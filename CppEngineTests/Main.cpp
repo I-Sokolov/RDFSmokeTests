@@ -3,6 +3,10 @@
 
 extern int main()
 {
-    printf("hello\n");
-    return 0;
+    try {
+        return 0;
+    }
+    catch (int& code) {
+        return code;
+    }
 }
