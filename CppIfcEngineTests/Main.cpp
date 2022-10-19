@@ -2,6 +2,8 @@
 #include "pch.h"
 
 extern void EngineTests(void);
+extern void EarlyBound_IFC4_test(void);
+extern void EarlyBound_AP242_test();
 
 
 extern int main()
@@ -10,6 +12,8 @@ extern int main()
         printf("--------- Starting IFC engine C++ tests\n");
         
         EngineTests();
+        EarlyBound_IFC4_test();
+        EarlyBound_AP242_test();
 
         printf("---------- Finished IFC enginde C++ tests\n");
         return 0;

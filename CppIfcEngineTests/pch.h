@@ -1,12 +1,15 @@
 #pragma once
 
 #include <stdio.h>
+#include <vector>
+#include <iostream>
 
 #include "ifcengine.h"
 #include "IFC4.h"
 #include "IFC2x3.h"
 #include "IFC4x3.h"
 #include "CIS2.h"
+#include "AP242.h"
 
 
 #ifdef ASSERT
