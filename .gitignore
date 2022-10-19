@@ -1,2 +1,8 @@
 
 */obj/
+*/.vs/
+output/
+CppIfcEngineTests/x64/
+CppEngineTests/x64/
+CsIfcEngineTests/bin/
+CsEngineTests/bin/
