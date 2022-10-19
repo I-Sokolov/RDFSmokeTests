@@ -61,6 +61,10 @@ echo ----------------------------- CPP Geometry Kernel Test --------------------
 call RunTest CppEngineTests "Release|x64" .
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED CPP Geometry Kernerl Engine Test !!!! & goto END)
 
+REM echo ----------------------------- C# Geometry Kernel Test -----------------------------
+REM call RunTest CsEngineTests "Release|Any CPU" net5.0
+REM if not .%ERRORLEVEL% == .0 (echo !!!! FAILED C# Geometry Kernel Engine Test !!!! & goto END)
+
 echo ------------------------------ OK. TESTS ARE PASSED --------------------------
 
 :END

@@ -3,6 +3,16 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+     <OutputPath>..\output\</OutputPath>
   </PropertyGroup>
+
+    <PropertyGroup>
+        <DefineConstants>_WIN64</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="..\output\xxxEngine.cs" />
+        <Compile Include="..\output\geom.cs" />
+    </ItemGroup>
 
 </Project>
