@@ -45,7 +45,7 @@ if not exist %RDF_TEST_DLL% (echo !!!!  Failed to copy %RDF_TEST_DLL% to output 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::
 
-if .%1 == .NOIFC goto NOIFC
+:: if .%RDF_TEST_RUN_IFC% == . goto NOIFC
 
 echo ----------------------------- CPP IfcEngine Test -----------------------------
 call RunTest CppIfcEngineTests "Release|x64" .
@@ -56,6 +56,10 @@ call RunTest CsIfcEngineTests "Release|Any CPU" net5.0
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED C# IfcEngine Test !!!! & goto END)
 
 :NOIFC
+
+echo ----------------------------- CPP Geometry Kernel Test -----------------------------
+call RunTest CppEngineTests "Release|x64" .
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED CPP Geometry Kernerl Engine Test !!!! & goto END)
 
 echo ------------------------------ OK. TESTS ARE PASSED --------------------------
 
