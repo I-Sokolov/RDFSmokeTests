@@ -176,8 +176,6 @@ static void TestPutAttr(SdaiModel model)
 
 static void TestGetAttrType(SdaiModel ifcModel, const char* entityName, const char* attrName, int_t expected)
 {
-    ENTER_TEST
-
     SdaiEntity entity = sdaiGetEntity(ifcModel, entityName);
     auto attr = sdaiGetAttrDefinition(entity, attrName);
     auto type = engiGetAttrType(attr);

@@ -6,4 +6,18 @@
     <OutputPath>..\output\</OutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+    <PropertyGroup>
+        <DefineConstants>_WIN64</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="..\output\xxxEngine.cs" />
+        <Compile Include="..\output\IFC4.cs" />
+        <Compile Include="..\output\AP242.cs" />
+    </ItemGroup>
+    
 </Project>

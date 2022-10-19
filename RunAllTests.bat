@@ -15,6 +15,7 @@ cd /d %~dp0
 IF .%RDF_TEST_INCLUDE_PATH% == . (echo ERROR: RDF_TEST_INCLUDE_PATH is not set & goto END)
 IF .%RDF_TEST_LIB% == . (echo ERROR: RDF_TEST_LIB is not set & goto END)
 IF .%RDF_TEST_DLL% == . (echo ERROR: RDF_TEST_DLL is not set & goto END)
+IF .%RDF_TEST_CS_ENGINE% == . (echo ERROR: RDF_TEST_CS_ENGINE is not set & goto END)
 
 IF .%RDF_TEST_DEVENV% == . set RDF_TEST_DEVENV="C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\devenv.com"
 
@@ -35,7 +36,9 @@ mkdir output
 IF not EXIST output (echo !!!!  Failed to create output !!! & goto END)
 
 @echo on
-xcopy %RDF_TEST_DLL% output /Y
+copy %RDF_TEST_DLL% output /Y
+copy %RDF_TEST_CS_ENGINE% output\xxxEngine.cs /Y
+xcopy %RDF_TEST_INCLUDE_PATH%\*.cs output /Y
 @echo off
 if not exist %RDF_TEST_DLL% (echo !!!!  Failed to copy %RDF_TEST_DLL% to output !!! & goto END)
 
