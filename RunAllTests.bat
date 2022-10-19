@@ -1,3 +1,5 @@
+git pull
+
 @echo off
 
 REM %cd% will give you the current working directory (variable)
