@@ -1,4 +1,5 @@
 git pull
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED Pull Test !!!! & goto END)
 
 @echo off
 
@@ -27,12 +28,16 @@ echo ...
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: copy testing dll
 
-@echo on
 IF EXIST output rd output /s /q
+IF EXIST output (echo !!!!  Failed to cleanup output !!! & goto END)
+
 mkdir output
-xcopy %RDF_TEST_DLL% output
-if not exist %RDF_TEST_DLL% (echo !!!!  Failed to copy %RDF_TEST_DLL% to output !!! & goto END)
+IF not EXIST output (echo !!!!  Failed to create output !!! & goto END)
+
+@echo on
+xcopy %RDF_TEST_DLL% output /Y
 @echo off
+if not exist %RDF_TEST_DLL% (echo !!!!  Failed to copy %RDF_TEST_DLL% to output !!! & goto END)
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::
@@ -40,8 +45,12 @@ if not exist %RDF_TEST_DLL% (echo !!!!  Failed to copy %RDF_TEST_DLL% to output 
 if .%1 == .NOIFC goto NOIFC
 
 echo ----------------------------- CPP IfcEngine Test -----------------------------
-call RunTest CppIfcEngineTests
+call RunTest CppIfcEngineTests "Release|x64" .
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED CPP IfcEngine Test !!!! & goto END)
+
+echo ----------------------------- C# IfcEngine Test -----------------------------
+call RunTest CsIfcEngineTests "Release|Any CPU" net5.0
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED C# IfcEngine Test !!!! & goto END)
 
 :NOIFC
 
