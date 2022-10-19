@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 using AP242;
 
-namespace CS_IFC
+namespace CsIfcEngineTests
 {
-    class CS_AP242
+    class EarlyBinding_AP242 : TestBase
     {
         public static void Run()
         {
@@ -21,6 +21,8 @@ namespace CS_IFC
 
         static void test_list3()
         {
+            ENTER_TEST();
+
             /// 
             /// Create list of list of list of double
             /// 
@@ -28,12 +30,12 @@ namespace CS_IFC
             RDF.ifcengine.SetSPFFHeaderItem(model, 9, 0, RDF.ifcengine.sdaiSTRING, "AP242");
             RDF.ifcengine.SetSPFFHeaderItem(model, 9, 1, RDF.ifcengine.sdaiSTRING, null as string);
 
-            assert(model!=0);
+            ASSERT(model!=0);
 
             var bspline_volume = rational_b_spline_volume.Create(model);
 
             list_of_list_of_list_of_double weights = bspline_volume.get_weights_data();
-            assert(weights.Count == 0);
+            ASSERT(weights.Count == 0);
 
             for (int i = 0; i < 2; i++)
             {
@@ -60,13 +62,13 @@ namespace CS_IFC
             var segment = composite_curve_segment.Create(model);
 
             bag_of_composite_curve bag = segment.get_using_curves();
-            assert(bag.Count==0);
+            ASSERT(bag.Count==0);
 
             //defined types on selects
             var equiv = equivalence_notable_instance.Create(model);
 
             list_of_equivalence_detected_difference_select lstCompared = equiv.get_compared_elements();
-            assert(lstCompared.Count == 0);
+            ASSERT(lstCompared.Count == 0);
 
             var vertexPoint = vertex_point.Create(model);
             vertexPoint.put_name("Test vertex point");
@@ -76,22 +78,22 @@ namespace CS_IFC
             equiv.put_compared_elements(lstCompared);
 
             lstCompared = equiv.get_compared_elements();
-            assert(lstCompared.Count!=0);
+            ASSERT(lstCompared.Count!=0);
             var test = lstCompared.First()._a3ms_inspected_equivalence_element_select().get_vertex_point().get_name();
-            assert(!strcmp(test, "Test vertex point"));
+            ASSERT(!strcmp(test, "Test vertex point"));
 
             //
             var prodDefOccur = product_definition_occurrence.Create(model);
-            assert(prodDefOccur.get_definition().get_product_definition() == 0);
+            ASSERT(prodDefOccur.get_definition().get_product_definition() == 0);
 
             var prodDef = product_definition.Create(model);
             prodDefOccur.put_definition().put_product_definition(prodDef);
-            assert(prodDefOccur.get_definition().get_product_definition() == prodDef);
+            ASSERT(prodDefOccur.get_definition().get_product_definition() == prodDef);
 
             //            
             var appliedUsageRights = applied_usage_right.Create(model);
             set_of_ir_usage_item lstUsageItems = appliedUsageRights.get_items();
-            assert(lstUsageItems.Count == 0);
+            ASSERT(lstUsageItems.Count == 0);
 
 
             var usageItem = applied_classification_assignment.Create(model);
@@ -105,15 +107,15 @@ namespace CS_IFC
             appliedUsageRights.put_items(lstUsageItems);
 
             lstUsageItems = appliedUsageRights.get_items();
-            assert(lstUsageItems.Count == 1);
-            assert(lstUsageItems.Last().get_action() == 0);
+            ASSERT(lstUsageItems.Count == 1);
+            ASSERT(lstUsageItems.Last().get_action() == 0);
             test = lstUsageItems.Last().get_applied_classification_assignment().get_role().get_name();
-            assert(!strcmp(test, "Test role"));
+            ASSERT(!strcmp(test, "Test role"));
 
             //            
             var listedLogical = listed_logical_data.Create(model);
             ListOfLOGICAL_VALUE lstLogical = listedLogical.get_values();
-            assert(lstLogical.Count == 0);
+            ASSERT(lstLogical.Count == 0);
 
             lstLogical.Add(LOGICAL_VALUE.True);
             lstLogical.Add(LOGICAL_VALUE.False);
@@ -122,7 +124,7 @@ namespace CS_IFC
             listedLogical.put_values(lstLogical);
 
             lstLogical = listedLogical.get_values();
-            assert(lstLogical.Count == 3 && lstLogical.First() == LOGICAL_VALUE.True && lstLogical.Last() == LOGICAL_VALUE.Unknown);
+            ASSERT(lstLogical.Count == 3 && lstLogical.First() == LOGICAL_VALUE.True && lstLogical.Last() == LOGICAL_VALUE.Unknown);
 
             //
             var extreme = extreme_instance.Create(model);
@@ -130,7 +132,7 @@ namespace CS_IFC
             var dir = direction.Create(model);
 
             set_of_location_of_extreme_value_select setLocations = extreme.get_locations_of_extreme_value();
-            assert(setLocations.Count == 0);
+            ASSERT(setLocations.Count == 0);
 
             setLocations.Add(new location_of_extreme_value_select(extreme));
             setLocations.Last()._inspected_shape_element_select().put_direction(dir);
@@ -138,7 +140,7 @@ namespace CS_IFC
             extreme.put_locations_of_extreme_value(setLocations);
 
             List<location_of_extreme_value_select> getLocations = extreme.get_locations_of_extreme_value();
-            assert(getLocations.Count == 1 && getLocations[0]._inspected_shape_element_select().get_direction() == dir);
+            ASSERT(getLocations.Count == 1 && getLocations[0]._inspected_shape_element_select().get_direction() == dir);
 
             //
             RDF.ifcengine.sdaiSaveModelBN(model, "Test.ap");
@@ -150,11 +152,11 @@ namespace CS_IFC
             var modelRead = RDF.ifcengine.sdaiOpenModelBN(0, "Test.ap", "AP242");
 
             var entity = RDF.ifcengine.sdaiGetEntity(modelRead, "RATIONAL_B_SPLINE_VOLUME");
-            assert(entity!=0);
+            ASSERT(entity!=0);
 
             var volumes = RDF.ifcengine.sdaiGetEntityExtent(modelRead, entity);
             var N_volumes = RDF.ifcengine.sdaiGetMemberCount(volumes);
-            assert(N_volumes == 1);
+            ASSERT(N_volumes == 1);
             for (long i = 0; i < N_volumes; i++)
             {
 
@@ -171,6 +173,8 @@ namespace CS_IFC
 
         static void test_multi_parent()
         {
+            ENTER_TEST();
+
             long model = RDF.ifcengine.sdaiCreateModelBN(0, null as string, "AP242");
             RDF.ifcengine.SetSPFFHeaderItem(model, 9, 0, RDF.ifcengine.sdaiSTRING, "AP242");
             RDF.ifcengine.SetSPFFHeaderItem(model, 9, 1, RDF.ifcengine.sdaiSTRING, null as string);
@@ -196,10 +200,10 @@ namespace CS_IFC
             var modelRead = RDF.ifcengine.sdaiOpenModelBN(0, "Test.ap", "AP242");
 
             var entity = RDF.ifcengine.sdaiGetEntity(modelRead, "a3m_equivalence_criterion_with_specified_elements");// "a3m_equivalence_criterion");
-            assert(entity!=0);
+            ASSERT(entity!=0);
             var items = RDF.ifcengine.sdaiGetEntityExtent(modelRead, entity);
             var N_items = RDF.ifcengine.sdaiGetMemberCount(items);
-            assert(N_items == 1);
+            ASSERT(N_items == 1);
             for (long i = 0; i < N_items; i++)
             {
 
@@ -207,14 +211,14 @@ namespace CS_IFC
                 RDF.ifcengine.engiGetAggrElement(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
 
                 var name = ((a3m_equivalence_criterion)item).get_name();
-                assert(!strcmp(name, NAME));
+                ASSERT(!strcmp(name, NAME));
             }
 
             entity = RDF.ifcengine.sdaiGetEntity(modelRead, "edge_loop");
-            assert(entity!=0);
+            ASSERT(entity!=0);
             items = RDF.ifcengine.sdaiGetEntityExtent(modelRead, entity);
             N_items = RDF.ifcengine.sdaiGetMemberCount(items);
-            assert(N_items == 1);
+            ASSERT(N_items == 1);
             for (long i = 0; i < N_items; i++)
             {
 
@@ -223,10 +227,10 @@ namespace CS_IFC
 
                 eloop = (edge_loop)item;
                 var name = eloop.get_name();
-                assert(name == NAME);
+                ASSERT(name == NAME);
 
                 var lst = eloop.get_edge_list();
-                assert(lst.Count == 2);
+                ASSERT(lst.Count == 2);
             }
 
 
@@ -239,10 +243,6 @@ namespace CS_IFC
             return s1 != s2;
         }
 
-        static void assert(bool c)
-        {
-            System.Diagnostics.Debug.Assert(c);
-        }
         private static void ASSERT_EQ_LST(IEnumerable lst1, IEnumerable lst2)
         {
             var it1 = lst1.GetEnumerator();
@@ -256,7 +256,7 @@ namespace CS_IFC
                 var cmp2 = it2.Current as IComparable;
                 if (cmp1 != null && cmp2 != null)
                 {
-                    assert(cmp1.Equals(cmp2));
+                    ASSERT(cmp1.Equals(cmp2));
                 }
                 else
                 {
@@ -268,7 +268,7 @@ namespace CS_IFC
                     }
                     else
                     {
-                        assert(false); //no comparision is implemented
+                        ASSERT(false); //no comparision is implemented
                     }
                 }
 
@@ -276,7 +276,7 @@ namespace CS_IFC
                 m2 = it2.MoveNext();
             }
 
-            assert(!m1 && !m2);
+            ASSERT(!m1 && !m2);
         }
 
     }

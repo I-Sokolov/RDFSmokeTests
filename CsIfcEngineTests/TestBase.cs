@@ -19,7 +19,7 @@ namespace CsIfcEngineTests
         protected static void ENTER_TEST()
         {
             var t = new System.Diagnostics.StackTrace();
-            var f = t.GetFrame(t.FrameCount - 2);
+            var f = t.GetFrame(1);
             var n = f.GetMethod().ReflectedType.Name + "." + f.GetMethod().Name;
             
             System.Console.WriteLine("Running {0}.", n);

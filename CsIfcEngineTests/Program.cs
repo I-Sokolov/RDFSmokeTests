@@ -11,6 +11,8 @@ namespace CsIfcEngineTests
                 Console.WriteLine("--------- Starting IFC engine C# tests");
 
                 EarlyBinding_IFC.Test();
+                EarlyBinding_AP242.Run();
+                EarlyBinding_GuideExample.Run();
 
                 Console.WriteLine("--------- Finished IFC engine C# tests");
                 return 0;

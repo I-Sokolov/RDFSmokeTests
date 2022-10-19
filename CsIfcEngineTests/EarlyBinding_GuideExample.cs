@@ -5,12 +5,13 @@ using System.Collections;
 
 using SdaiInstance = System.Int64;
 
-namespace CS_IFC
+namespace CsIfcEngineTests
 {
-    class GuideExample
+    class EarlyBinding_GuideExample : TestBase
     {
         public static void Run()
         {
+            ENTER_TEST();
 
             long model = RDF.ifcengine.sdaiCreateModelBN(0, null as string, "IFC4");
             RDF.ifcengine.SetSPFFHeaderItem(model, 9, 0, RDF.ifcengine.sdaiSTRING, "IFC4");
@@ -26,23 +27,23 @@ namespace CS_IFC
 
             //whenever SDAI instance is required, model instance can be used with implicit conversion
             long ok = RDF.ifcengine.sdaiIsKindOfBN(wall, "IfcProduct");
-            assert(ok!=0);
+            ASSERT(ok!=0);
 
             SdaiInstance sdaiWall = wall;
             ok = RDF.ifcengine.sdaiIsKindOfBN(sdaiWall, "IfcSlab");
-            assert(ok==0);
+            ASSERT(ok==0);
 
             //other way, if you have SDAI instance you can construct model instance of appripriate type
 
             IFC4.IfcProduct product = sdaiWall; 
-            assert(product != 0); //check instance is valid
+            ASSERT(product != 0); //check instance is valid
 
             //or if somebody loves C# syle
             product = new IFC4.IfcProduct (sdaiWall);
-            assert(product!=0); 
+            ASSERT(product!=0); 
 
             IFC4.IfcSlab slab = sdaiWall;
-            assert(slab==0); //wall is not a slab
+            ASSERT(slab==0); //wall is not a slab
 
             //
             // use put_* and set_* methods to access attribute
@@ -50,7 +51,7 @@ namespace CS_IFC
             // 
 
             wall.put_Name("MyWall");
-            assert(wall.get_Name() == "MyWall");
+            ASSERT(wall.get_Name() == "MyWall");
 
             //
             // nullable values
@@ -58,23 +59,23 @@ namespace CS_IFC
 
             // get_* method will return domain type if attribute domain includes null value
             string text = wall.get_Description();
-            assert(text == null); //not set
+            ASSERT(text == null); //not set
 
             // but if null value outside of domain type, get_* method will return nullable<> type extension
             // use nullable.Isnull and nullable.Value
 
             double? width = door.get_OverallWidth();
-            assert(width==null); //not set
+            ASSERT(width==null); //not set
 
             door.put_OverallWidth(900);
 
             width = door.get_OverallWidth();
-            assert(width!=null && width! == 900);
+            ASSERT(width!=null && width! == 900);
 
             // Hint: use var to simplify code
 
             var height = door.get_OverallHeight();
-            assert(height==null); //not set
+            ASSERT(height==null); //not set
 
             //
             // Enumerations
@@ -85,11 +86,11 @@ namespace CS_IFC
 
             // get_* methods will return nullable extension
             IFC4.IfcWallTypeEnum? wallPredefinedType = wall.get_PredefinedType();
-            assert(wallPredefinedType! == IFC4.IfcWallTypeEnum.MOVABLE);
+            ASSERT(wallPredefinedType! == IFC4.IfcWallTypeEnum.MOVABLE);
 
             //Hint: simplify with var
             var doorPredefinedType = door.get_PredefinedType();
-            assert(doorPredefinedType==null);
+            ASSERT(doorPredefinedType==null);
 
             //
             // Definded types
@@ -101,7 +102,7 @@ namespace CS_IFC
 
             //and to get
             /*IFC4.IfcPositiveLengthMeasure>*/ double? getMeasure = door.get_OverallHeight();
-            assert(getMeasure! == 2000);
+            ASSERT(getMeasure! == 2000);
 
             //
             // SELECTs
@@ -122,23 +123,23 @@ namespace CS_IFC
             //similary, attribute get_* methods return a get-selector and you can inquire content
             IFC4.IfcActorSelect_get getSelector = actor.get_TheActor();
 
-            assert(getSelector.is_IfcPerson());
-            assert(!getSelector.is_IfcOrganization());
+            ASSERT(getSelector.is_IfcPerson());
+            ASSERT(!getSelector.is_IfcOrganization());
 
             IFC4.IfcPerson gotPerson = getSelector.get_IfcPerson();
-            assert(gotPerson == person);
+            ASSERT(gotPerson == person);
 
             IFC4.IfcOrganization gotOrganization = getSelector.get_IfcOrganization();
-            assert(gotOrganization == 0);
+            ASSERT(gotOrganization == 0);
 
             //get-selector may provide a method to get as base C++ type without specifing IFC type
 
             SdaiInstance inst = getSelector.as_instance();
 
             //check instance class
-            assert((IFC4.IfcPerson)(inst)!=0);
-            assert((IFC4.IfcOrganization)(inst)==0);
-            assert(RDF.ifcengine.sdaiIsKindOfBN(inst, "IfcPerson")!=0);
+            ASSERT((IFC4.IfcPerson)(inst)!=0);
+            ASSERT((IFC4.IfcOrganization)(inst)==0);
+            ASSERT(RDF.ifcengine.sdaiIsKindOfBN(inst, "IfcPerson")!=0);
 
 
             //work with nested SELECT
@@ -148,29 +149,29 @@ namespace CS_IFC
             measure.put_ValueComponent().put_IfcSimpleValue().put_IfcInteger(75);
 
             //you can get with type path
-            assert(measure.get_ValueComponent().get_IfcSimpleValue().is_IfcInteger());
-            assert(!measure.get_ValueComponent().get_IfcMeasureValue().is_IfcAreaMeasure());
+            ASSERT(measure.get_ValueComponent().get_IfcSimpleValue().is_IfcInteger());
+            ASSERT(!measure.get_ValueComponent().get_IfcMeasureValue().is_IfcAreaMeasure());
 
             var valueSelector = measure.get_ValueComponent(); //you can save selector in a variable
 
             var gotInt = valueSelector.get_IfcSimpleValue().get_IfcInteger();
-            assert(gotInt != null && gotInt! == 75);
+            ASSERT(gotInt != null && gotInt! == 75);
 
             var gotArea = measure.get_ValueComponent().get_IfcMeasureValue().get_IfcAreaMeasure();
-            assert(gotArea==null);
+            ASSERT(gotArea==null);
 
             //if you are not interested in type, you can get as C++ base type
             gotInt = valueSelector.as_int();
-            assert(gotInt != null && gotInt! == 75);
+            ASSERT(gotInt != null && gotInt! == 75);
 
             var gotDouble = valueSelector.as_double();
-            assert(gotDouble != null && gotDouble! == 75);
+            ASSERT(gotDouble != null && gotDouble! == 75);
 
             var gotText = measure.get_ValueComponent().as_text();
-            assert(gotText != null && gotText == "75");
+            ASSERT(gotText != null && gotText == "75");
 
             var gotBool = valueSelector.as_bool();
-            assert(gotBool==null); //IfcInteger is not convertable to bool
+            ASSERT(gotBool==null); //IfcInteger is not convertable to bool
 
             //
             // AGGRAGATIONS
@@ -192,7 +193,7 @@ namespace CS_IFC
             site.put_RefLatitude(planeAngle);
 
             IFC4.IfcCompoundPlaneAngleMeasure gotPlaneAngle = site.get_RefLatitude();
-            assert(gotPlaneAngle.Count == 3 && gotPlaneAngle.First() == 44 && gotPlaneAngle[1]==34 && gotPlaneAngle[2]==3);
+            ASSERT(gotPlaneAngle.Count == 3 && gotPlaneAngle.First() == 44 && gotPlaneAngle[1]==34 && gotPlaneAngle[2]==3);
 
             //to put you can use any IEnumerable of base type
             var lstInt = new List<long> () ;
@@ -204,10 +205,10 @@ namespace CS_IFC
 
             //get_* method will return a subclass of List<> of base type
             List<long> gotLongitued = site.get_RefLongitude();
-            assert(gotLongitued.Count == 4 && gotLongitued[2] == 3);
+            ASSERT(gotLongitued.Count == 4 && gotLongitued[2] == 3);
 
             IFC4.IfcCompoundPlaneAngleMeasure gotLatitude = site.get_RefLatitude();
-            assert(gotLatitude.Count == 1 && gotLatitude.First() == 56);
+            ASSERT(gotLatitude.Count == 1 && gotLatitude.First() == 56);
 
             //
             // RELATIONSHIPS is an example of aggregations of entities
@@ -218,7 +219,7 @@ namespace CS_IFC
             group.put_RelatedObjects(gropObjects);
 
             IFC4.SetOfIfcObjectDefinition gotGroup = group.get_RelatedObjects();
-            assert(gotGroup.Count == 2 && gotGroup.First() == wall && gotGroup.Last() == site);
+            ASSERT(gotGroup.Count == 2 && gotGroup.First() == wall && gotGroup.Last() == site);
 
             //
             // AGGERGATION OF SELECT
@@ -241,13 +242,13 @@ namespace CS_IFC
             propEnumValue.put_EnumerationValues(lstValue);
 
             IFC4.ListOfIfcValue gotValues = propEnumValue.get_EnumerationValues();
-            assert(gotValues.Count == 2);
+            ASSERT(gotValues.Count == 2);
 
             string v1 = gotValues.First()._IfcSimpleValue().get_IfcLabel();
-            assert(v1 != null && v1== "MyLabel");
+            ASSERT(v1 != null && v1== "MyLabel");
             
             double? v2 = gotValues.Last()._IfcMeasureValue().get_IfcCountMeasure();
-            assert(v2 != null && v2! == 4);
+            ASSERT(v2 != null && v2! == 4);
 
             //
             // AGGREGATION OF AGGREGATION
@@ -282,12 +283,7 @@ namespace CS_IFC
             prop.put_NominalValue().put_IfcMeasureValue().put_IfcComplexNumber(cplx);
 
             IFC4.IfcComplexNumber cplxNum = prop.get_NominalValue().get_IfcMeasureValue().get_IfcComplexNumber();
-            assert(cplxNum.Count == 2 && cplxNum.First() == 2.1 && cplxNum.Last() == 1.5);
-        }
-
-        private static void assert(bool ok)
-        {
-            System.Diagnostics.Debug.Assert(ok);
+            ASSERT(cplxNum.Count == 2 && cplxNum.First() == 2.1 && cplxNum.Last() == 1.5);
         }
 
         private static void assert_equal(IEnumerable lst1, IEnumerable lst2)
@@ -303,7 +299,7 @@ namespace CS_IFC
                 var cmp2 = it2.Current as IComparable;
                 if (cmp1 != null && cmp2 != null)
                 {
-                    assert(cmp1.Equals(cmp2));
+                    ASSERT(cmp1.Equals(cmp2));
                 }
                 else
                 {
@@ -315,7 +311,7 @@ namespace CS_IFC
                     }
                     else
                     {
-                        assert(false); //no comparision is implemented
+                        ASSERT(false); //no comparision is implemented
                     }
                 }
 
@@ -323,7 +319,7 @@ namespace CS_IFC
                 m2 = it2.MoveNext();
             }
 
-            assert(!m1 && !m2);
+            ASSERT(!m1 && !m2);
         }
 
     }
