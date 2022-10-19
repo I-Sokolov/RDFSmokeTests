@@ -15,3 +15,4 @@
 
 #define ASSERT(c) {if (!(c)) { printf ("ASSERT failed at LINE %d FILE %s\n", __LINE__, __FILE__); throw (int) 13;}}
 
+#define ENTER_TEST printf ("Running " __FUNCTION__ ".\n");

@@ -1,12 +1,17 @@
 
 #include "pch.h"
 
+extern void EngineTests(void);
+
+
 extern int main()
 {
     try {
-        printf("Starting IFC engine C++ tests\n");
-        ASSERT(0);
-        printf("Finished IFC enginde C++ tests\n");
+        printf("--------- Starting IFC engine C++ tests\n");
+        
+        EngineTests();
+
+        printf("---------- Finished IFC enginde C++ tests\n");
         return 0;
     }
     catch (int& code) {
