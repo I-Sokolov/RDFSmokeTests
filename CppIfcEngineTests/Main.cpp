@@ -4,6 +4,8 @@
 extern void EngineTests(void);
 extern void EarlyBound_IFC4_test(void);
 extern void EarlyBound_AP242_test();
+extern void EarlyBound_GuideExamples();
+
 
 
 extern int main()
@@ -14,6 +16,7 @@ extern int main()
         EngineTests();
         EarlyBound_IFC4_test();
         EarlyBound_AP242_test();
+        EarlyBound_GuideExamples();
 
         printf("---------- Finished IFC enginde C++ tests\n");
         return 0;
