@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="..\output\xxxEngine.cs" />
+        <Compile Include="..\output\engine.cs" />
         <Compile Include="..\output\geom.cs" />
     </ItemGroup>
 

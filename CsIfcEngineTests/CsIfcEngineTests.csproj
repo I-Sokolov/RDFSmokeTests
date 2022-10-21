@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="..\output\xxxEngine.cs" />
+        <Compile Include="..\output\ifcEngine.cs" />
         <Compile Include="..\output\IFC4.cs" />
         <Compile Include="..\output\AP242.cs" />
     </ItemGroup>
