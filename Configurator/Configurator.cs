@@ -168,10 +168,15 @@ namespace Configurator
                 Settings.Default[valueProp] = value;
                 Environment.SetEnvironmentVariable(envVar, value, EnvironmentVariableTarget.User);
 
-                var history = new System.Collections.Specialized.StringCollection();
+                var historySet = new HashSet<string>();
                 foreach (var item in cb.Items)
                 {
-                    history.Add((string)item);
+                    historySet.Add((string)item);
+                }
+                var history = new System.Collections.Specialized.StringCollection();
+                foreach (var item in historySet)
+                {
+                    history.Add(item);
                 }
                 history.Add(value);
                 Settings.Default[historyProp] = history;
