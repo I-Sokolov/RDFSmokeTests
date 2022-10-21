@@ -15,8 +15,10 @@ IF .%RDF_TEST_DEVENV% == . set RDF_TEST_DEVENV="C:\Program Files (x86)\Microsoft
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::;
 
 echo ----------------------------- Configurator  -----------------------------
-call RunTest Configurator "Release|Any CPU" ..\Configurator.bin\net5.0-windows
+call RunTest Configurator "Release|Any CPU" net5.0-windows
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to configurate tests !!!! & goto END)
+
+set RDF_TEST
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::;
 :: chek parameters
@@ -25,6 +27,7 @@ IF .%RDF_TEST_INCLUDE_PATH% == . (echo ERROR: RDF_TEST_INCLUDE_PATH is not set &
 IF .%RDF_TEST_LIB% == . (echo ERROR: RDF_TEST_LIB is not set & goto END)
 IF .%RDF_TEST_DLL% == . (echo ERROR: RDF_TEST_DLL is not set & goto END)
 IF .%RDF_TEST_ENGINE_CS% == . (echo ERROR: RDF_TEST_ENGINE_CS is not set & goto END)
+IF .%RDF_TEST_GEOM_CS% == . (echo ERROR: RDF_TEST_GEOM_CS is not set & goto END)
 if .%RDF_TEST_ONLY_KERNEL% == .1 goto ONLY_KERNEL
 IF .%RDF_TEST_IFCENGINE_CS% == . (echo ERROR: RDF_TEST_IFCENGINE_CS is not set & goto END)
 IF .%RDF_TEST_IFC4_CS% == . (echo ERROR: RDF_TEST_IFC4_CS is not set & goto END)
@@ -49,7 +52,7 @@ IF not EXIST output (echo !!!!  Failed to create output !!! & goto END)
 @echo on
 copy %RDF_TEST_DLL% output /Y
 copy %RDF_TEST_ENGINE_CS%\engine.cs output /Y
-copy %RDF_TEST_ENGINE_CS%\geom.cs output /Y
+copy %RDF_TEST_GEOM_CS%\geom.cs output /Y
 if .%RDF_TEST_ONLY_KERNEL% == .1 goto ONLY_KERNEL
 copy %RDF_TEST_IFCENGINE_CS%\ifcengine.cs output /Y
 copy %RDF_TEST_IFC4_CS%\IFC4.cs output /Y

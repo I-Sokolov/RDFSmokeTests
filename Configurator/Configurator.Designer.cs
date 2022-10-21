@@ -45,12 +45,14 @@ namespace Configurator
             this.cbIFC4cs = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.cbAP242cs = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cbGeomCs = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // btnRun
             // 
             this.btnRun.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnRun.Location = new System.Drawing.Point(383, 524);
+            this.btnRun.Location = new System.Drawing.Point(383, 593);
             this.btnRun.Name = "btnRun";
             this.btnRun.Size = new System.Drawing.Size(74, 29);
             this.btnRun.TabIndex = 0;
@@ -134,9 +136,9 @@ namespace Configurator
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(14, 239);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(213, 20);
+            this.label4.Size = new System.Drawing.Size(125, 20);
             this.label4.TabIndex = 9;
-            this.label4.Text = "path to engine.cs and geom.cs:";
+            this.label4.Text = "path to engine.cs:";
             // 
             // cbEngineCs
             // 
@@ -152,7 +154,7 @@ namespace Configurator
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(14, 305);
+            this.label5.Location = new System.Drawing.Point(14, 359);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(141, 20);
             this.label5.TabIndex = 11;
@@ -163,7 +165,7 @@ namespace Configurator
             this.cbIfcEngineCs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbIfcEngineCs.FormattingEnabled = true;
-            this.cbIfcEngineCs.Location = new System.Drawing.Point(14, 328);
+            this.cbIfcEngineCs.Location = new System.Drawing.Point(14, 382);
             this.cbIfcEngineCs.Name = "cbIfcEngineCs";
             this.cbIfcEngineCs.Size = new System.Drawing.Size(829, 28);
             this.cbIfcEngineCs.TabIndex = 10;
@@ -172,7 +174,7 @@ namespace Configurator
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 371);
+            this.label6.Location = new System.Drawing.Point(13, 425);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(108, 20);
             this.label6.TabIndex = 13;
@@ -183,7 +185,7 @@ namespace Configurator
             this.cbIFC4cs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbIFC4cs.FormattingEnabled = true;
-            this.cbIFC4cs.Location = new System.Drawing.Point(13, 394);
+            this.cbIFC4cs.Location = new System.Drawing.Point(13, 448);
             this.cbIFC4cs.Name = "cbIFC4cs";
             this.cbIFC4cs.Size = new System.Drawing.Size(829, 28);
             this.cbIFC4cs.TabIndex = 12;
@@ -192,7 +194,7 @@ namespace Configurator
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(14, 442);
+            this.label7.Location = new System.Drawing.Point(14, 496);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(122, 20);
             this.label7.TabIndex = 15;
@@ -203,17 +205,38 @@ namespace Configurator
             this.cbAP242cs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbAP242cs.FormattingEnabled = true;
-            this.cbAP242cs.Location = new System.Drawing.Point(14, 465);
+            this.cbAP242cs.Location = new System.Drawing.Point(14, 519);
             this.cbAP242cs.Name = "cbAP242cs";
             this.cbAP242cs.Size = new System.Drawing.Size(829, 28);
             this.cbAP242cs.TabIndex = 14;
             this.cbAP242cs.TextChanged += new System.EventHandler(this.OnCbTextChanged);
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(14, 294);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(119, 20);
+            this.label8.TabIndex = 17;
+            this.label8.Text = "path to geom.cs:";
+            // 
+            // cbGeomCs
+            // 
+            this.cbGeomCs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbGeomCs.FormattingEnabled = true;
+            this.cbGeomCs.Location = new System.Drawing.Point(14, 317);
+            this.cbGeomCs.Name = "cbGeomCs";
+            this.cbGeomCs.Size = new System.Drawing.Size(829, 28);
+            this.cbGeomCs.TabIndex = 16;
+            // 
             // Configurator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(853, 565);
+            this.ClientSize = new System.Drawing.Size(853, 634);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.cbGeomCs);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.cbAP242cs);
             this.Controls.Add(this.label6);
@@ -255,6 +278,8 @@ namespace Configurator
         private System.Windows.Forms.ComboBox cbIFC4cs;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cbAP242cs;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox cbGeomCs;
     }
 }
 

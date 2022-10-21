@@ -356,5 +356,51 @@ namespace Configurator {
                 this["IFCTest_cbAP242cs_value"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection KernelTest_cbGeomCs_history {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbGeomCs_history"]));
+            }
+            set {
+                this["KernelTest_cbGeomCs_history"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection IFCTest_cbGeomCs_history {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbGeomCs_history"]));
+            }
+            set {
+                this["IFCTest_cbGeomCs_history"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string KernelTest_cbGeomCs_value {
+            get {
+                return ((string)(this["KernelTest_cbGeomCs_value"]));
+            }
+            set {
+                this["KernelTest_cbGeomCs_value"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string IFCTest_cbGeomCs_value {
+            get {
+                return ((string)(this["IFCTest_cbGeomCs_value"]));
+            }
+            set {
+                this["IFCTest_cbGeomCs_value"] = value;
+            }
+        }
     }
 }

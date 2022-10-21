@@ -20,6 +20,7 @@ namespace Configurator
         string ENV_DLL = "RDF_TEST_DLL";
         string ENV_ENGINE_CS = "RDF_TEST_ENGINE_CS";
         string ENV_IFCENGINE_CS = "RDF_TEST_IFCENGINE_CS";
+        string ENV_GEOM_CS = "RDF_TEST_GEOM_CS";
         string ENV_IFC4_CS = "RDF_TEST_IFC4_CS";
         string ENV_AP242_CS = "RDF_TEST_AP242_CS";
 
@@ -52,6 +53,7 @@ namespace Configurator
                 && CheckFileExist(cbLibFile)
                 && CheckFileExist(cbDllFile)
                 && CheckDirExist(cbEngineCs)
+                && CheckDirExist(cbGeomCs)
                 && (chkOnlyKernel.Checked ||
                       CheckDirExist(cbIfcEngineCs)
                       && CheckDirExist(cbIFC4cs)
@@ -104,13 +106,14 @@ namespace Configurator
             else
             {
                 Settings.Default.OnlyKernelTests = chkOnlyKernel.Checked;
-                Environment.SetEnvironmentVariable(ENV_ONLY_KERNEL, chkOnlyKernel.Checked ? "1" : "0");
+                Environment.SetEnvironmentVariable(ENV_ONLY_KERNEL, chkOnlyKernel.Checked ? "1" : "0", EnvironmentVariableTarget.User);
             }
 
             SettingsExchange(cbIncludePath, ENV_INCLUDE_PATH, load);
             SettingsExchange(cbLibFile, ENV_LIB, load);
             SettingsExchange(cbDllFile, ENV_DLL, load);
             SettingsExchange(cbEngineCs, ENV_ENGINE_CS, load);
+            SettingsExchange(cbGeomCs, ENV_GEOM_CS, load);
             SettingsExchange(cbIfcEngineCs, ENV_IFCENGINE_CS, load);
             SettingsExchange(cbIFC4cs, ENV_IFC4_CS, load);
             SettingsExchange(cbAP242cs, ENV_AP242_CS, load);
@@ -163,7 +166,7 @@ namespace Configurator
             {
                 var value = cb.Text;
                 Settings.Default[valueProp] = value;
-                Environment.SetEnvironmentVariable(envVar, value);
+                Environment.SetEnvironmentVariable(envVar, value, EnvironmentVariableTarget.User);
 
                 var history = new System.Collections.Specialized.StringCollection();
                 foreach (var item in cb.Items)
