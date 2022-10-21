@@ -24,7 +24,8 @@ namespace Configurator
         string ENV_IFC4_CS = "RDF_TEST_IFC4_CS";
         string ENV_AP242_CS = "RDF_TEST_AP242_CS";
 
-
+        Dictionary<string, string> config = new Dictionary<string, string>();
+        
         HashSet<object> modifiedCtrls = new HashSet<object>();
         bool loadingSettings = false;
 
@@ -42,8 +43,26 @@ namespace Configurator
             if (IsValid())
             {
                 SettingsExchange(false);
+                WriteConfig();
                 exitCode.value = 0;
                 Close();
+            }
+        }
+
+        void WriteConfig ()
+        {
+            var exepath = System.Reflection.Assembly.GetEntryAssembly().Location;
+            var folder = System.IO.Path.GetDirectoryName(exepath);
+            var cfgFile = System.IO.Path.Combine(folder, "SetConfig.bat");
+
+            using (var writer = new System.IO.StreamWriter(cfgFile))
+            {
+                writer.WriteLine("@echo on");
+                foreach (var v in config)
+                {
+                    writer.WriteLine("SET {0}={1}", v.Key, v.Value);
+                }
+                writer.WriteLine("@echo off");
             }
         }
 
@@ -106,7 +125,7 @@ namespace Configurator
             else
             {
                 Settings.Default.OnlyKernelTests = chkOnlyKernel.Checked;
-                Environment.SetEnvironmentVariable(ENV_ONLY_KERNEL, chkOnlyKernel.Checked ? "1" : "0", EnvironmentVariableTarget.User);
+                config.Add (ENV_ONLY_KERNEL, chkOnlyKernel.Checked ? "1" : "0");
             }
 
             SettingsExchange(cbIncludePath, ENV_INCLUDE_PATH, load);
@@ -139,7 +158,7 @@ namespace Configurator
                 pfx = "IFCTest_";
 
             var valueProp = pfx + cb.Name + "_value";
-            var historyProp = pfx + cb.Name + "_history";
+            var historyProp = cb.Name + "_history";
 
             if (load)
             {
@@ -166,7 +185,7 @@ namespace Configurator
             {
                 var value = cb.Text;
                 Settings.Default[valueProp] = value;
-                Environment.SetEnvironmentVariable(envVar, value, EnvironmentVariableTarget.User);
+                config.Add(envVar, value);
 
                 var historySet = new HashSet<string>();
                 foreach (var item in cb.Items)

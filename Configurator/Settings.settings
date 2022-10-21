@@ -5,46 +5,25 @@
     <Setting Name="OnlyKernelTests" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="KernelTest_cbIncludePath_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbIncludePath_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="IFCTest_cbIncludePath_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbLibFile_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="KernelTest_cbLibFile_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbDllFile_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="IFCTest_cbLibFile_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbEngineCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="KernelTest_cbDllFile_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbIfcEngineCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="IFCTest_cbDllFile_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbIFC4cs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="KernelTest_cbEngineCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="IFCTest_cbEngineCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="KernelTest_cbIfcEngineCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="IFCTest_cbIfcEngineCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="KernelTest_cbIFC4cs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="IFCTest_cbIFC4cs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="KernelTest_cbAP242cs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="IFCTest_cbAP242cs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbAP242cs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="KernelTest_cbIncludePath_value" Type="System.String" Scope="User">
@@ -89,10 +68,7 @@
     <Setting Name="IFCTest_cbAP242cs_value" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="KernelTest_cbGeomCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="IFCTest_cbGeomCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbGeomCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="KernelTest_cbGeomCs_value" Type="System.String" Scope="User">

@@ -229,6 +229,7 @@ namespace Configurator
             this.cbGeomCs.Name = "cbGeomCs";
             this.cbGeomCs.Size = new System.Drawing.Size(829, 28);
             this.cbGeomCs.TabIndex = 16;
+            this.cbGeomCs.TextChanged += new System.EventHandler(this.OnCbTextChanged);
             // 
             // Configurator
             // 

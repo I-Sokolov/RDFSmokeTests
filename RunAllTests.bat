@@ -12,13 +12,17 @@ cd /d %~dp0
 
 IF .%RDF_TEST_DEVENV% == . set RDF_TEST_DEVENV="C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\devenv.com"
 
+IF EXIST output rd output /s /q
+IF EXIST output (echo !!!!  Failed to cleanup output !!! & goto END)
+mkdir output
+IF not EXIST output (echo !!!!  Failed to create output !!! & goto END)
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::;
 
 echo ----------------------------- Configurator  -----------------------------
 call RunTest Configurator "Release|Any CPU" net5.0-windows
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to configurate tests !!!! & goto END)
-
-set RDF_TEST
+call output\net5.0-windows\SetConfig.bat
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::;
 :: chek parameters
@@ -42,12 +46,6 @@ echo ...
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: copy testing dll
-
-IF EXIST output rd output /s /q
-IF EXIST output (echo !!!!  Failed to cleanup output !!! & goto END)
-
-mkdir output
-IF not EXIST output (echo !!!!  Failed to create output !!! & goto END)
 
 @echo on
 copy %RDF_TEST_DLL% output /Y

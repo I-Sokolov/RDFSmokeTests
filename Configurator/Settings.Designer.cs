@@ -37,155 +37,78 @@ namespace Configurator {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KernelTest_cbIncludePath_history {
+        public global::System.Collections.Specialized.StringCollection cbIncludePath_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbIncludePath_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbIncludePath_history"]));
             }
             set {
-                this["KernelTest_cbIncludePath_history"] = value;
+                this["cbIncludePath_history"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection IFCTest_cbIncludePath_history {
+        public global::System.Collections.Specialized.StringCollection cbLibFile_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbIncludePath_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbLibFile_history"]));
             }
             set {
-                this["IFCTest_cbIncludePath_history"] = value;
+                this["cbLibFile_history"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KernelTest_cbLibFile_history {
+        public global::System.Collections.Specialized.StringCollection cbDllFile_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbLibFile_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbDllFile_history"]));
             }
             set {
-                this["KernelTest_cbLibFile_history"] = value;
+                this["cbDllFile_history"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection IFCTest_cbLibFile_history {
+        public global::System.Collections.Specialized.StringCollection cbEngineCs_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbLibFile_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbEngineCs_history"]));
             }
             set {
-                this["IFCTest_cbLibFile_history"] = value;
+                this["cbEngineCs_history"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KernelTest_cbDllFile_history {
+        public global::System.Collections.Specialized.StringCollection cbIfcEngineCs_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbDllFile_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbIfcEngineCs_history"]));
             }
             set {
-                this["KernelTest_cbDllFile_history"] = value;
+                this["cbIfcEngineCs_history"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection IFCTest_cbDllFile_history {
+        public global::System.Collections.Specialized.StringCollection cbIFC4cs_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbDllFile_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbIFC4cs_history"]));
             }
             set {
-                this["IFCTest_cbDllFile_history"] = value;
+                this["cbIFC4cs_history"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KernelTest_cbEngineCs_history {
+        public global::System.Collections.Specialized.StringCollection cbAP242cs_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbEngineCs_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbAP242cs_history"]));
             }
             set {
-                this["KernelTest_cbEngineCs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection IFCTest_cbEngineCs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbEngineCs_history"]));
-            }
-            set {
-                this["IFCTest_cbEngineCs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KernelTest_cbIfcEngineCs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbIfcEngineCs_history"]));
-            }
-            set {
-                this["KernelTest_cbIfcEngineCs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection IFCTest_cbIfcEngineCs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbIfcEngineCs_history"]));
-            }
-            set {
-                this["IFCTest_cbIfcEngineCs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KernelTest_cbIFC4cs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbIFC4cs_history"]));
-            }
-            set {
-                this["KernelTest_cbIFC4cs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection IFCTest_cbIFC4cs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbIFC4cs_history"]));
-            }
-            set {
-                this["IFCTest_cbIFC4cs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KernelTest_cbAP242cs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbAP242cs_history"]));
-            }
-            set {
-                this["KernelTest_cbAP242cs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection IFCTest_cbAP242cs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbAP242cs_history"]));
-            }
-            set {
-                this["IFCTest_cbAP242cs_history"] = value;
+                this["cbAP242cs_history"] = value;
             }
         }
         
@@ -359,23 +282,12 @@ namespace Configurator {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection KernelTest_cbGeomCs_history {
+        public global::System.Collections.Specialized.StringCollection cbGeomCs_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KernelTest_cbGeomCs_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbGeomCs_history"]));
             }
             set {
-                this["KernelTest_cbGeomCs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection IFCTest_cbGeomCs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["IFCTest_cbGeomCs_history"]));
-            }
-            set {
-                this["IFCTest_cbGeomCs_history"] = value;
+                this["cbGeomCs_history"] = value;
             }
         }
         
