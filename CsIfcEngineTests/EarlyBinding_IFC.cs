@@ -10,7 +10,7 @@ using IFC4;
 
 namespace CsIfcEngineTests
 {
-    class EarlyBinding_IFC : TestBase 
+    class EarlyBinding_IFC : CsTests.TestBase 
     {
         public static void Test()
         {

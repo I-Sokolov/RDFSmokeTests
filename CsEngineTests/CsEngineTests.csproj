@@ -13,6 +13,7 @@
     <ItemGroup>
         <Compile Include="..\output\engine.cs" />
         <Compile Include="..\output\geom.cs" />
+        <Compile Include="..\CsIfcEngineTests\TestBase.cs" />
     </ItemGroup>
 
 </Project>

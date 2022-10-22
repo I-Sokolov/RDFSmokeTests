@@ -7,7 +7,7 @@ using SdaiInstance = System.Int64;
 
 namespace CsIfcEngineTests
 {
-    class EarlyBinding_GuideExample : TestBase
+    class EarlyBinding_GuideExample : CsTests.TestBase
     {
         public static void Run()
         {

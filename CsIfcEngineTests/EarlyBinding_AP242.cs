@@ -9,7 +9,7 @@ using AP242;
 
 namespace CsIfcEngineTests
 {
-    class EarlyBinding_AP242 : TestBase
+    class EarlyBinding_AP242 : CsTests.TestBase
     {
         public static void Run()
         {
