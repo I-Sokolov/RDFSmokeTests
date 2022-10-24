@@ -1,4 +1,4 @@
-@echo off
+@echo on
 
 echo Build %1 .......
 %RDF_TEST_DEVENV% %1\%1.sln /Build %2

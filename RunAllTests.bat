@@ -11,6 +11,7 @@ REM %~dpnx0 gives the full path to the batch
 cd /d %~dp0
 
 IF .%RDF_TEST_DEVENV% == . set RDF_TEST_DEVENV="C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\devenv.com"
+IF not EXIST %RDF_TEST_DEVENV% (echo "Not found devenv.com from Visual Studio 2019. Set RDF_TEST_DEVENV" & goto END)
 
 IF EXIST output rd output /s /q
 IF EXIST output (echo !!!!  Failed to cleanup output !!! & goto END)
