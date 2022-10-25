@@ -215,6 +215,8 @@ static void test_multi_parent()
     ENTER_TEST
 
     int_t  model = sdaiCreateModelBN(0, NULL, "AP242");
+    ASSERT(model);
+
     SetSPFFHeaderItem(model, 9, 0, sdaiSTRING, "AP242");
     SetSPFFHeaderItem(model, 9, 1, sdaiSTRING, 0);
 
