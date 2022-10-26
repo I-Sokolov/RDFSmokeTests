@@ -19,5 +19,9 @@
         <Compile Include="..\output\IFC4.cs" />
         <Compile Include="..\output\AP242.cs" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CommandLineParser.FSharp" Version="2.9.1" />
+    </ItemGroup>
     
 </Project>

@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Configurator" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="OnlyKernelTests" Type="System.Boolean" Scope="User">
+    <Setting Name="chkOnlyKernel" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="cbIncludePath_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
@@ -76,6 +76,9 @@
     </Setting>
     <Setting Name="IFCTest_cbGeomCs_value" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="сhkExpressParser" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

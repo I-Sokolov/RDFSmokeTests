@@ -47,12 +47,13 @@ namespace Configurator
             this.cbAP242cs = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.cbGeomCs = new System.Windows.Forms.ComboBox();
+            this.сhkExpressParser = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnRun
             // 
             this.btnRun.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnRun.Location = new System.Drawing.Point(383, 593);
+            this.btnRun.Location = new System.Drawing.Point(383, 643);
             this.btnRun.Name = "btnRun";
             this.btnRun.Size = new System.Drawing.Size(74, 29);
             this.btnRun.TabIndex = 0;
@@ -80,7 +81,7 @@ namespace Configurator
             this.cbIncludePath.Name = "cbIncludePath";
             this.cbIncludePath.Size = new System.Drawing.Size(829, 28);
             this.cbIncludePath.TabIndex = 2;
-            this.cbIncludePath.TextChanged += new System.EventHandler(this.OnCbTextChanged);
+            this.cbIncludePath.TextChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // label1
             // 
@@ -109,7 +110,7 @@ namespace Configurator
             this.cbLibFile.Name = "cbLibFile";
             this.cbLibFile.Size = new System.Drawing.Size(829, 28);
             this.cbLibFile.TabIndex = 4;
-            this.cbLibFile.TextChanged += new System.EventHandler(this.OnCbTextChanged);
+            this.cbLibFile.TextChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // label2
             // 
@@ -129,7 +130,7 @@ namespace Configurator
             this.cbDllFile.Name = "cbDllFile";
             this.cbDllFile.Size = new System.Drawing.Size(829, 28);
             this.cbDllFile.TabIndex = 6;
-            this.cbDllFile.TextChanged += new System.EventHandler(this.OnCbTextChanged);
+            this.cbDllFile.TextChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // label4
             // 
@@ -149,7 +150,7 @@ namespace Configurator
             this.cbEngineCs.Name = "cbEngineCs";
             this.cbEngineCs.Size = new System.Drawing.Size(829, 28);
             this.cbEngineCs.TabIndex = 8;
-            this.cbEngineCs.TextChanged += new System.EventHandler(this.OnCbTextChanged);
+            this.cbEngineCs.TextChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // label5
             // 
@@ -169,7 +170,7 @@ namespace Configurator
             this.cbIfcEngineCs.Name = "cbIfcEngineCs";
             this.cbIfcEngineCs.Size = new System.Drawing.Size(829, 28);
             this.cbIfcEngineCs.TabIndex = 10;
-            this.cbIfcEngineCs.TextChanged += new System.EventHandler(this.OnCbTextChanged);
+            this.cbIfcEngineCs.TextChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // label6
             // 
@@ -189,7 +190,7 @@ namespace Configurator
             this.cbIFC4cs.Name = "cbIFC4cs";
             this.cbIFC4cs.Size = new System.Drawing.Size(829, 28);
             this.cbIFC4cs.TabIndex = 12;
-            this.cbIFC4cs.TextChanged += new System.EventHandler(this.OnCbTextChanged);
+            this.cbIFC4cs.TextChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // label7
             // 
@@ -209,7 +210,7 @@ namespace Configurator
             this.cbAP242cs.Name = "cbAP242cs";
             this.cbAP242cs.Size = new System.Drawing.Size(829, 28);
             this.cbAP242cs.TabIndex = 14;
-            this.cbAP242cs.TextChanged += new System.EventHandler(this.OnCbTextChanged);
+            this.cbAP242cs.TextChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // label8
             // 
@@ -229,13 +230,25 @@ namespace Configurator
             this.cbGeomCs.Name = "cbGeomCs";
             this.cbGeomCs.Size = new System.Drawing.Size(829, 28);
             this.cbGeomCs.TabIndex = 16;
-            this.cbGeomCs.TextChanged += new System.EventHandler(this.OnCbTextChanged);
+            this.cbGeomCs.TextChanged += new System.EventHandler(this.OnSettingChanged);
+            // 
+            // сhkExpressParser
+            // 
+            this.сhkExpressParser.AutoSize = true;
+            this.сhkExpressParser.Location = new System.Drawing.Point(14, 568);
+            this.сhkExpressParser.Name = "сhkExpressParser";
+            this.сhkExpressParser.Size = new System.Drawing.Size(134, 24);
+            this.сhkExpressParser.TabIndex = 18;
+            this.сhkExpressParser.Text = "EXPRESS parser";
+            this.сhkExpressParser.UseVisualStyleBackColor = true;
+            this.сhkExpressParser.CheckedChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // Configurator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(853, 634);
+            this.ClientSize = new System.Drawing.Size(853, 684);
+            this.Controls.Add(this.сhkExpressParser);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.cbGeomCs);
             this.Controls.Add(this.label7);
@@ -281,6 +294,7 @@ namespace Configurator
         private System.Windows.Forms.ComboBox cbAP242cs;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox cbGeomCs;
+        private System.Windows.Forms.CheckBox сhkExpressParser;
     }
 }
 

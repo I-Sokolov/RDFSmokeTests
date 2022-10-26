@@ -26,12 +26,12 @@ namespace Configurator {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool OnlyKernelTests {
+        public bool chkOnlyKernel {
             get {
-                return ((bool)(this["OnlyKernelTests"]));
+                return ((bool)(this["chkOnlyKernel"]));
             }
             set {
-                this["OnlyKernelTests"] = value;
+                this["chkOnlyKernel"] = value;
             }
         }
         
@@ -312,6 +312,18 @@ namespace Configurator {
             }
             set {
                 this["IFCTest_cbGeomCs_value"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool сhkExpressParser {
+            get {
+                return ((bool)(this["сhkExpressParser"]));
+            }
+            set {
+                this["сhkExpressParser"] = value;
             }
         }
     }

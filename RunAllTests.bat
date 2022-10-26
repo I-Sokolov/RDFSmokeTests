@@ -71,7 +71,7 @@ call RunTest CppIfcEngineTests "Release|x64" .
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED CPP IfcEngine Test !!!! & goto END)
 
 echo ----------------------------- C# IfcEngine Test -----------------------------
-call RunTest CsIfcEngineTests "Release|Any CPU" net5.0
+call RunTest CsIfcEngineTests "Release|Any CPU" net5.0 %RDF_TEST_CSIFC_CMDLINE%
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED C# IfcEngine Test !!!! & goto END)
 
 :ONLY_KERNEL

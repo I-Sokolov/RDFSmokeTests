@@ -23,6 +23,7 @@ namespace Configurator
         string ENV_GEOM_CS = "RDF_TEST_GEOM_CS";
         string ENV_IFC4_CS = "RDF_TEST_IFC4_CS";
         string ENV_AP242_CS = "RDF_TEST_AP242_CS";
+        string ENV_CSIFC_CMDLINE = "RDF_TEST_CSIFC_CMDLINE";
 
         Dictionary<string, string> config = new Dictionary<string, string>();
         
@@ -117,17 +118,6 @@ namespace Configurator
                 Settings.Default.Reload();
             }
 
-            if (load)
-            {
-                if (!modifiedCtrls.Contains(chkOnlyKernel))
-                    chkOnlyKernel.Checked = Settings.Default.OnlyKernelTests;
-            }
-            else
-            {
-                Settings.Default.OnlyKernelTests = chkOnlyKernel.Checked;
-                config.Add (ENV_ONLY_KERNEL, chkOnlyKernel.Checked ? "1" : "0");
-            }
-
             SettingsExchange(cbIncludePath, ENV_INCLUDE_PATH, load);
             SettingsExchange(cbLibFile, ENV_LIB, load);
             SettingsExchange(cbDllFile, ENV_DLL, load);
@@ -136,6 +126,14 @@ namespace Configurator
             SettingsExchange(cbIfcEngineCs, ENV_IFCENGINE_CS, load);
             SettingsExchange(cbIFC4cs, ENV_IFC4_CS, load);
             SettingsExchange(cbAP242cs, ENV_AP242_CS, load);
+
+            SettingsExchange(chkOnlyKernel, load);
+            SettingsExchange(сhkExpressParser, load);
+
+            if (!load)
+            {
+                SetOptionsConfig();
+            }
 
             if (load)
             {
@@ -147,6 +145,35 @@ namespace Configurator
             }
 
             loadingSettings = false;
+        }
+
+        void SetOptionsConfig ()
+        {
+            config.Add(ENV_ONLY_KERNEL, chkOnlyKernel.Checked ? "1" : "0");
+
+            string cmdCsIfc = "";
+
+            if (сhkExpressParser.Checked)
+            {
+                cmdCsIfc += " --ExpressParsing";
+            }
+
+            config.Add(ENV_CSIFC_CMDLINE, cmdCsIfc);
+        }
+
+        void SettingsExchange (CheckBox chk, bool load)
+        {
+            var name = chk.Name;
+
+            if (load)
+            {
+                if (!modifiedCtrls.Contains(chk))
+                    chk.Checked = (bool)Settings.Default[name];
+            }
+            else
+            {
+                Settings.Default[name] = chk.Checked;
+            }
         }
 
         void SettingsExchange(ComboBox cb, string envVar, bool load)
@@ -208,6 +235,7 @@ namespace Configurator
             cbIfcEngineCs.Enabled = !chkOnlyKernel.Checked;
             cbIFC4cs.Enabled = !chkOnlyKernel.Checked;
             cbAP242cs.Enabled = !chkOnlyKernel.Checked;
+            сhkExpressParser.Enabled = !chkOnlyKernel.Checked;
         }
 
         private void chkOnlyKernel_CheckedChanged(object sender, EventArgs e)
@@ -219,7 +247,7 @@ namespace Configurator
             }
         }
 
-        private void OnCbTextChanged(object sender, EventArgs e)
+        private void OnSettingChanged(object sender, EventArgs e)
         {
             if (!loadingSettings)
             {
