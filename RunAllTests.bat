@@ -56,6 +56,7 @@ if .%RDF_TEST_ONLY_KERNEL% == .1 goto ONLY_KERNEL
 copy %RDF_TEST_IFCENGINE_CS%\ifcengine.cs output /Y
 copy %RDF_TEST_IFC4_CS%\IFC4.cs output /Y
 copy %RDF_TEST_AP242_CS%\AP242.cs output /Y
+copy output\IfcEngine.dll output\engine.dll /Y
 :ONLY_KERNEL
 @echo off
 
