@@ -4,6 +4,9 @@ echo git pull...
 git pull
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED Pull from test reprository. Press Ctr+C to stop or any key to continue !!!! & pause)
 
+git log -1
+echo ---------------------------------------------------------------------------
+
 REM %cd% will give you the current working directory (variable)
 REM %~dp0 will give you the full path to the batch file's directory (fixed)
 REM %0 could give the name of the current subroutine
