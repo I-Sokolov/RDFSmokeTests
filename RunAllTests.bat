@@ -52,14 +52,30 @@ echo ...
 :: copy testing dll
 
 @echo on
+
 copy %RDF_TEST_DLL% output /Y
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to copy !!!! & goto END)
+
 copy %RDF_TEST_ENGINE_CS%\engine.cs output /Y
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to copy !!!! & goto END)
+
 copy %RDF_TEST_GEOM_CS%\geom.cs output /Y
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to copy !!!! & goto END)
+
 if .%RDF_TEST_ONLY_KERNEL% == .1 goto ONLY_KERNEL
+
 copy %RDF_TEST_IFCENGINE_CS%\ifcengine.cs output /Y
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to copy !!!! & goto END)
+
 copy %RDF_TEST_IFC4_CS%\IFC4.cs output /Y
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to copy !!!! & goto END)
+
 copy %RDF_TEST_AP242_CS%\AP242.cs output /Y
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to copy !!!! & goto END)
+
 copy output\IfcEngine.dll output\engine.dll /Y
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to copy !!!! & goto END)
+
 :ONLY_KERNEL
 @echo off
 
