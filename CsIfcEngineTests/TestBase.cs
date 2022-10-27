@@ -16,13 +16,13 @@ namespace CsTests
             }
         }
 
-        protected static void ENTER_TEST()
+        protected static void ENTER_TEST(string testName = "")
         {
             var t = new System.Diagnostics.StackTrace();
             var f = t.GetFrame(1);
             var n = f.GetMethod().ReflectedType.Name + "." + f.GetMethod().Name;
             
-            System.Console.WriteLine("Running {0}.", n);
+            System.Console.WriteLine("Running {0} {1}", n, testName);
         }
     }
 }

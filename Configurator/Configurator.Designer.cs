@@ -237,9 +237,9 @@ namespace Configurator
             this.сhkExpressParser.AutoSize = true;
             this.сhkExpressParser.Location = new System.Drawing.Point(14, 568);
             this.сhkExpressParser.Name = "сhkExpressParser";
-            this.сhkExpressParser.Size = new System.Drawing.Size(134, 24);
+            this.сhkExpressParser.Size = new System.Drawing.Size(280, 24);
             this.сhkExpressParser.TabIndex = 18;
-            this.сhkExpressParser.Text = "EXPRESS parser";
+            this.сhkExpressParser.Text = "test EXPRESS parser and WHERE rules";
             this.сhkExpressParser.UseVisualStyleBackColor = true;
             this.сhkExpressParser.CheckedChanged += new System.EventHandler(this.OnSettingChanged);
             // 

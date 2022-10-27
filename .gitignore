@@ -7,3 +7,4 @@ CppEngineTests/x64/
 CsIfcEngineTests/bin/
 CsEngineTests/bin/
 Configurator.bin/
+**/launchSettings.json
