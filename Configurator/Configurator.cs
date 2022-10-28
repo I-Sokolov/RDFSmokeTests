@@ -87,6 +87,11 @@ namespace Configurator
 
             if (type == SymbolicLink.File)
             {
+                if (!System.IO.File.Exists (srcPath))
+                {
+                    throw new System.ApplicationException("File does not exists: " + srcPath);
+                }
+
                 if (System.IO.File.Exists(targetPath))
                 {
                     System.IO.File.Delete(targetPath);
@@ -95,6 +100,11 @@ namespace Configurator
             }
             else 
             {
+                if (!System.IO.Directory.Exists(srcPath))
+                {
+                    throw new System.ApplicationException("Directory does not exists: " + srcPath);
+                }
+
                 if (System.IO.Directory.Exists(targetPath))
                 {
                     System.IO.Directory.Delete(targetPath, true);
@@ -135,7 +145,7 @@ namespace Configurator
 
                 if (chkModelChecker.Checked || chkExpressParser.Checked)
                 {
-                    string path = Path.Combine(cbIncludePath.Text, "..\\Toolboxa");
+                    string path = Path.Combine(cbIncludePath.Text, "..\\Toolbox");
                     CreateSymLink(path, "ModelCheckerAPI.h", folder, null, cfgFile);
                 }
 
