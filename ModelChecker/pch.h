@@ -1,10 +1,17 @@
 #pragma once
 
+#include <Windows.h>
+
 #include <stdio.h>
-#include <vector>
-#include <iostream>
+#include <stdarg.h>
+#include <assert.h>
+#include <string>
+#include <set>
+#include <filesystem>
 
 #include "ifcengine.h"
+
+#define IFCENGINE_MODEL_CHECKER
 #include "..\ModelCheckerAPI.h"
 
 #ifdef ASSERT
