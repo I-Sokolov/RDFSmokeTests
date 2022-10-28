@@ -11,7 +11,7 @@ struct IssueHandler
 };
 
 static RDF::ModelChecker::ErrorLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pIssueHandler);
-static RDF::ModelChecker::ErrorLevel CheckModels(const char* filePath, const char* expressSchemaFilePath);
+//static RDF::ModelChecker::ErrorLevel CheckModels(const char* filePath, const char* expressSchemaFilePath);
 
 /// <summary>
 /// Issue reporting 
@@ -66,6 +66,7 @@ struct PrintIssue : public IssueHandler
     }
 };
 
+#if 0
 static RDF::ModelChecker::ErrorLevel CheckModels(const char* filePathWC, const char* expressSchemaFilePath)
 {
     RDF::ModelChecker::ErrorLevel res = 0;
@@ -94,7 +95,7 @@ static RDF::ModelChecker::ErrorLevel CheckModels(const char* filePathWC, const c
 
     return res;
 }
-
+#endif
 
 static RDF::ModelChecker::ErrorLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pLog)
 {
@@ -105,7 +106,7 @@ static RDF::ModelChecker::ErrorLevel CheckModel(const char* filePath, const char
     else
         printf(" embedded_schema='true'>\n");
 
-    int result = 0;
+    RDF::ModelChecker::ErrorLevel result = 0;
 
     SdaiModel model = sdaiOpenModelBN(NULL, filePath, expressSchemaFilePath ? expressSchemaFilePath : "");
     if (model) {
