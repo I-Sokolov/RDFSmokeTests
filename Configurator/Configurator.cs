@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Configurator
 {
@@ -70,7 +71,7 @@ namespace Configurator
             Directory = 1
         }
 
-        void CopyFile (string srcPath, string srcFile, string targetFolder, string targetFile, System.IO.StreamWriter cfgFile)
+        void CreateSymLink (string srcPath, string srcFile, string targetFolder, string targetFile, System.IO.StreamWriter cfgFile, SymbolicLink type = SymbolicLink.File)
         {
             if (srcFile != null)
             {
@@ -84,14 +85,25 @@ namespace Configurator
 
             string targetPath = System.IO.Path.Combine(targetFolder, targetFile);
 
-            if (System.IO.File.Exists (targetPath))
+            if (type == SymbolicLink.File)
             {
-                System.IO.File.Delete(targetPath);
-                cfgFile.WriteLine("echo Deleted {0}" + targetPath);
+                if (System.IO.File.Exists(targetPath))
+                {
+                    System.IO.File.Delete(targetPath);
+                    cfgFile.WriteLine("echo Deleted {0}" + targetPath);
+                }
+            }
+            else 
+            {
+                if (System.IO.Directory.Exists(targetPath))
+                {
+                    System.IO.Directory.Delete(targetPath, true);
+                    cfgFile.WriteLine("echo Deleted DIR {0}" + targetPath);
+                }
             }
 
-            if (CreateSymbolicLink(targetPath, srcPath, SymbolicLink.File))
-                cfgFile.WriteLine("echo SYMLINK {0} to {1}", srcPath, targetPath);
+            if (CreateSymbolicLink(targetPath, srcPath, type))
+                cfgFile.WriteLine("echo SYMLINK {0} = {1}", targetPath, srcPath);
             else
                 throw new System.ApplicationException("Failed CreateSymbolicLink(" + targetPath + ", " + srcPath + ", SymbolicLink.File)");
         }
@@ -104,29 +116,31 @@ namespace Configurator
             cfgFile.WriteLine("@echo .");
 
             cfgFile.WriteLine("SET RDF_TEST_ONLY_KERNEL={0}", chkOnlyKernel.Checked ? "1" : "0");
-            cfgFile.WriteLine("SET RDF_TEST_INCLUDE_PATH={0}", cbIncludePath.Text);
-            cfgFile.WriteLine("SET RDF_TEST_LIB={0}", cbLibFile.Text);
-
-            string cmdLineCsIfc = "";
-            if (сhkExpressParser.Checked)
-            {
-                cmdLineCsIfc += " --ExpressParsing";
-            }
-            cfgFile.WriteLine("SET RDF_TEST_CSIFC_CMDLINE={0}", cmdLineCsIfc);
+            cfgFile.WriteLine("SET RDF_TEST_MODEL_CHECKER={0}", chkModelChecker.Checked ? "1" : "0");
+            cfgFile.WriteLine("SET RDF_TEST_EXPRESS_PARSER={0}", chkExpressParser.Checked ? "1" : "0");
 
             cfgFile.WriteLine("@echo off");
 
-            CopyFile(cbDllFile.Text, null, folder, null, cfgFile);
-            CopyFile(cbEngineCs.Text, "engine.cs", folder, null, cfgFile);
-            CopyFile(cbGeomCs.Text, "geom.cs", folder, null, cfgFile);
+            CreateSymLink(cbIncludePath.Text, null, folder, null, cfgFile, SymbolicLink.Directory);
+            CreateSymLink(cbLibFile.Text, null, folder, null, cfgFile);
+            CreateSymLink(cbDllFile.Text, null, folder, null, cfgFile);
+            CreateSymLink(cbEngineCs.Text, "engine.cs", folder, null, cfgFile);
+            CreateSymLink(cbGeomCs.Text, "geom.cs", folder, null, cfgFile);
 
             if (!chkOnlyKernel.Checked)
             {
-                CopyFile(cbIfcEngineCs.Text, "ifcengine.cs", folder, null, cfgFile);
-                CopyFile(cbIFC4cs.Text, "IFC4.cs", folder, null, cfgFile);
-                CopyFile(cbAP242cs.Text, "AP242.cs", folder, null, cfgFile);
+                CreateSymLink(cbIfcEngineCs.Text, "ifcengine.cs", folder, null, cfgFile);
+                CreateSymLink(cbIFC4cs.Text, "IFC4.cs", folder, null, cfgFile);
+                CreateSymLink(cbAP242cs.Text, "AP242.cs", folder, null, cfgFile);
 
-                CopyFile(".", "ifcEngine.dll", ".", "engine.dll", cfgFile); //trick because engine.cs refers to engine.dll, not ifcengine.dll
+                if (chkModelChecker.Checked || chkExpressParser.Checked)
+                {
+                    string path = Path.Combine(cbIncludePath.Text, "..\\Toolboxa");
+                    CreateSymLink(path, "ModelCheckerAPI.h", folder, null, cfgFile);
+                }
+
+                CreateSymLink(".", "ifcEngine.dll", ".", "engine.dll", cfgFile); //trick because engine.cs refers to engine.dll, not ifcengine.dll
+                CreateSymLink(".", "ifcEngine.lib", ".", "engine.lib", cfgFile);
             }             
         }
 
@@ -181,6 +195,10 @@ namespace Configurator
                 Settings.Default.Reload();
             }
 
+            SettingsExchange(chkOnlyKernel, load);
+            SettingsExchange(chkExpressParser, load);
+            SettingsExchange(chkModelChecker, load);
+
             SettingsExchange(cbIncludePath, load);
             SettingsExchange(cbLibFile, load);
             SettingsExchange(cbDllFile, load);
@@ -189,9 +207,6 @@ namespace Configurator
             SettingsExchange(cbIfcEngineCs, load);
             SettingsExchange(cbIFC4cs, load);
             SettingsExchange(cbAP242cs, load);
-
-            SettingsExchange(chkOnlyKernel, load);
-            SettingsExchange(сhkExpressParser, load);
 
             if (load)
             {
@@ -278,7 +293,8 @@ namespace Configurator
             cbIfcEngineCs.Enabled = !chkOnlyKernel.Checked;
             cbIFC4cs.Enabled = !chkOnlyKernel.Checked;
             cbAP242cs.Enabled = !chkOnlyKernel.Checked;
-            сhkExpressParser.Enabled = !chkOnlyKernel.Checked;
+            chkExpressParser.Enabled = !chkOnlyKernel.Checked;
+            chkModelChecker.Enabled = !chkOnlyKernel.Checked;
         }
 
         private void chkOnlyKernel_CheckedChanged(object sender, EventArgs e)

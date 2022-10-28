@@ -38,8 +38,20 @@ call RunTest CppIfcEngineTests "Release|x64" .
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED CPP IfcEngine Test !!!! & goto END)
 
 echo ----------------------------- C# IfcEngine Test -----------------------------
-call RunTest CsIfcEngineTests "Release|Any CPU" net5.0 %RDF_TEST_CSIFC_CMDLINE%
+call RunTest CsIfcEngineTests "Release|Any CPU" net5.0
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED C# IfcEngine Test !!!! & goto END)
+
+if not .%RDF_TEST_MODEL_CHECKER%. == .1. goto SKIP_MODEL_CHECKER
+echo ----------------------------- Model Checker Test ---------------------------
+call RunTest ModelChecker "Release|x64"
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED Model Checker Test !!!! & goto END)
+:SKIP_MODEL_CHECKER
+
+if not .%RDF_TEST_EXPRESS_PARSER%. == .1. goto SKIP_EXPRESS_PARSER
+echo ----------------------------- EXPRESS Parser Test ---------------------------
+call RunTest ExpressParser "Release|x64"
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED EXPRESS Parser Test !!!! & goto END)
+:SKIP_EXPRESS_PARSER
 
 :ONLY_KERNEL
 

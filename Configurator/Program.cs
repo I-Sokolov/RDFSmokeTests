@@ -32,9 +32,7 @@ namespace Configurator
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
-                Console.WriteLine();
-                Console.WriteLine(e.Message);
+                System.Windows.Forms.MessageBox.Show (e.ToString(), e.Message);
                 return 13;
             }
         }
