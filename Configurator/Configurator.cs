@@ -62,6 +62,14 @@ namespace Configurator
             }
         }
 
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, SymbolicLink dwFlags);
+        enum SymbolicLink
+        {
+            File = 0,
+            Directory = 1
+        }
+
         void CopyFile (string srcPath, string srcFile, string targetFolder, string targetFile, System.IO.StreamWriter cfgFile)
         {
             if (srcFile != null)
@@ -79,13 +87,13 @@ namespace Configurator
             if (System.IO.File.Exists (targetPath))
             {
                 System.IO.File.Delete(targetPath);
-                Console.WriteLine("echo Deleted {0}" + targetPath);
                 cfgFile.WriteLine("echo Deleted {0}" + targetPath);
             }
 
-            System.IO.File.Copy(srcPath, targetPath);
-            Console.WriteLine("echo COPIED {0} to {1}", srcPath, targetPath);
-            cfgFile.WriteLine("echo COPIED {0} to {1}", srcPath, targetPath);
+            if (CreateSymbolicLink(targetPath, srcPath, SymbolicLink.File))
+                cfgFile.WriteLine("echo SYMLINK {0} to {1}", srcPath, targetPath);
+            else
+                throw new System.ApplicationException("Failed CreateSymbolicLink(" + targetPath + ", " + srcPath + ", SymbolicLink.File)");
         }
 
         void CreateConfiguration(string folder, System.IO.StreamWriter cfgFile)
