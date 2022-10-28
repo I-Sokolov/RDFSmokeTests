@@ -13,19 +13,6 @@ namespace Configurator
     public partial class Configurator : Form
     {
         Program.ExitCode exitCode;
-
-        string ENV_ONLY_KERNEL = "RDF_TEST_ONLY_KERNEL";
-        string ENV_INCLUDE_PATH = "RDF_TEST_INCLUDE_PATH";
-        string ENV_LIB = "RDF_TEST_LIB";
-        string ENV_DLL = "RDF_TEST_DLL";
-        string ENV_ENGINE_CS = "RDF_TEST_ENGINE_CS";
-        string ENV_IFCENGINE_CS = "RDF_TEST_IFCENGINE_CS";
-        string ENV_GEOM_CS = "RDF_TEST_GEOM_CS";
-        string ENV_IFC4_CS = "RDF_TEST_IFC4_CS";
-        string ENV_AP242_CS = "RDF_TEST_AP242_CS";
-        string ENV_CSIFC_CMDLINE = "RDF_TEST_CSIFC_CMDLINE";
-
-        Dictionary<string, string> config = new Dictionary<string, string>();
         
         HashSet<object> modifiedCtrls = new HashSet<object>();
         bool loadingSettings = false;
@@ -39,32 +26,100 @@ namespace Configurator
             SettingsExchange(true);
         }
 
-        private void OnClick(object sender, EventArgs e)
+        private void OnOK(object sender, EventArgs e)
         {
             if (IsValid())
             {
                 SettingsExchange(false);
-                WriteConfig();
-                exitCode.value = 0;
+                CreateConfiguration();
                 Close();
             }
         }
 
-        void WriteConfig ()
+        void CreateConfiguration()
         {
-            var exepath = System.Reflection.Assembly.GetEntryAssembly().Location;
-            var folder = System.IO.Path.GetDirectoryName(exepath);
-            var cfgFile = System.IO.Path.Combine(folder, "SetConfig.bat");
-
-            using (var writer = new System.IO.StreamWriter(cfgFile))
+            try
             {
-                writer.WriteLine("@echo on");
-                foreach (var v in config)
+                //var exepath = System.Reflection.Assembly.GetEntryAssembly().Location;
+                //var folder = System.IO.Path.GetDirectoryName(exepath);
+                var folder = System.IO.Directory.GetCurrentDirectory();
+                var cfgFile = System.IO.Path.Combine(folder, "SetConfig.bat");
+
+                using (var writer = new System.IO.StreamWriter(cfgFile))
                 {
-                    writer.WriteLine("SET {0}={1}", v.Key, v.Value);
+                    CreateConfiguration(folder, writer);
                 }
-                writer.WriteLine("@echo off");
+
+                exitCode.value = 0;
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                Console.WriteLine();
+                Console.WriteLine(e.Message);
+                System.Windows.Forms.MessageBox.Show (e.ToString(), e.Message);
+                exitCode.value = 13;
+            }
+        }
+
+        void CopyFile (string srcPath, string srcFile, string targetFolder, string targetFile, System.IO.StreamWriter cfgFile)
+        {
+            if (srcFile != null)
+            {
+                srcPath = System.IO.Path.Combine(srcPath, srcFile);
+            }
+
+            if (targetFile == null)
+            {
+                targetFile = System.IO.Path.GetFileName(srcPath);
+            }
+
+            string targetPath = System.IO.Path.Combine(targetFolder, targetFile);
+
+            if (System.IO.File.Exists (targetPath))
+            {
+                System.IO.File.Delete(targetPath);
+                Console.WriteLine("echo Deleted {0}" + targetPath);
+                cfgFile.WriteLine("echo Deleted {0}" + targetPath);
+            }
+
+            System.IO.File.Copy(srcPath, targetPath);
+            Console.WriteLine("echo COPIED {0} to {1}", srcPath, targetPath);
+            cfgFile.WriteLine("echo COPIED {0} to {1}", srcPath, targetPath);
+        }
+
+        void CreateConfiguration(string folder, System.IO.StreamWriter cfgFile)
+        {
+            cfgFile.WriteLine("@echo on");
+
+            cfgFile.WriteLine("@echo ************************ Configuration *************************");
+            cfgFile.WriteLine("@echo .");
+
+            cfgFile.WriteLine("SET RDF_TEST_ONLY_KERNEL={0}", chkOnlyKernel.Checked ? "1" : "0");
+            cfgFile.WriteLine("SET RDF_TEST_INCLUDE_PATH={0}", cbIncludePath.Text);
+            cfgFile.WriteLine("SET RDF_TEST_LIB={0}", cbLibFile.Text);
+
+            string cmdLineCsIfc = "";
+            if (сhkExpressParser.Checked)
+            {
+                cmdLineCsIfc += " --ExpressParsing";
+            }
+            cfgFile.WriteLine("SET RDF_TEST_CSIFC_CMDLINE={0}", cmdLineCsIfc);
+
+            cfgFile.WriteLine("@echo off");
+
+            CopyFile(cbDllFile.Text, null, folder, null, cfgFile);
+            CopyFile(cbEngineCs.Text, "engine.cs", folder, null, cfgFile);
+            CopyFile(cbGeomCs.Text, "geom.cs", folder, null, cfgFile);
+
+            if (!chkOnlyKernel.Checked)
+            {
+                CopyFile(cbIfcEngineCs.Text, "ifcengine.cs", folder, null, cfgFile);
+                CopyFile(cbIFC4cs.Text, "IFC4.cs", folder, null, cfgFile);
+                CopyFile(cbAP242cs.Text, "AP242.cs", folder, null, cfgFile);
+
+                CopyFile(".", "ifcEngine.dll", ".", "engine.dll", cfgFile); //trick because engine.cs refers to engine.dll, not ifcengine.dll
+            }             
         }
 
         private bool IsValid()
@@ -118,22 +173,17 @@ namespace Configurator
                 Settings.Default.Reload();
             }
 
-            SettingsExchange(cbIncludePath, ENV_INCLUDE_PATH, load);
-            SettingsExchange(cbLibFile, ENV_LIB, load);
-            SettingsExchange(cbDllFile, ENV_DLL, load);
-            SettingsExchange(cbEngineCs, ENV_ENGINE_CS, load);
-            SettingsExchange(cbGeomCs, ENV_GEOM_CS, load);
-            SettingsExchange(cbIfcEngineCs, ENV_IFCENGINE_CS, load);
-            SettingsExchange(cbIFC4cs, ENV_IFC4_CS, load);
-            SettingsExchange(cbAP242cs, ENV_AP242_CS, load);
+            SettingsExchange(cbIncludePath, load);
+            SettingsExchange(cbLibFile, load);
+            SettingsExchange(cbDllFile, load);
+            SettingsExchange(cbEngineCs, load);
+            SettingsExchange(cbGeomCs, load);
+            SettingsExchange(cbIfcEngineCs, load);
+            SettingsExchange(cbIFC4cs, load);
+            SettingsExchange(cbAP242cs, load);
 
             SettingsExchange(chkOnlyKernel, load);
             SettingsExchange(сhkExpressParser, load);
-
-            if (!load)
-            {
-                SetOptionsConfig();
-            }
 
             if (load)
             {
@@ -145,20 +195,6 @@ namespace Configurator
             }
 
             loadingSettings = false;
-        }
-
-        void SetOptionsConfig ()
-        {
-            config.Add(ENV_ONLY_KERNEL, chkOnlyKernel.Checked ? "1" : "0");
-
-            string cmdCsIfc = "";
-
-            if (сhkExpressParser.Checked)
-            {
-                cmdCsIfc += " --ExpressParsing";
-            }
-
-            config.Add(ENV_CSIFC_CMDLINE, cmdCsIfc);
         }
 
         void SettingsExchange (CheckBox chk, bool load)
@@ -176,7 +212,7 @@ namespace Configurator
             }
         }
 
-        void SettingsExchange(ComboBox cb, string envVar, bool load)
+        void SettingsExchange(ComboBox cb, bool load)
         {
             string pfx;
             if (chkOnlyKernel.Checked)
@@ -212,7 +248,6 @@ namespace Configurator
             {
                 var value = cb.Text;
                 Settings.Default[valueProp] = value;
-                config.Add(envVar, value);
 
                 var historySet = new HashSet<string>();
                 foreach (var item in cb.Items)
@@ -255,5 +290,15 @@ namespace Configurator
             }
         }
 
+        //[System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+        //static extern bool AllocConsole();
+
+        private void OnFormLoad(object sender, EventArgs e)
+        {
+            /*if (!AllocConsole())
+            {
+                System.Windows.Forms.MessageBox.Show("Can not allow console!");
+            }*/
+        }
     }
 }

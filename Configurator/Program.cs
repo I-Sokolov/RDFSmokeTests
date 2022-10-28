@@ -19,14 +19,24 @@ namespace Configurator
         [STAThread]
         static int Main()
         {
-            var exitCode = new ExitCode();
+            try
+            {
+                var exitCode = new ExitCode();
 
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Configurator(exitCode));
+                Application.SetHighDpiMode(HighDpiMode.SystemAware);
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new Configurator(exitCode));
 
-            return exitCode.value;
+                return exitCode.value;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                Console.WriteLine();
+                Console.WriteLine(e.Message);
+                return 13;
+            }
         }
     }
 }

@@ -59,7 +59,7 @@ namespace Configurator
             this.btnRun.TabIndex = 0;
             this.btnRun.Text = "Run";
             this.btnRun.UseVisualStyleBackColor = true;
-            this.btnRun.Click += new System.EventHandler(this.OnClick);
+            this.btnRun.Click += new System.EventHandler(this.OnOK);
             // 
             // chkOnlyKernel
             // 
@@ -269,6 +269,7 @@ namespace Configurator
             this.Controls.Add(this.btnRun);
             this.Name = "Configurator";
             this.Text = "Configurator";
+            this.Load += new System.EventHandler(this.OnFormLoad);
             this.ResumeLayout(false);
             this.PerformLayout();
 
