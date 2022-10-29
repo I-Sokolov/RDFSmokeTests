@@ -11,9 +11,6 @@
 
 #include "ifcengine.h"
 
-#define IFCENGINE_MODEL_CHECKER
-#include "..\ModelCheckerAPI.h"
-
 #ifdef ASSERT
 #undef ASSERT
 #endif

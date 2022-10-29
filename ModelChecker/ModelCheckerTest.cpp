@@ -3,6 +3,9 @@
 
 #include "pch.h"
 
+#define IFCENGINE_MODEL_CHECKER
+#include "..\ModelCheckerAPI.h"
+
 #define INDENT "\t\t"
 
 struct IssueHandler
