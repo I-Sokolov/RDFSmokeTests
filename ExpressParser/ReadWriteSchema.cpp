@@ -16,28 +16,23 @@ static bool FileEquals(std::string& file1, std::string& file2)
 
     int ch1;
     while ((ch1 = fgetc(fp1)) != EOF) {
-        auto ch2 = fgetc(fp2); 
-        ASSERT(ch2 != EOF); //file2 smaller?
-        ASSERT(ch2 == ch1);
+        auto ch2 = fgetc(fp2);
+        if (ch2 != ch1) {
+            return false;
+        }
     }
 
-    ASSERT(fgetc(fp2) == EOF); //file2 bigger?
+    if (fgetc(fp2) != EOF) //file2 bigger?
+    {
+        return false;
+    }
 
     fclose(fp1);
     fclose(fp2);
+
+    return true;
 }
 
-
-static void     WriteModel(SdaiModel model, std::string& writeFile)
-{
-    FILE* fp = NULL;
-    fopen_s(&fp, writeFile.c_str(), "wt");
-    ASSERT(fp);
-
-    RDF::ExpressSchemaWriter::WriteSchema(model, fp);
-
-    fclose(fp);
-}
 
 static void ReadWriteSchema(const char* expFileName, const char* embeddedName)
 {
@@ -55,7 +50,8 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName)
     std::string writeFile = "WriteSchema_";
     writeFile.append(expFileName);
 
-    WriteModel(model, writeFile);
+    bool ok = RDF::ExpressSchemaWriter::WriteSchema(model, writeFile.c_str());
+    ASSERT(ok);
 
     sdaiCloseModel(model);
 
@@ -69,7 +65,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName)
     writeEmbedded.append(embeddedName);
     writeEmbedded.append(".exp");
 
-    WriteModel(model, writeEmbedded);
+    ok = RDF::ExpressSchemaWriter::WriteSchema(model, writeEmbedded.c_str());
 
     //
     //
