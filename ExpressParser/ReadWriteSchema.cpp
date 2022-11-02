@@ -91,6 +91,9 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     bool fileEquals = FileEquals(writeFile, rewriteFile);
     ASSERT(fileEquals); //write issue?
 
+    //printf("..Do not test embedded\n");
+    //return; 
+    
     //
     // write embedded schema to file
     //
@@ -106,8 +109,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     //
     //
     fileEquals = FileEquals(writeFile, writeEmbedded);
-    printf("\tcheck comparision with embedded is disabled\n");
-    //ASSERT(fileEquals); //embedded schema mismatch express file?
+    ASSERT(fileEquals); //embedded schema mismatch express file?
 }
 
 
