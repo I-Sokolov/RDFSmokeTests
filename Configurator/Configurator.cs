@@ -143,7 +143,7 @@ namespace Configurator
                 CreateSymLink(cbIFC4cs.Text, "IFC4.cs", folder, null, cfgFile);
                 CreateSymLink(cbAP242cs.Text, "AP242.cs", folder, null, cfgFile);
 
-                string pathToolbox = Path.Combine(cbIncludePath.Text, "..\\Toolbox");
+                string pathToolbox = Path.Combine(cbIncludePath.Text, "..\\ToolBoxEx");
 
                 if (chkModelChecker.Checked)
                 {
