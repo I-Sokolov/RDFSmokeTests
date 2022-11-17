@@ -30,11 +30,7 @@ namespace CsIfcEngineTests
                 EarlyBinding_IFC4x4.Test();
                 EarlyBinding_AP242.Run();
                 EarlyBinding_GuideExample.Run();
-
-                //if (options.ExpressParsing)
-                {
-                    //ExpressParser.Run();
-                }
+                ExpressParser.Run();
 
                 Console.WriteLine("--------- Finished IFC engine C# tests");
                 return 0;
