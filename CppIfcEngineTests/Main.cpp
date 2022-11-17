@@ -1,8 +1,9 @@
 
 #include "pch.h"
 
-extern void EngineTests(void);
-extern void EarlyBound_IFC4_test(void);
+extern void EngineTests();
+extern void EarlyBound_IFC4_test();
+extern void EarlyBound_IFC4x4_test();
 extern void EarlyBound_AP242_test();
 extern void EarlyBound_GuideExamples();
 
@@ -15,6 +16,7 @@ extern int main()
         
         EngineTests();
         EarlyBound_IFC4_test();
+        EarlyBound_IFC4x4_test();
         EarlyBound_AP242_test();
         EarlyBound_GuideExamples();
 

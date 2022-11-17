@@ -17,6 +17,7 @@
     <ItemGroup>
         <Compile Include="..\output\ifcEngine.cs" />
         <Compile Include="..\output\IFC4.cs" />
+        <Compile Include="..\output\IFC4x4.cs" />
         <Compile Include="..\output\AP242.cs" />
     </ItemGroup>
 

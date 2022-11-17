@@ -33,6 +33,9 @@
     <ClCompile Include="EarlyBound_GuideExample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EarlyBound_IFC4x4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

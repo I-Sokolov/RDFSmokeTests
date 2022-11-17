@@ -8,6 +8,7 @@
 #include "IFC4.h"
 #include "IFC2x3.h"
 #include "IFC4x3.h"
+#include "IFC4x4.h"
 #include "CIS2.h"
 #include "AP242.h"
 
