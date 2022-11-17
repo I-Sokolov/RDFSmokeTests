@@ -1,7 +1,6 @@
 
 #include "pch.h"
 
-#define IFCENGINE_SCHEMA_WRITER
 #include "..\ExpressSchemaWriterAPI.h"
 
 enum class enum_embedded_schema : unsigned char
