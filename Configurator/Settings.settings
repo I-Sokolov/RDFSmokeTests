@@ -77,10 +77,7 @@
     <Setting Name="IFCTest_cbGeomCs_value" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="chkExpressParser" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="chkModelChecker" Type="System.Boolean" Scope="User">
+    <Setting Name="chkToolBoxEx" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

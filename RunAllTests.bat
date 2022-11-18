@@ -41,17 +41,11 @@ echo ----------------------------- C# IfcEngine Test ---------------------------
 call RunTest CsIfcEngineTests "Release|Any CPU" net5.0
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED C# IfcEngine Test !!!! & goto END)
 
-if not .%RDF_TEST_MODEL_CHECKER%. == .1. goto SKIP_MODEL_CHECKER
-echo ----------------------------- Model Checker Test ---------------------------
-call RunTest ModelChecker "Release|x64" .
-if not .%ERRORLEVEL% == .0 (echo !!!! FAILED Model Checker Test !!!! & goto END)
-:SKIP_MODEL_CHECKER
-
-if not .%RDF_TEST_EXPRESS_PARSER%. == .1. goto SKIP_EXPRESS_PARSER
-echo ----------------------------- EXPRESS Parser Test ---------------------------
-call RunTest ExpressParser "Release|x64" .
-if not .%ERRORLEVEL% == .0 (echo !!!! FAILED EXPRESS Parser Test !!!! & goto END)
-:SKIP_EXPRESS_PARSER
+if not .%RDF_TEST_TOOLBOX_EX%. == .1. goto SKIP_TOOLBOX_EX
+echo ----------------------------- EXPRESS ToolBoxEx Test ---------------------------
+call RunTest ToolBoxEx "Release|x64" .
+if not .%ERRORLEVEL% == .0 (echo !!!! FAILED ToolBoxEx Test !!!! & goto END)
+:SKIP_TOOLBOX_EX
 
 :ONLY_KERNEL
 

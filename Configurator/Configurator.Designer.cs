@@ -47,8 +47,7 @@ namespace Configurator
             this.cbAP242cs = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.cbGeomCs = new System.Windows.Forms.ComboBox();
-            this.chkExpressParser = new System.Windows.Forms.CheckBox();
-            this.chkModelChecker = new System.Windows.Forms.CheckBox();
+            this.chkToolBoxEx = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnRun
@@ -233,35 +232,23 @@ namespace Configurator
             this.cbGeomCs.TabIndex = 16;
             this.cbGeomCs.TextChanged += new System.EventHandler(this.OnSettingChanged);
             // 
-            // chkExpressParser
+            // chkToolBoxEx
             // 
-            this.chkExpressParser.AutoSize = true;
-            this.chkExpressParser.Location = new System.Drawing.Point(14, 568);
-            this.chkExpressParser.Name = "chkExpressParser";
-            this.chkExpressParser.Size = new System.Drawing.Size(280, 24);
-            this.chkExpressParser.TabIndex = 18;
-            this.chkExpressParser.Text = "test EXPRESS parser and WHERE rules";
-            this.chkExpressParser.UseVisualStyleBackColor = true;
-            this.chkExpressParser.CheckedChanged += new System.EventHandler(this.OnSettingChanged);
-            // 
-            // chkModelChecker
-            // 
-            this.chkModelChecker.AutoSize = true;
-            this.chkModelChecker.Location = new System.Drawing.Point(12, 598);
-            this.chkModelChecker.Name = "chkModelChecker";
-            this.chkModelChecker.Size = new System.Drawing.Size(158, 24);
-            this.chkModelChecker.TabIndex = 19;
-            this.chkModelChecker.Text = "test Model Checker";
-            this.chkModelChecker.UseVisualStyleBackColor = true;
-            this.chkModelChecker.CheckedChanged += new System.EventHandler(this.OnSettingChanged);
+            this.chkToolBoxEx.AutoSize = true;
+            this.chkToolBoxEx.Location = new System.Drawing.Point(14, 568);
+            this.chkToolBoxEx.Name = "chkToolBoxEx";
+            this.chkToolBoxEx.Size = new System.Drawing.Size(134, 24);
+            this.chkToolBoxEx.TabIndex = 18;
+            this.chkToolBoxEx.Text = "ToolBoxEx tests";
+            this.chkToolBoxEx.UseVisualStyleBackColor = true;
+            this.chkToolBoxEx.CheckedChanged += new System.EventHandler(this.OnSettingChanged);
             // 
             // Configurator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(853, 684);
-            this.Controls.Add(this.chkModelChecker);
-            this.Controls.Add(this.chkExpressParser);
+            this.Controls.Add(this.chkToolBoxEx);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.cbGeomCs);
             this.Controls.Add(this.label7);
@@ -308,8 +295,7 @@ namespace Configurator
         private System.Windows.Forms.ComboBox cbAP242cs;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox cbGeomCs;
-        private System.Windows.Forms.CheckBox chkExpressParser;
-        private System.Windows.Forms.CheckBox chkModelChecker;
+        private System.Windows.Forms.CheckBox chkToolBoxEx;
     }
 }
 

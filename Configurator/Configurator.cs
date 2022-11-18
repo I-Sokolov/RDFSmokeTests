@@ -126,8 +126,7 @@ namespace Configurator
             cfgFile.WriteLine("@echo .");
 
             cfgFile.WriteLine("SET RDF_TEST_ONLY_KERNEL={0}", chkOnlyKernel.Checked ? "1" : "0");
-            cfgFile.WriteLine("SET RDF_TEST_MODEL_CHECKER={0}", chkModelChecker.Checked ? "1" : "0");
-            cfgFile.WriteLine("SET RDF_TEST_EXPRESS_PARSER={0}", chkExpressParser.Checked ? "1" : "0");
+            cfgFile.WriteLine("SET RDF_TEST_TOOLBOX_EX={0}", chkToolBoxEx.Checked ? "1" : "0");
 
             cfgFile.WriteLine("@echo off");
 
@@ -146,12 +145,9 @@ namespace Configurator
 
                 string pathToolbox = Path.Combine(cbIncludePath.Text, "..\\ToolBoxEx");
 
-                if (chkModelChecker.Checked)
+                if (chkToolBoxEx.Checked)
                 {
                     CreateSymLink(pathToolbox, "ModelCheckerAPI.h", folder, null, cfgFile);
-                }
-                if (chkExpressParser.Checked)
-                {
                     CreateSymLink(pathToolbox, "ExpressSchemaWriterAPI.h", folder, null, cfgFile);
                 }
 
@@ -212,8 +208,7 @@ namespace Configurator
             }
 
             SettingsExchange(chkOnlyKernel, load);
-            SettingsExchange(chkExpressParser, load);
-            SettingsExchange(chkModelChecker, load);
+            SettingsExchange(chkToolBoxEx, load);
 
             SettingsExchange(cbIncludePath, load);
             SettingsExchange(cbLibFile, load);
@@ -309,8 +304,7 @@ namespace Configurator
             cbIfcEngineCs.Enabled = !chkOnlyKernel.Checked;
             cbIFC4cs.Enabled = !chkOnlyKernel.Checked;
             cbAP242cs.Enabled = !chkOnlyKernel.Checked;
-            chkExpressParser.Enabled = !chkOnlyKernel.Checked;
-            chkModelChecker.Enabled = !chkOnlyKernel.Checked;
+            chkToolBoxEx.Enabled = !chkOnlyKernel.Checked;
         }
 
         private void chkOnlyKernel_CheckedChanged(object sender, EventArgs e)

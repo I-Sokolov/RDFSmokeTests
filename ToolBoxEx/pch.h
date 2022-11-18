@@ -1,6 +1,9 @@
 #pragma once
 
+#include <Windows.h>
+
 #include <stdio.h>
+#include <stdarg.h>
 #include <vector>
 #include <iostream>
 #include <string>
@@ -18,3 +21,5 @@
 #define ENTER_TEST printf ("Running " __FUNCTION__ ".\n");
 
 #define ENTER_TEST_NAME(name) printf ("Running " __FUNCTION__ " %s.\n", (name));
+
+

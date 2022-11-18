@@ -318,24 +318,12 @@ namespace Configurator {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chkExpressParser {
+        public bool chkToolBoxEx {
             get {
-                return ((bool)(this["chkExpressParser"]));
+                return ((bool)(this["chkToolBoxEx"]));
             }
             set {
-                this["chkExpressParser"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chkModelChecker {
-            get {
-                return ((bool)(this["chkModelChecker"]));
-            }
-            set {
-                this["chkModelChecker"] = value;
+                this["chkToolBoxEx"] = value;
             }
         }
     }
