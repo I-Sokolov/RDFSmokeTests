@@ -11,11 +11,12 @@ enum class enum_embedded_schema : unsigned char
     IFC4X1_FINAL,
     IFC4X2_DRAFT,
     IFC4X3_ADD1,
+    IFC4X4,
     AP242,
     CIS2
 };
 
-extern __declspec(dllimport) const char* parsingRead_SetGeneratedSchemaFile(
+extern __declspec(dllimport) const char* parsingReadSchema_SetGeneratedSchemaFile(
     enum_embedded_schema	schema,
     const char* directory = nullptr
 );
@@ -60,7 +61,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     std::filesystem::path readFilePath("..\\TestData\\schemas");
     readFilePath.append(expFileName);
 
-    parsingRead_SetGeneratedSchemaFile(generate, ".");
+    parsingReadSchema_SetGeneratedSchemaFile(generate, ".");
     auto model = sdaiCreateModelBN(1, "", readFilePath.string().c_str());
     ASSERT(model != 0);
 
@@ -75,7 +76,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     //
     // check re-read
     //
-    parsingRead_SetGeneratedSchemaFile(enum_embedded_schema::NONE);
+    parsingReadSchema_SetGeneratedSchemaFile(enum_embedded_schema::NONE);
     model = sdaiCreateModelBN(2, "", writeFile.c_str());
     ASSERT(model); //writer issue?
 
@@ -89,9 +90,8 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
 
     bool fileEquals = FileEquals(writeFile, rewriteFile);
     ASSERT(fileEquals); //write issue?
-
-    //printf("..Do not test embedded\n");
-    //return; 
+    
+    printf(" ... compared to rewrite\n");
     
     //
     // write embedded schema to file
@@ -109,6 +109,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     //
     fileEquals = FileEquals(writeFile, writeEmbedded);
     ASSERT(fileEquals); //embedded schema mismatch express file?
+    printf(" ... compared to embedded\n");
 }
 
 
