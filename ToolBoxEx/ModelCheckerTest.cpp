@@ -180,7 +180,8 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {172,   "IfcUnitAssignment",    "Units",                    0,      1,r4,           RDF::ModelChecker::IssueID::UnexpectedAggregation},
     {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         RDF::ModelChecker::IssueID::WrongAggregationSize},
     {231,   "IfcSite",              "RefLatitude",              9,      0,NULL,         RDF::ModelChecker::IssueID::WrongAggregationSize},
-    {6,     "IfcApplication",       "Version",                  1,      0,NULL,         RDF::ModelChecker::IssueID::UniqueRuleViolation}
+    {6,     "IfcApplication",       "Version",                  1,      0,NULL,         RDF::ModelChecker::IssueID::UniqueRuleViolation},
+    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule}
 };
 
 
