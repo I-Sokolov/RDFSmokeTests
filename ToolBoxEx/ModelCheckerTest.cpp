@@ -188,6 +188,7 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
 static IssueInfo rExpectedIssuesIFC4[] =
 {
     {14,    "IfcShapeRepresentation",   "ContextOfItems",       0,      0,NULL,         RDF::ModelChecker::IssueID::MissedNonOptionalArgument},
+    {14,    "IfcShapeRepresentation",   NULL,                   -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule},
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      2,r32,          RDF::ModelChecker::IssueID::WrongArgumentType},
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      1,r2,           RDF::ModelChecker::IssueID::WrongAggregationSize},
     {7,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r2,           RDF::ModelChecker::IssueID::UnresolvedReference},
@@ -195,7 +196,8 @@ static IssueInfo rExpectedIssuesIFC4[] =
     {19,    "IfcSpatialStructureElement",NULL,                  -1,     0,NULL,         RDF::ModelChecker::IssueID::AbstractEntity},
     {1,     "IfcRoot",                   "GlobalId",            0,      0,NULL,         RDF::ModelChecker::IssueID::UniqueRuleViolation},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           RDF::ModelChecker::IssueID::WrongArgumentType},
-    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           RDF::ModelChecker::IssueID::WrongArgumentType}
+    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           RDF::ModelChecker::IssueID::WrongArgumentType},
+    {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule}
 };
 
 //
