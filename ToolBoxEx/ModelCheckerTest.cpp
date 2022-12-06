@@ -268,6 +268,7 @@ static IssueInfo rExpectedIssuesIFC4[] =
     {1,     "IfcRoot",                   "GlobalId",            0,      0,NULL,         RDF::ModelChecker::IssueID::UniqueRuleViolation},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           RDF::ModelChecker::IssueID::WrongArgumentType},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           RDF::ModelChecker::IssueID::WrongArgumentType},
+    {21,    "IfcPropertyListValue",      NULL,                  -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule},
     {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule}
 };
 
