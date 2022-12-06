@@ -153,6 +153,77 @@ struct IssueInfo
     RDF::ModelChecker::IssueID  issueId;
 };
 
+
+//
+// smoke test run and check
+//
+
+struct CheckExpectedIssuses : public PrintIssue
+{
+    CheckExpectedIssuses(IssueInfo* rExpectedIssuesIFC2x3, int nExpectedIssues) : m_rExpectedIssues(rExpectedIssuesIFC2x3), m_nExpectedIssues(nExpectedIssues) {}
+
+    virtual void OnIssue(RDF::ModelChecker::IssueInfo* issue) override;
+
+private:
+    IssueInfo* m_rExpectedIssues;
+    int m_nExpectedIssues;
+};
+
+
+void CheckExpectedIssuses::OnIssue(RDF::ModelChecker::IssueInfo* issue)
+{
+    //base report
+    __super::OnIssue(issue);
+
+    //check issue expected
+    bool found = false;
+    for (int i = 0; i < m_nExpectedIssues; i++) {
+        auto& expected = m_rExpectedIssues[i];
+        if (expected.stepId == RDF::ModelChecker::StepId (issue) 
+            && expected.attrInd == RDF::ModelChecker::AttrIndex (issue) 
+            && expected.aggrLevel == RDF::ModelChecker::AggrLevel (issue)) {
+
+            ASSERT(expected.issueId == RDF::ModelChecker::IssueId (issue));
+            
+            auto aggrLevel = RDF::ModelChecker::AggrLevel(issue);
+            auto aggrIndArray = RDF::ModelChecker::AggrIndArray(issue);
+            for (int i = 0; i < aggrLevel; i++) {
+                ASSERT(expected.aggrIndArray[i] == aggrIndArray[i]);
+            }
+            
+            found = true;
+            expected.stepId = -1; //mark as reported
+            break;
+        }
+    }
+    ASSERT(found);
+}
+
+static void TestInvalidParameters()
+{
+    ENTER_TEST;
+
+    printf("\t<TestInvalidParameters>\n");
+
+    RDF::ModelChecker::CheckResults* checks = RDF::ModelChecker::CheckModel((int_t)&checks);
+    auto issue = RDF::ModelChecker::FirstIssue(checks);
+    auto level = RDF::ModelChecker::Level(issue);
+    ASSERT(level == 100000);
+    ASSERT(!RDF::ModelChecker::NextIssue(issue));
+    printf("\t\t<Finished errorLevel='%d' />\n", level);
+    RDF::ModelChecker::DisposeResults(checks);
+
+    checks = RDF::ModelChecker::CheckInstance((int_t)checks);
+    issue = RDF::ModelChecker::FirstIssue(checks);
+    level = RDF::ModelChecker::Level(issue);
+    ASSERT(level == 100000);
+    ASSERT(!RDF::ModelChecker::NextIssue(issue));
+    printf("\t\t<Finished errorLevel='%d' />\n", level);
+    RDF::ModelChecker::DisposeResults(checks);
+
+    printf("\t</TestInvalidParameters>\n");
+}
+
 static IssueInfo rExpectedIssuesIFC2x3[] =
 {
     //id   class                    attrName                    ind     aggrLev/aggrInd         Issue
@@ -200,99 +271,42 @@ static IssueInfo rExpectedIssuesIFC4[] =
     {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule}
 };
 
-//
-// smoke test run and check
-//
-
-struct CheckExpectedIssuses : public PrintIssue
+static IssueInfo rExpectedIssuesIFC4x3[] =
 {
-    CheckExpectedIssuses(IssueInfo* rExpectedIssuesIFC2x3, int nExpectedIssues) : m_rExpectedIssues(rExpectedIssuesIFC2x3), m_nExpectedIssues(nExpectedIssues) {}
-
-    virtual void OnIssue(RDF::ModelChecker::IssueInfo* issue) override;
-
-private:
-    IssueInfo* m_rExpectedIssues;
-    int m_nExpectedIssues;
+    {1158,    "IfcPointByDistanceExpression",   "DistanceAlong",       0,       0,NULL,         RDF::ModelChecker::IssueID::WhereRule},
+    {19,      "IfcRelContainedInSpatialStructure",NULL,                 -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule},
+    {17,      "IfcGeometricRepresentationContext",NULL,                 -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule}
 };
 
-
-void CheckExpectedIssuses::OnIssue(RDF::ModelChecker::IssueInfo* issue)
+static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nExpectedIssues)
 {
-    //base report
-    __super::OnIssue(issue);
+    ENTER_TEST_NAME(file);
 
-    //check issue expected
-    bool found = false;
-    for (int i = 0; i < m_nExpectedIssues; i++) {
-        auto& expected = m_rExpectedIssues[i];
-        if (expected.stepId == RDF::ModelChecker::StepId (issue) 
-            && expected.attrInd == RDF::ModelChecker::AttrIndex (issue) 
-            && expected.aggrLevel == RDF::ModelChecker::AggrLevel (issue)) {
+    std::string modelPath("..\\TestData\\");
+    modelPath += file;
 
-            ASSERT(expected.issueId == RDF::ModelChecker::IssueId (issue));
-            
-            auto aggrLevel = RDF::ModelChecker::AggrLevel(issue);
-            auto aggrIndArray = RDF::ModelChecker::AggrIndArray(issue);
-            for (int i = 0; i < aggrLevel; i++) {
-                ASSERT(expected.aggrIndArray[i] == aggrIndArray[i]);
-            }
-            
-            found = true;
-            expected.stepId = -1; //mark as reported
-            break;
-        }
+    CheckExpectedIssuses log(rExpectedIssues, nExpectedIssues);
+    auto result = CheckModel(modelPath.c_str(), NULL, &log);
+    
+    //all expected issues are reported
+    for (int i = 0; i < nExpectedIssues; i++) {
+        ASSERT(rExpectedIssues[i].stepId == -1);
     }
-    ASSERT(found);
+
+    printf("\t<Finished errorLevel='%d' />\n", (int)result);
 }
 
 
 extern void ModelCheckerTests()
 {
-    ENTER_TEST
-
     printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     printf("<RDFExpressModelChecker>\n");
 
-    printf("\t<TestInvalidParameters>\n");
 
-    RDF::ModelChecker::CheckResults* checks = RDF::ModelChecker::CheckModel((int_t) &checks);
-    auto issue = RDF::ModelChecker::FirstIssue(checks);
-    auto level = RDF::ModelChecker::Level(issue);
-    ASSERT(level == 100000);
-    ASSERT(!RDF::ModelChecker::NextIssue(issue));
-    printf("\t\t<Finished errorLevel='%d' />\n", level);
-    RDF::ModelChecker::DisposeResults(checks);
-
-    checks = RDF::ModelChecker::CheckInstance((int_t) checks);
-    issue = RDF::ModelChecker::FirstIssue(checks);
-    level = RDF::ModelChecker::Level(issue);
-    ASSERT(level == 100000);
-    ASSERT(!RDF::ModelChecker::NextIssue(issue));
-    printf("\t\t<Finished errorLevel='%d' />\n", level);
-    RDF::ModelChecker::DisposeResults(checks);
-
-    printf("\t</TestInvalidParameters>\n");
-
-    // test model with different cases of issues
-    //
-
-    CheckExpectedIssuses log(rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3));
-    auto result = CheckModel("..\\TestData\\ModelCheckerIFC2x3.ifc", NULL, &log);
-
-    //all expected issues are reported
-    for (auto expected : rExpectedIssuesIFC2x3) {
-        ASSERT(expected.stepId == -1);
-    }
-
-    CheckExpectedIssuses log2(rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4));
-    result = CheckModel("..\\TestData\\ModelCheckerIFC4.ifc", NULL, &log2);
-
-    //all expected issues are reported
-    for (auto expected : rExpectedIssuesIFC2x3) {
-        ASSERT(expected.stepId == -1);
-    }
-
-    printf("\t<Finished errorLevel='%d' />\n", level);
+    TestInvalidParameters();
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3));
+    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4));
+    CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3));
+    
     printf("</RDFExpressModelChecker>\n");
-
 }
