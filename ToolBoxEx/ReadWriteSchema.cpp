@@ -61,7 +61,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     std::filesystem::path readFilePath("..\\TestData\\schemas");
     readFilePath.append(expFileName);
 
-    parsingReadSchema_SetGeneratedSchemaFile(generate, ".");
+    auto generatedFile = parsingReadSchema_SetGeneratedSchemaFile(generate, ".");
     auto model = sdaiCreateModelBN(1, "", readFilePath.string().c_str());
     ASSERT(model != 0);
 
@@ -93,6 +93,11 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     
     printf(" ... compared to rewrite\n");
     
+    if (generatedFile) {
+        printf("GENERATION MODE - DO NOT DO COMPARISION TESTS FOR EMBEDDED SCHEMA\n");
+        return; //>>>>>>>>>>>>>>
+    }
+
     //
     // write embedded schema to file
     //
