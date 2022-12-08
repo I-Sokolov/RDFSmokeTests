@@ -21,6 +21,9 @@ extern __declspec(dllimport) const char* parsingReadSchema_SetGeneratedSchemaFil
     const char* directory = nullptr
 );
 
+extern __declspec(dllimport) bool ExpressionReaderSmokeTest(int_t model);
+
+
 static bool FileEquals(std::string& file1, std::string& file2)
 {
     FILE* fp1 = NULL;
@@ -64,6 +67,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     auto generatedFile = parsingReadSchema_SetGeneratedSchemaFile(generate, ".");
     auto model = sdaiCreateModelBN(1, "", readFilePath.string().c_str());
     ASSERT(model != 0);
+    ASSERT(ExpressionReaderSmokeTest(model));
 
     std::string writeFile = "WriteSchema_";
     writeFile.append(expFileName);
@@ -79,6 +83,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     parsingReadSchema_SetGeneratedSchemaFile(enum_embedded_schema::NONE);
     model = sdaiCreateModelBN(2, "", writeFile.c_str());
     ASSERT(model); //writer issue?
+    ASSERT(ExpressionReaderSmokeTest(model));
 
     std::string rewriteFile = "ReWriteSchema_";
     rewriteFile.append(expFileName);
@@ -103,6 +108,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     //
     model = sdaiCreateModelBN(1, "", embeddedName);
     ASSERT(model != 0);
+    ASSERT(ExpressionReaderSmokeTest(model));
 
     std::string writeEmbedded = "WriteEmbedded_";
     writeEmbedded.append(embeddedName);
