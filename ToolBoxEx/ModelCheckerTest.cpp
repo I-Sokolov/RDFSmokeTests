@@ -231,13 +231,18 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
-static IssueInfo rExpectedIssuesIFC2x3_Limit4[] =
+static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
 {
     {51,    "IfcProductDefinitionShape",    "Representations",      2,      1,r3,           ValidationIssueType::UnresolvedReference},
     {51,    "IfcProdcutDefinitionShape",    NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation},
     {74,    "IfcPolyLoop",                  "Polygon",              0,      1,r1,           ValidationIssueType::UnresolvedReference},
     {84,    "IFCCARTESIANPOINTLIST2D",      NULL,                   -1,     0,NULL,         ValidationIssueType::WrongNumberOfArguments},
     {110,   "IfcProject",                   "GlobalId",             0,      0,NULL,         ValidationIssueType::MissedNonOptionalArgument}
+};
+
+static IssueInfo rExpectedIssuesIFC2x3_LimitTime[] =
+{
+    {-1,    "IfcProductDefinitionShape",    "Representations",      2,      1,r3,           ValidationIssueType::UnresolvedReference}
 };
 
 static IssueInfo rExpectedIssuesIFC4[] =
@@ -320,7 +325,10 @@ extern void ModelCheckerTests()
     CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), false);
     
     validateSetLimits(-1, 4);
-    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_Limit4, _countof(rExpectedIssuesIFC2x3_Limit4), true);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitCount, _countof(rExpectedIssuesIFC2x3_LimitCount), true);
+
+    validateSetLimits(0, -1);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitTime, _countof(rExpectedIssuesIFC2x3_LimitTime), true);
 
     printf("</RDFExpressModelChecker>\n");
 }
