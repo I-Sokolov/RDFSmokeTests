@@ -3,49 +3,47 @@
 
 #include "pch.h"
 
-#include "..\ModelCheckerAPI.h"
-
 #define INDENT "\t\t"
 
 struct IssueHandler
 {
-    virtual void OnIssue(RDF::ModelChecker::IssueInfo* issue) = NULL;
+    virtual void OnIssue(ValidationIssue* issue) = NULL;
 };
 
-static RDF::ModelChecker::ErrorLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pIssueHandler);
-//static RDF::ModelChecker::ErrorLevel CheckModels(const char* filePath, const char* expressSchemaFilePath);
+static ValidationIssueLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pIssueHandler);
+//static ValidationIssueLevel CheckModels(const char* filePath, const char* expressSchemaFilePath);
 
 /// <summary>
 /// Issue reporting 
 /// </summary>
 struct PrintIssue : public IssueHandler
 {
-    virtual void OnIssue(RDF::ModelChecker::IssueInfo* issue) override
+    virtual void OnIssue(ValidationIssue* issue) override
     {
         printf(INDENT "<Issue");
 
-        auto stepId = RDF::ModelChecker::StepId(issue);
+        auto stepId = validateGetStepId(issue);
         if (stepId > 0) {
             printf(" stepId='#%lld'", stepId);
         }
 
-        auto entity = RDF::ModelChecker::EntityName(issue);
+        auto entity = validateGetEntityName(issue);
         if (entity) {
             printf(" entity='%s'", entity);
         }
 
-        auto attrName = RDF::ModelChecker::AttrName(issue);
+        auto attrName = validateGetAttrName(issue);
         if (attrName) {
             printf(" attribute='%s'", attrName);
         }
 
-        auto attrIndex = RDF::ModelChecker::AttrIndex(issue);
+        auto attrIndex = validateGetAttrIndex(issue);
         if (attrIndex >= 0) {
             printf(" attributeIndex='%lld'", (int64_t) attrIndex);
         }
 
-        auto aggrLevel = RDF::ModelChecker::AggrLevel(issue);
-        auto aggrIndArray = RDF::ModelChecker::AggrIndArray(issue);
+        auto aggrLevel = validateGetAggrLevel(issue);
+        auto aggrIndArray = validateGetAggrIndArray(issue);
         for (int_t i = 0; i < aggrLevel; i++) {
             if (i == 0) {
                 printf(" aggregationIndex='%lld'", (int64_t) aggrIndArray[i]);
@@ -55,11 +53,11 @@ struct PrintIssue : public IssueHandler
             }
         }
 
-        auto issueId = RDF::ModelChecker::IssueId(issue);
-        auto level = RDF::ModelChecker::Level(issue);
-        printf(" issueId='%d' issueLevel='%d'>\n", (int) issueId, level);
+        auto issueId = validateGetIssueType(issue);
+        auto level = validateGetIssueLevel(issue);
+        printf(" issueId='%d' issueLevel='%lld'>\n", (int) issueId, level);
 
-        auto text = RDF::ModelChecker::Description(issue);
+        auto text = validateGetDescription(issue);
         if (text) {
             printf(INDENT INDENT "%s\n", text);
         }
@@ -69,9 +67,9 @@ struct PrintIssue : public IssueHandler
 };
 
 #if 0
-static RDF::ModelChecker::ErrorLevel CheckModels(const char* filePathWC, const char* expressSchemaFilePath)
+static ValidationIssueLevel CheckModels(const char* filePathWC, const char* expressSchemaFilePath)
 {
-    RDF::ModelChecker::ErrorLevel res = 0;
+    ValidationIssueLevel res = 0;
 
     const auto directory = std::filesystem::path {filePathWC}.parent_path();
 
@@ -99,7 +97,7 @@ static RDF::ModelChecker::ErrorLevel CheckModels(const char* filePathWC, const c
 }
 #endif
 
-static RDF::ModelChecker::ErrorLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pLog)
+static ValidationIssueLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pLog)
 {
     printf("\t<CheckModel file='%s'", filePath);
     
@@ -108,16 +106,16 @@ static RDF::ModelChecker::ErrorLevel CheckModel(const char* filePath, const char
     else
         printf(" embedded_schema='true'>\n");
 
-    RDF::ModelChecker::ErrorLevel result = 0;
+    ValidationIssueLevel result = 0;
 
     SdaiModel model = sdaiOpenModelBN(NULL, filePath, expressSchemaFilePath ? expressSchemaFilePath : "");
     if (model) {
-        auto checks = RDF::ModelChecker::CheckModel(model);
-        for (auto issue = RDF::ModelChecker::FirstIssue(checks); issue; issue = RDF::ModelChecker::NextIssue(issue)) {
+        auto checks = validateModel(model);
+        for (auto issue = validateGetFirstIssue(checks); issue; issue = validateGetNextIssue(issue)) {
             pLog->OnIssue(issue);
-            result = max(result, RDF::ModelChecker::Level(issue));
+            result = max(result, validateGetIssueLevel(issue));
         }
-        RDF::ModelChecker::DisposeResults(checks);
+        validateFreeResults(checks);
         //sdaiCloseModel(model);
     }
     else {
@@ -150,7 +148,7 @@ struct IssueInfo
     int_t                       attrInd;
     int_t                       aggrLevel;
     int_t*                      aggrIndArray;
-    RDF::ModelChecker::IssueID  issueId;
+    ValidationIssueType         issueType;
 };
 
 
@@ -162,7 +160,7 @@ struct CheckExpectedIssuses : public PrintIssue
 {
     CheckExpectedIssuses(IssueInfo* rExpectedIssuesIFC2x3, int nExpectedIssues) : m_rExpectedIssues(rExpectedIssuesIFC2x3), m_nExpectedIssues(nExpectedIssues) {}
 
-    virtual void OnIssue(RDF::ModelChecker::IssueInfo* issue) override;
+    virtual void OnIssue(ValidationIssue* issue) override;
 
 private:
     IssueInfo* m_rExpectedIssues;
@@ -170,7 +168,7 @@ private:
 };
 
 
-void CheckExpectedIssuses::OnIssue(RDF::ModelChecker::IssueInfo* issue)
+void CheckExpectedIssuses::OnIssue(ValidationIssue* issue)
 {
     //base report
     __super::OnIssue(issue);
@@ -179,14 +177,15 @@ void CheckExpectedIssuses::OnIssue(RDF::ModelChecker::IssueInfo* issue)
     bool found = false;
     for (int i = 0; i < m_nExpectedIssues; i++) {
         auto& expected = m_rExpectedIssues[i];
-        if (expected.stepId == RDF::ModelChecker::StepId (issue) 
-            && expected.attrInd == RDF::ModelChecker::AttrIndex (issue) 
-            && expected.aggrLevel == RDF::ModelChecker::AggrLevel (issue)) {
+        if (expected.stepId == validateGetStepId (issue) 
+            && expected.attrInd == validateGetAttrIndex (issue) 
+            && expected.aggrLevel == validateGetAggrLevel (issue)) {
 
-            ASSERT(expected.issueId == RDF::ModelChecker::IssueId (issue));
+            auto vi = validateGetIssueType(issue);
+            ASSERT(expected.issueType == vi);
             
-            auto aggrLevel = RDF::ModelChecker::AggrLevel(issue);
-            auto aggrIndArray = RDF::ModelChecker::AggrIndArray(issue);
+            auto aggrLevel = validateGetAggrLevel(issue);
+            auto aggrIndArray = validateGetAggrIndArray(issue);
             for (int i = 0; i < aggrLevel; i++) {
                 ASSERT(expected.aggrIndArray[i] == aggrIndArray[i]);
             }
@@ -205,21 +204,21 @@ static void TestInvalidParameters()
 
     printf("\t<TestInvalidParameters>\n");
 
-    RDF::ModelChecker::CheckResults* checks = RDF::ModelChecker::CheckModel((int_t)&checks);
-    auto issue = RDF::ModelChecker::FirstIssue(checks);
-    auto level = RDF::ModelChecker::Level(issue);
+    ValidationResults* checks = validateModel((int_t)&checks);
+    auto issue = validateGetFirstIssue(checks);
+    auto level = validateGetIssueLevel(issue);
     ASSERT(level == 100000);
-    ASSERT(!RDF::ModelChecker::NextIssue(issue));
-    printf("\t\t<Finished errorLevel='%d' />\n", level);
-    RDF::ModelChecker::DisposeResults(checks);
+    ASSERT(!validateGetNextIssue(issue));
+    printf("\t\t<Finished errorLevel='%lld' />\n", level);
+    validateFreeResults(checks);
 
-    checks = RDF::ModelChecker::CheckInstance((int_t)checks);
-    issue = RDF::ModelChecker::FirstIssue(checks);
-    level = RDF::ModelChecker::Level(issue);
+    checks = validateInstance((int_t)checks);
+    issue = validateGetFirstIssue(checks);
+    level = validateGetIssueLevel(issue);
     ASSERT(level == 100000);
-    ASSERT(!RDF::ModelChecker::NextIssue(issue));
-    printf("\t\t<Finished errorLevel='%d' />\n", level);
-    RDF::ModelChecker::DisposeResults(checks);
+    ASSERT(!validateGetNextIssue(issue));
+    printf("\t\t<Finished errorLevel='%lld' />\n", level);
+    validateFreeResults(checks);
 
     printf("\t</TestInvalidParameters>\n");
 }
@@ -227,56 +226,56 @@ static void TestInvalidParameters()
 static IssueInfo rExpectedIssuesIFC2x3[] =
 {
     //id   class                    attrName                    ind     aggrLev/aggrInd         Issue
-    {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         RDF::ModelChecker::IssueID::WrongNumberOfArguments},
-    {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           RDF::ModelChecker::IssueID::UnresolvedReference},
-    {74,    "IfcPolyLoop",          "Polygon",                  0,      1,r1,           RDF::ModelChecker::IssueID::UnresolvedReference},
-    {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         RDF::ModelChecker::IssueID::MissedNonOptionalArgument},
-    {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         RDF::ModelChecker::IssueID::UnexpectedStar},
-    {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         RDF::ModelChecker::IssueID::UnexpectedAggregation},
-    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         RDF::ModelChecker::IssueID::WrongNumberOfArguments},
-    {114,   "IfcProject",           NULL,                       -1,     0,NULL,         RDF::ModelChecker::IssueID::WrongNumberOfArguments},
-    {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         RDF::ModelChecker::IssueID::ExpectedAggregation},
-    {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {120,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {121,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {122,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {123,   "IfcOwnerHistory",      "CreationDate",             7,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {124,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {125,   "IfcOwnerHistory",      "ChangeAction",             3,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {126,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {130,   "IfcMeasureWithUnit",   "ValueComponent",           0,      0,NULL,         RDF::ModelChecker::IssueID::WrongArgumentType},
-    {170,   "IfcUnitAssignment",    "Units",                    0,      1,r6,           RDF::ModelChecker::IssueID::UnexpectedValueType},
-    {170,   "IfcUnitAssignment",    "Units",                    0,      1,r4,           RDF::ModelChecker::IssueID::WrongArgumentType},
-    {171,   "IfcUnitAssignment",    "Units",                    0,      1,r4,           RDF::ModelChecker::IssueID::UnexpectedValueType},
-    {172,   "IfcUnitAssignment",    "Units",                    0,      1,r4,           RDF::ModelChecker::IssueID::UnexpectedAggregation},
-    {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         RDF::ModelChecker::IssueID::WrongAggregationSize},
-    {231,   "IfcSite",              "RefLatitude",              9,      0,NULL,         RDF::ModelChecker::IssueID::WrongAggregationSize},
-    {6,     "IfcApplication",       "Version",                  1,      0,NULL,         RDF::ModelChecker::IssueID::UniqueRuleViolation},
-    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule}
+    {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         ValidationIssueType::WrongNumberOfArguments},
+    {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           ValidationIssueType::UnresolvedReference},
+    {74,    "IfcPolyLoop",          "Polygon",                  0,      1,r1,           ValidationIssueType::UnresolvedReference},
+    {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         ValidationIssueType::MissedNonOptionalArgument},
+    {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         ValidationIssueType::UnexpectedStar},
+    {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         ValidationIssueType::UnexpectedAggregation},
+    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         ValidationIssueType::WrongNumberOfArguments},
+    {114,   "IfcProject",           NULL,                       -1,     0,NULL,         ValidationIssueType::WrongNumberOfArguments},
+    {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         ValidationIssueType::ExpectedAggregation},
+    {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {120,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {121,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {122,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {123,   "IfcOwnerHistory",      "CreationDate",             7,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {124,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {125,   "IfcOwnerHistory",      "ChangeAction",             3,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {126,   "IfcOwnerHistory",      "OwningUser",               0,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {130,   "IfcMeasureWithUnit",   "ValueComponent",           0,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {170,   "IfcUnitAssignment",    "Units",                    0,      1,r4,           ValidationIssueType::WrongArgumentType},
+    {170,   "IfcUnitAssignment",    "Units",                    0,      1,r6,           ValidationIssueType::UnexpectedValueType},
+    {171,   "IfcUnitAssignment",    "Units",                    0,      1,r4,           ValidationIssueType::UnexpectedValueType},
+    {172,   "IfcUnitAssignment",    "Units",                    0,      1,r4,           ValidationIssueType::UnexpectedAggregation},
+    {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         ValidationIssueType::WrongAggregationSize},
+    {231,   "IfcSite",              "RefLatitude",              9,      0,NULL,         ValidationIssueType::WrongAggregationSize},
+    {6,     "IfcApplication",       "Version",                  1,      0,NULL,         ValidationIssueType::UniqueRuleViolation},
+    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
 
 static IssueInfo rExpectedIssuesIFC4[] =
 {
-    {14,    "IfcShapeRepresentation",   "ContextOfItems",       0,      0,NULL,         RDF::ModelChecker::IssueID::MissedNonOptionalArgument},
-    {14,    "IfcShapeRepresentation",   NULL,                   -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule},
-    {29,    "IfcIndexedPolyCurve",      "Segments",             1,      2,r32,          RDF::ModelChecker::IssueID::WrongArgumentType},
-    {29,    "IfcIndexedPolyCurve",      "Segments",             1,      1,r2,           RDF::ModelChecker::IssueID::WrongAggregationSize},
-    {7,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r2,           RDF::ModelChecker::IssueID::UnresolvedReference},
-    {3,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r1,           RDF::ModelChecker::IssueID::AggrElementValueNotUnique},
-    {19,    "IfcSpatialStructureElement",NULL,                  -1,     0,NULL,         RDF::ModelChecker::IssueID::AbstractEntity},
-    {1,     "IfcRoot",                   "GlobalId",            0,      0,NULL,         RDF::ModelChecker::IssueID::UniqueRuleViolation},
-    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           RDF::ModelChecker::IssueID::WrongArgumentType},
-    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           RDF::ModelChecker::IssueID::WrongArgumentType},
-    {21,    "IfcPropertyListValue",      NULL,                  -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule},
-    {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule}
+    {14,    "IfcShapeRepresentation",   "ContextOfItems",       0,      0,NULL,         ValidationIssueType::MissedNonOptionalArgument},
+    {14,    "IfcShapeRepresentation",   NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation},
+    {29,    "IfcIndexedPolyCurve",      "Segments",             1,      2,r32,          ValidationIssueType::WrongArgumentType},
+    {29,    "IfcIndexedPolyCurve",      "Segments",             1,      1,r2,           ValidationIssueType::WrongAggregationSize},
+    {7,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r2,           ValidationIssueType::UnresolvedReference},
+    {3,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r1,           ValidationIssueType::AggrElementValueNotUnique},
+    {19,    "IfcSpatialStructureElement",NULL,                  -1,     0,NULL,         ValidationIssueType::AbstractEntity},
+    {1,     "IfcRoot",                   "GlobalId",            0,      0,NULL,         ValidationIssueType::UniqueRuleViolation},
+    {21,    "IfcPropertyListValue",      NULL,                  -1,     0,NULL,         ValidationIssueType::WhereRuleViolation},
+    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           ValidationIssueType::WrongArgumentType},
+    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           ValidationIssueType::WrongArgumentType},
+    {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
 static IssueInfo rExpectedIssuesIFC4x3[] =
 {
-    {1158,    "IfcPointByDistanceExpression",   "DistanceAlong",       0,       0,NULL,         RDF::ModelChecker::IssueID::WhereRule},
-    {19,      "IfcRelContainedInSpatialStructure",NULL,                 -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule},
-    {17,      "IfcGeometricRepresentationContext",NULL,                 -1,     0,NULL,         RDF::ModelChecker::IssueID::WhereRule}
+    {1158,    "IfcPointByDistanceExpression",   "DistanceAlong",       0,       0,NULL,         ValidationIssueType::WhereRuleViolation},
+    {19,      "IfcRelContainedInSpatialStructure",NULL,                 -1,     0,NULL,         ValidationIssueType::WhereRuleViolation},
+    {17,      "IfcGeometricRepresentationContext",NULL,                 -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
 static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nExpectedIssues)

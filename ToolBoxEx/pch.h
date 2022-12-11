@@ -16,7 +16,15 @@
 #undef ASSERT
 #endif
 
-#define ASSERT(c) {if (!(c)) { printf ("ASSERT failed at line %d file %s\n", __LINE__, __FILE__); throw (int) 13;}}
+static void DoAssert(bool c, int line, const char* file)
+{
+    if (!c) { 
+        printf("ASSERT failed at line %d file %s\n", line, file); 
+        throw (int)13; 
+    }
+}
+
+#define ASSERT(c) {DoAssert ((c), __LINE__, __FILE__);}
 
 #define ENTER_TEST printf ("Running " __FUNCTION__ ".\n");
 

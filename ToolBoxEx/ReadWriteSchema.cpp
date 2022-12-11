@@ -1,7 +1,6 @@
 
 #include "pch.h"
 
-#include "..\ExpressSchemaWriterAPI.h"
 
 enum class enum_embedded_schema : unsigned char
 {
@@ -72,7 +71,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     std::string writeFile = "WriteSchema_";
     writeFile.append(expFileName);
 
-    bool ok = RDF::ExpressSchemaWriter::WriteSchema(model, writeFile.c_str());
+    bool ok = engiSaveExpressSchema(model, writeFile.c_str());
     ASSERT(ok);
 
     sdaiCloseModel(model);
@@ -88,7 +87,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     std::string rewriteFile = "ReWriteSchema_";
     rewriteFile.append(expFileName);
 
-    ok = RDF::ExpressSchemaWriter::WriteSchema(model, rewriteFile.c_str());
+    ok = engiSaveExpressSchema(model, rewriteFile.c_str());
     ASSERT(ok); //write-read is different from read
 
     sdaiCloseModel(model);
@@ -114,7 +113,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     writeEmbedded.append(embeddedName);
     writeEmbedded.append(".exp");
 
-    ok = RDF::ExpressSchemaWriter::WriteSchema(model, writeEmbedded.c_str());
+    ok = engiSaveExpressSchema(model, writeEmbedded.c_str());
 
     //
     //

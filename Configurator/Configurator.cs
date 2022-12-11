@@ -143,14 +143,6 @@ namespace Configurator
                 CreateSymLink(cbIFC4cs.Text, "IFC4x4.cs", folder, null, cfgFile);
                 CreateSymLink(cbAP242cs.Text, "AP242.cs", folder, null, cfgFile);
 
-                string pathToolbox = Path.Combine(cbIncludePath.Text, "..\\ToolBoxEx");
-
-                if (chkToolBoxEx.Checked)
-                {
-                    CreateSymLink(pathToolbox, "ModelCheckerAPI.h", folder, null, cfgFile);
-                    CreateSymLink(pathToolbox, "ExpressSchemaWriterAPI.h", folder, null, cfgFile);
-                }
-
                 CreateSymLink(".", "ifcEngine.dll", ".", "engine.dll", cfgFile); //trick because engine.cs refers to engine.dll, not ifcengine.dll
                 CreateSymLink(".", "ifcEngine.lib", ".", "engine.lib", cfgFile);
             }             
