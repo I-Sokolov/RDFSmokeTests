@@ -97,7 +97,7 @@ static ValidationIssueLevel CheckModels(const char* filePathWC, const char* expr
 }
 #endif
 
-static ValidationIssueLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pLog)
+static ValidationIssueLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pLog, bool expectedMore)
 {
     printf("\t<CheckModel file='%s'", filePath);
     
@@ -115,6 +115,7 @@ static ValidationIssueLevel CheckModel(const char* filePath, const char* express
             pLog->OnIssue(issue);
             result = max(result, validateGetIssueLevel(issue));
         }
+        ASSERT(validateIsComplete(checks) != expectedMore);
         validateFreeResults(checks);
         //sdaiCloseModel(model);
     }
@@ -131,14 +132,6 @@ static ValidationIssueLevel CheckModel(const char* filePath, const char* express
 // smoke-test expected issues
 //
 
-static int_t r1[] = {1};
-static int_t r2[] = {2};
-static int_t r3[] = {3};
-static int_t r4[] = {4};
-static int_t r6[] = {6};
-static int_t r7[] = {7};
-static int_t r9[] = {9};
-static int_t r32[] = {3,2};
 
 struct IssueInfo
 {
@@ -198,30 +191,14 @@ void CheckExpectedIssuses::OnIssue(ValidationIssue* issue)
     ASSERT(found);
 }
 
-static void TestInvalidParameters()
-{
-    ENTER_TEST;
-
-    printf("\t<TestInvalidParameters>\n");
-
-    ValidationResults* checks = validateModel((int_t)&checks);
-    auto issue = validateGetFirstIssue(checks);
-    auto level = validateGetIssueLevel(issue);
-    ASSERT(level == 100000);
-    ASSERT(!validateGetNextIssue(issue));
-    printf("\t\t<Finished errorLevel='%lld' />\n", level);
-    validateFreeResults(checks);
-
-    checks = validateInstance((int_t)checks);
-    issue = validateGetFirstIssue(checks);
-    level = validateGetIssueLevel(issue);
-    ASSERT(level == 100000);
-    ASSERT(!validateGetNextIssue(issue));
-    printf("\t\t<Finished errorLevel='%lld' />\n", level);
-    validateFreeResults(checks);
-
-    printf("\t</TestInvalidParameters>\n");
-}
+static int_t r1[] = { 1 };
+static int_t r2[] = { 2 };
+static int_t r3[] = { 3 };
+static int_t r4[] = { 4 };
+static int_t r6[] = { 6 };
+static int_t r7[] = { 7 };
+static int_t r9[] = { 9 };
+static int_t r32[] = { 3,2 };
 
 static IssueInfo rExpectedIssuesIFC2x3[] =
 {
@@ -254,6 +231,14 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
+static IssueInfo rExpectedIssuesIFC2x3_Limit4[] =
+{
+    {51,    "IfcProductDefinitionShape",    "Representations",      2,      1,r3,           ValidationIssueType::UnresolvedReference},
+    {51,    "IfcProdcutDefinitionShape",    NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation},
+    {74,    "IfcPolyLoop",                  "Polygon",              0,      1,r1,           ValidationIssueType::UnresolvedReference},
+    {84,    "IFCCARTESIANPOINTLIST2D",      NULL,                   -1,     0,NULL,         ValidationIssueType::WrongNumberOfArguments},
+    {110,   "IfcProject",                   "GlobalId",             0,      0,NULL,         ValidationIssueType::MissedNonOptionalArgument}
+};
 
 static IssueInfo rExpectedIssuesIFC4[] =
 {
@@ -278,15 +263,38 @@ static IssueInfo rExpectedIssuesIFC4x3[] =
     {17,      "IfcGeometricRepresentationContext",NULL,                 -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
-static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nExpectedIssues)
+static void TestInvalidParameters()
 {
-    ENTER_TEST_NAME(file);
+    printf("\t<TestInvalidParameters>\n");
+
+    ValidationResults* checks = validateModel((int_t)&checks);
+    auto issue = validateGetFirstIssue(checks);
+    auto level = validateGetIssueLevel(issue);
+    ASSERT(level == 100000);
+    ASSERT(!validateGetNextIssue(issue));
+    printf("\t\t<Finished errorLevel='%lld' />\n", level);
+    validateFreeResults(checks);
+
+    checks = validateInstance((int_t)checks);
+    issue = validateGetFirstIssue(checks);
+    level = validateGetIssueLevel(issue);
+    ASSERT(level == 100000);
+    ASSERT(!validateGetNextIssue(issue));
+    printf("\t\t<Finished errorLevel='%lld' />\n", level);
+    validateFreeResults(checks);
+
+    printf("\t</TestInvalidParameters>\n");
+}
+
+static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nExpectedIssues, bool expectedMore)
+{
+    //ENTER_TEST_NAME(file);
 
     std::string modelPath("..\\TestData\\");
     modelPath += file;
 
     CheckExpectedIssuses log(rExpectedIssues, nExpectedIssues);
-    auto result = CheckModel(modelPath.c_str(), NULL, &log);
+    auto result = CheckModel(modelPath.c_str(), NULL, &log, expectedMore);
     
     //all expected issues are reported
     for (int i = 0; i < nExpectedIssues; i++) {
@@ -299,14 +307,20 @@ static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nEx
 
 extern void ModelCheckerTests()
 {
+    ENTER_TEST;
+
     printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     printf("<RDFExpressModelChecker>\n");
 
 
     TestInvalidParameters();
-    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3));
-    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4));
-    CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3));
+
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), false);
+    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), false);
+    CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), false);
     
+    validateSetLimits(-1, 4);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_Limit4, _countof(rExpectedIssuesIFC2x3_Limit4), true);
+
     printf("</RDFExpressModelChecker>\n");
 }
