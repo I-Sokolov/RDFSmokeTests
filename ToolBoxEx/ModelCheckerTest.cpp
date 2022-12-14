@@ -384,15 +384,29 @@ extern void ModelCheckerTests()
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), false);
     CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), false);
     CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), false);
-    
+ 
+    uint64_t issueTypesAll = validateGetOptions(NULL, NULL, 0);
+    ASSERT(issueTypesAll == 0xFFFF);
+
     validateSetOptions(-1, 4, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitCount, _countof(rExpectedIssuesIFC2x3_LimitCount), true);
+
+    int_t sec;
+    int_t cnt;
+    auto issueTypes = validateGetOptions(&sec, &cnt, 0);
+    ASSERT(sec == -1 && cnt == 4 && issueTypes == issueTypesAll);
 
     validateSetOptions(0, -1, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitTime, _countof(rExpectedIssuesIFC2x3_LimitTime), true);
 
+    issueTypes = validateGetOptions(&sec, &cnt, ~(uint64_t(0)));
+    ASSERT(sec == 0 && cnt == -1 && issueTypes == issueTypesAll);
+
     validateSetOptions(-1, -1, 0, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::WhereRuleViolation));
     CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4_ExcludeRules , _countof(rExpectedIssuesIFC4_ExcludeRules), false);
+
+    issueTypes = validateGetOptions(&sec, &cnt, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::AbstractEntity));
+    ASSERT(sec == -1 && cnt == -1 && issueTypes == uint64_t(ValidationIssueType::AbstractEntity));
 
     printf("</RDFExpressModelChecker>\n");
 }
