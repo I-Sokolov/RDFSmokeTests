@@ -18,26 +18,75 @@ static ValidationIssueLevel CheckModel(const char* filePath, const char* express
 /// </summary>
 struct PrintIssue : public IssueHandler
 {
+    const char* GetEntityName(ValidationIssue* issue)
+    {
+        auto ent = validateGetEntity(issue);
+        if (ent) {
+            const char* name = 0;
+            engiGetEntityName(ent, sdaiSTRING, &name);
+            return name;
+        }
+        else {
+            return NULL;
+        }
+    }
+
+    const char* GetAttrName(ValidationIssue* issue)
+    {
+        auto attr = validateGetAttr(issue);
+        if (attr) {
+            const char* name = 0;
+            engiGetAttributeTraits(attr, &name, 0, 0, 0, 0, 0, 0, 0);
+            return name;
+        }
+        else {
+            return NULL;
+        }
+    }
+
+    int_t GetAttrIndex(ValidationIssue* issue)
+    {
+        auto ent = validateGetEntity(issue);
+        const char* name = GetAttrName(issue);
+        if (ent && name) {
+            return engiGetEntityAttributeIndexEx(ent, name, true, false);
+        }
+        else {
+            return -1;
+        }
+    }
+
+    int64_t GetStepId(ValidationIssue* issue)
+    {
+        auto inst = validateGetInstance(issue);
+        if (inst) {
+            return internalGetP21Line(inst);
+        }
+        else {
+            return -1;
+        }
+    }
+
     virtual void OnIssue(ValidationIssue* issue) override
     {
         printf(INDENT "<Issue");
 
-        auto stepId = validateGetStepId(issue);
+        auto stepId = GetStepId(issue);
         if (stepId > 0) {
             printf(" stepId='#%lld'", stepId);
         }
 
-        auto entity = validateGetEntityName(issue);
+        auto entity = GetEntityName(issue);
         if (entity) {
             printf(" entity='%s'", entity);
         }
 
-        auto attrName = validateGetAttrName(issue);
+        auto attrName = GetAttrName(issue);
         if (attrName) {
             printf(" attribute='%s'", attrName);
         }
 
-        auto attrIndex = validateGetAttrIndex(issue);
+        auto attrIndex = GetAttrIndex(issue);
         if (attrIndex >= 0) {
             printf(" attributeIndex='%lld'", (int64_t) attrIndex);
         }
@@ -170,8 +219,8 @@ void CheckExpectedIssuses::OnIssue(ValidationIssue* issue)
     bool found = false;
     for (int i = 0; i < m_nExpectedIssues; i++) {
         auto& expected = m_rExpectedIssues[i];
-        if (expected.stepId == validateGetStepId (issue) 
-            && expected.attrInd == validateGetAttrIndex (issue) 
+        if (expected.stepId == GetStepId (issue) 
+            && expected.attrInd == GetAttrIndex (issue) 
             && expected.aggrLevel == validateGetAggrLevel (issue)) {
 
             auto vi = validateGetIssueType(issue);
@@ -324,10 +373,10 @@ extern void ModelCheckerTests()
     CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), false);
     CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), false);
     
-    validateSetLimits(-1, 4);
+    validateSetOptions(-1, 4, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitCount, _countof(rExpectedIssuesIFC2x3_LimitCount), true);
 
-    validateSetLimits(0, -1);
+    validateSetOptions(0, -1, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitTime, _countof(rExpectedIssuesIFC2x3_LimitTime), true);
 
     printf("</RDFExpressModelChecker>\n");
