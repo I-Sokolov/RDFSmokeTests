@@ -310,6 +310,18 @@ static IssueInfo rExpectedIssuesIFC4[] =
     {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
+static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
+{
+    {14,    "IfcShapeRepresentation",   "ContextOfItems",       0,      0,NULL,         ValidationIssueType::MissedNonOptionalArgument},
+    {29,    "IfcIndexedPolyCurve",      "Segments",             1,      2,r32,          ValidationIssueType::WrongArgumentType},
+    {29,    "IfcIndexedPolyCurve",      "Segments",             1,      1,r2,           ValidationIssueType::WrongAggregationSize},
+    {7,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r2,           ValidationIssueType::UnresolvedReference},
+    {3,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r1,           ValidationIssueType::AggrElementValueNotUnique},
+    {19,    "IfcSpatialStructureElement",NULL,                  -1,     0,NULL,         ValidationIssueType::AbstractEntity},
+    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           ValidationIssueType::WrongArgumentType},
+    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           ValidationIssueType::WrongArgumentType}
+};
+
 static IssueInfo rExpectedIssuesIFC4x3[] =
 {
     {1158,    "IfcPointByDistanceExpression",   "DistanceAlong",       0,       0,NULL,         ValidationIssueType::WhereRuleViolation},
@@ -378,6 +390,9 @@ extern void ModelCheckerTests()
 
     validateSetOptions(0, -1, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitTime, _countof(rExpectedIssuesIFC2x3_LimitTime), true);
+
+    validateSetOptions(-1, -1, 0, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::WhereRuleViolation));
+    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4_ExcludeRules , _countof(rExpectedIssuesIFC4_ExcludeRules), false);
 
     printf("</RDFExpressModelChecker>\n");
 }
