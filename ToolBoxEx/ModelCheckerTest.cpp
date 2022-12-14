@@ -200,7 +200,7 @@ struct IssueInfo
 
 struct CheckExpectedIssuses : public PrintIssue
 {
-    CheckExpectedIssuses(IssueInfo* rExpectedIssuesIFC2x3, int nExpectedIssues) : m_rExpectedIssues(rExpectedIssuesIFC2x3), m_nExpectedIssues(nExpectedIssues) {}
+    CheckExpectedIssuses(IssueInfo* rExpectedIssues, int nExpectedIssues) : m_rExpectedIssues(rExpectedIssues), m_nExpectedIssues(nExpectedIssues) {}
 
     virtual void OnIssue(ValidationIssue* issue) override;
 
@@ -217,9 +217,10 @@ void CheckExpectedIssuses::OnIssue(ValidationIssue* issue)
 
     //check issue expected
     bool found = false;
+    auto stepId = GetStepId(issue);
     for (int i = 0; i < m_nExpectedIssues; i++) {
         auto& expected = m_rExpectedIssues[i];
-        if (expected.stepId == GetStepId (issue) 
+        if (expected.stepId == stepId 
             && expected.attrInd == GetAttrIndex (issue) 
             && expected.aggrLevel == validateGetAggrLevel (issue)) {
 
@@ -254,6 +255,7 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     //id   class                    attrName                    ind     aggrLev/aggrInd         Issue
     {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         ValidationIssueType::WrongNumberOfArguments},
     {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           ValidationIssueType::UnresolvedReference},
+    {151,   "IfcProductDefinitionShape","Representations",      2,      1,r3,           ValidationIssueType::UnresolvedReference},
     {74,    "IfcPolyLoop",          "Polygon",                  0,      1,r1,           ValidationIssueType::UnresolvedReference},
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         ValidationIssueType::MissedNonOptionalArgument},
     {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         ValidationIssueType::UnexpectedStar},
@@ -277,7 +279,9 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         ValidationIssueType::WrongAggregationSize},
     {231,   "IfcSite",              "RefLatitude",              9,      0,NULL,         ValidationIssueType::WrongAggregationSize},
     {6,     "IfcApplication",       "Version",                  1,      0,NULL,         ValidationIssueType::UniqueRuleViolation},
-    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
+    {161,   "IfcApplication",       "Version",                  1,      0,NULL,         ValidationIssueType::UniqueRuleViolation},
+    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation},
+    {151,    "IfcProdcutDefinitionShape",NULL,                  -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
@@ -292,6 +296,22 @@ static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
 static IssueInfo rExpectedIssuesIFC2x3_LimitTime[] =
 {
     {-1,    "IfcProductDefinitionShape",    "Representations",      2,      1,r3,           ValidationIssueType::UnresolvedReference}
+};
+
+static IssueInfo rExpectedIssuesIFC2x3_once[] =
+{
+    //id   class                    attrName                    ind     aggrLev/aggrInd         Issue
+    {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         ValidationIssueType::WrongNumberOfArguments},
+    {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           ValidationIssueType::UnresolvedReference},
+    {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         ValidationIssueType::MissedNonOptionalArgument},
+    {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         ValidationIssueType::UnexpectedStar},
+    {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         ValidationIssueType::UnexpectedAggregation},
+    {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         ValidationIssueType::ExpectedAggregation},
+    {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         ValidationIssueType::WrongArgumentType},
+    {170,   "IfcUnitAssignment",    "Units",                    0,      1,r6,           ValidationIssueType::UnexpectedValueType},
+    {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         ValidationIssueType::WrongAggregationSize},
+    {6,     "IfcApplication",       "Version",                  1,      0,NULL,         ValidationIssueType::UniqueRuleViolation},
+    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         ValidationIssueType::WhereRuleViolation}
 };
 
 static IssueInfo rExpectedIssuesIFC4[] =
@@ -385,28 +405,34 @@ extern void ModelCheckerTests()
     CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), false);
     CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), false);
  
-    uint64_t issueTypesAll = validateGetOptions(NULL, NULL, 0);
+    uint64_t issueTypesAll = validateGetOptions(NULL, NULL, NULL, 0);
     ASSERT(issueTypesAll == 0xFFFF);
 
-    validateSetOptions(-1, 4, 0, 0);
+    validateSetOptions(-1, 4, false, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitCount, _countof(rExpectedIssuesIFC2x3_LimitCount), true);
 
     int_t sec;
     int_t cnt;
-    auto issueTypes = validateGetOptions(&sec, &cnt, 0);
-    ASSERT(sec == -1 && cnt == 4 && issueTypes == issueTypesAll);
+    bool  showOnce;
+    auto issueTypes = validateGetOptions(&sec, &cnt, &showOnce, 0);
+    ASSERT(sec == -1 && cnt == 4 && !showOnce && issueTypes == issueTypesAll);
 
-    validateSetOptions(0, -1, 0, 0);
+    validateSetOptions(0, -1, false, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitTime, _countof(rExpectedIssuesIFC2x3_LimitTime), true);
 
-    issueTypes = validateGetOptions(&sec, &cnt, ~(uint64_t(0)));
-    ASSERT(sec == 0 && cnt == -1 && issueTypes == issueTypesAll);
+    issueTypes = validateGetOptions(&sec, &cnt, &showOnce, ~(uint64_t(0)));
+    ASSERT(sec == 0 && cnt == -1 && !showOnce && issueTypes == issueTypesAll);
 
-    validateSetOptions(-1, -1, 0, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::WhereRuleViolation));
-    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4_ExcludeRules , _countof(rExpectedIssuesIFC4_ExcludeRules), false);
+    validateSetOptions(-1, -1, false, 0, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::WhereRuleViolation));
+    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4_ExcludeRules , _countof(rExpectedIssuesIFC4_ExcludeRules), true);
 
-    issueTypes = validateGetOptions(&sec, &cnt, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::AbstractEntity));
+    issueTypes = validateGetOptions(&sec, &cnt, &showOnce, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::AbstractEntity));
     ASSERT(sec == -1 && cnt == -1 && issueTypes == uint64_t(ValidationIssueType::AbstractEntity));
+
+    validateSetOptions(-1, -1, true, ~0, ~0);
+    issueTypes = validateGetOptions(&sec, &cnt, &showOnce, ~(uint64_t(0)));
+    ASSERT(sec == -1 && cnt == -1 && showOnce && issueTypes == issueTypesAll);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_once, _countof(rExpectedIssuesIFC2x3_once), true);
 
     printf("</RDFExpressModelChecker>\n");
 }
