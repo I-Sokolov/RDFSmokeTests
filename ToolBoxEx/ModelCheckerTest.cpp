@@ -146,7 +146,7 @@ static ValidationIssueLevel CheckModels(const char* filePathWC, const char* expr
 }
 #endif
 
-static ValidationIssueLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pLog, bool expectedMore)
+static ValidationIssueLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pLog, enum_validation_status status)
 {
     printf("\t<CheckModel file='%s'", filePath);
     
@@ -164,7 +164,7 @@ static ValidationIssueLevel CheckModel(const char* filePath, const char* express
             pLog->OnIssue(issue);
             result = max(result, validateGetIssueLevel(issue));
         }
-        ASSERT(validateIsComplete(checks) != expectedMore);
+        ASSERT(validateGetStatus(checks) == status);
         validateFreeResults(checks);
         //sdaiCloseModel(model);
     }
@@ -372,7 +372,7 @@ static void TestInvalidParameters()
     printf("\t</TestInvalidParameters>\n");
 }
 
-static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nExpectedIssues, bool expectedMore)
+static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nExpectedIssues, enum_validation_status status)
 {
     //ENTER_TEST_NAME(file);
 
@@ -380,7 +380,7 @@ static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nEx
     modelPath += file;
 
     CheckExpectedIssuses log(rExpectedIssues, nExpectedIssues);
-    auto result = CheckModel(modelPath.c_str(), NULL, &log, expectedMore);
+    auto result = CheckModel(modelPath.c_str(), NULL, &log, status);
     
     //all expected issues are reported
     for (int i = 0; i < nExpectedIssues; i++) {
@@ -401,15 +401,15 @@ extern void ModelCheckerTests()
 
     TestInvalidParameters();
 
-    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), false);
-    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), false);
-    CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), false);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), enum_validation_status::__COMPLETE_ALL);
+    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), enum_validation_status::__COMPLETE_ALL);
+    CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), enum_validation_status::__COMPLETE_ALL);
  
     uint64_t issueTypesAll = validateGetOptions(NULL, NULL, NULL, 0);
     ASSERT(issueTypesAll == 0xFFFF);
 
     validateSetOptions(-1, 4, false, 0, 0);
-    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitCount, _countof(rExpectedIssuesIFC2x3_LimitCount), true);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitCount, _countof(rExpectedIssuesIFC2x3_LimitCount), enum_validation_status::__COUNT_EXCEED);
 
     int_t sec;
     int_t cnt;
@@ -418,13 +418,13 @@ extern void ModelCheckerTests()
     ASSERT(sec == -1 && cnt == 4 && !showOnce && issueTypes == issueTypesAll);
 
     validateSetOptions(0, -1, false, 0, 0);
-    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitTime, _countof(rExpectedIssuesIFC2x3_LimitTime), true);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitTime, _countof(rExpectedIssuesIFC2x3_LimitTime), enum_validation_status::__TIME_EXCEED);
 
     issueTypes = validateGetOptions(&sec, &cnt, &showOnce, ~(uint64_t(0)));
     ASSERT(sec == 0 && cnt == -1 && !showOnce && issueTypes == issueTypesAll);
 
     validateSetOptions(-1, -1, false, 0, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::WhereRuleViolation));
-    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4_ExcludeRules , _countof(rExpectedIssuesIFC4_ExcludeRules), true);
+    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4_ExcludeRules , _countof(rExpectedIssuesIFC4_ExcludeRules), enum_validation_status::__COMPLETE_NOT_ALL);
 
     issueTypes = validateGetOptions(&sec, &cnt, &showOnce, uint64_t(ValidationIssueType::UniqueRuleViolation) | uint64_t(ValidationIssueType::AbstractEntity));
     ASSERT(sec == -1 && cnt == -1 && issueTypes == uint64_t(ValidationIssueType::AbstractEntity));
@@ -432,7 +432,7 @@ extern void ModelCheckerTests()
     validateSetOptions(-1, -1, true, ~0, ~0);
     issueTypes = validateGetOptions(&sec, &cnt, &showOnce, ~(uint64_t(0)));
     ASSERT(sec == -1 && cnt == -1 && showOnce && issueTypes == issueTypesAll);
-    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_once, _countof(rExpectedIssuesIFC2x3_once), true);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_once, _countof(rExpectedIssuesIFC2x3_once), enum_validation_status::__COMPLETE_NOT_ALL);
 
     printf("</RDFExpressModelChecker>\n");
 }
