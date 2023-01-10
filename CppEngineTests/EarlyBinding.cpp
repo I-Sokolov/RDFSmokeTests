@@ -6,6 +6,7 @@ using namespace GEOM;
 
 static int64_t CreateRedBox(int64_t model);
 static void TestTypesOfProperties(int64_t model);
+static void RemoveInstanceTest(int64_t box);
 
 
 /// <summary>
@@ -16,9 +17,11 @@ void EarlyBindingTests()
 {
 	int64_t model = OpenModel(NULL);
 
-	CreateRedBox(model);
+	auto box = CreateRedBox(model);
 
 	TestTypesOfProperties(model);
+
+	RemoveInstanceTest(box);
 
 	CloseModel(model);
 }
@@ -227,4 +230,18 @@ static void TestTypesOfProperties(int64_t model)
 	ASSERT(cnt == 2);
 	for (int i = 0; i < cnt; i++) ASSERT(pts[i] == ptg64[i]);
 	ASSERT_ARR_EQ(ptg64, pts, cnt);
+}
+
+static void RemoveInstanceTest(int64_t box)
+{
+	ENTER_TEST;
+
+	auto model = GetModel(box);
+	auto boxClass = GetInstanceClass(box);
+	auto collectionClass = GetClassByName(model, "Collection");
+
+	RemoveInstance(box);
+
+	auto newClass = CreateClass(model, "New class");
+	SetClassParent(newClass, collectionClass, 1);
 }
