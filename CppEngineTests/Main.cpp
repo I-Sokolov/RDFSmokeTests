@@ -1,6 +1,7 @@
 
 #include "pch.h"
 
+extern void InstancePropertiesTests();
 extern void EarlyBindingTests();
 
 extern int main()
@@ -8,6 +9,7 @@ extern int main()
     try {
         printf("--------- Starting Geometry engine C++ tests\n");
 
+        InstancePropertiesTests();
         EarlyBindingTests();
 
         printf("--------- Finished Geometry enginde C++ tests\n");

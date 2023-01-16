@@ -2,8 +2,6 @@
 #include "pch.h"
 using namespace GEOM;
 
-#define ASSERT_ARR_EQ(r1,r2,N)  	for (int i=0; i<N; i++) { ASSERT_AT((fabs ((double)r1[i]-(double)r2[i]) < 1e-9), /*#r1 "!=" #r2,*/ __FILE__, __LINE__);}
-
 static int64_t CreateRedBox(int64_t model);
 static void TestTypesOfProperties(int64_t model);
 static void RemoveInstanceTest(int64_t box);
