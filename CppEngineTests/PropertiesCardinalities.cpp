@@ -40,7 +40,7 @@ static void CheckPropertiesExpected(OwlInstance instance, PropList expectedProps
         prop = GetInstancePropertyByIterator(instance, prop);        
     }
 
-#if 1 //print actual props
+#if 0 //print actual props
     for (auto& p : actualProps) {
         printf("%s:\t%lld, %lld, %lld, %lld\n", p.first.c_str(), p.second.cardMin, p.second.cardMax, p.second.cardMinAggr, p.second.cardMaxAggr);
     }
@@ -183,7 +183,17 @@ static void MultiParentsCardinality (int64_t type)
     SetClassPropertyCardinalityRestriction(classB, propEmpty, 4, 5);
     propList.Add("Empty", 4, 5, 4, 3);
 
-    //TODO - prop classA3 only, prop classB only, prop class A1 only
+    auto propOnlyA3 = CreateProperty(model, type, "OnlyForClassA3");
+    SetClassPropertyCardinalityRestriction(classA3, propOnlyA3, 2, -1);
+    propList.Add("OnlyForClassA3", -1, -1, 2, -1);
+    
+    auto propOnlyA2 = CreateProperty(model, type, "OnlyForClassA2");
+    SetClassPropertyCardinalityRestriction(classA2, propOnlyA2, 2, 8);
+    propList.Add("OnlyForClassA2", -1, -1, 2, 8);
+
+    auto propOnlyB = CreateProperty(model, type, "OnlyForClassB");
+    SetClassPropertyCardinalityRestriction(classB, propOnlyB, 1, 8);
+    propList.Add("OnlyForClassB", 1, 8, 1, 8);
 
     //
     auto instance2 = CreateInstance(classB);
@@ -192,10 +202,13 @@ static void MultiParentsCardinality (int64_t type)
 
     auto instance3 = CreateInstance(classB);
 
+
+
     //
     CheckPropertiesExpected(instance3, propList);
-    CheckPropertiesExpected(instance2, propList);
     //instance created before SetClassParent
+    CheckPropertiesExpected(instance2, propList);
+    //instance created before assigning properties
     CheckPropertiesExpected(instance1, propList);
     
 
