@@ -198,8 +198,6 @@ void InstancePropertiesTests()
 
     SubclassChangesCardianlity(true, DATATYPEPROPERTY_TYPE_CHAR);
     SubclassChangesCardianlity(true, OBJECTPROPERTY_TYPE);
-    /** TODO: late SetCardinality
     SubclassChangesCardianlity(false, OBJECTPROPERTY_TYPE);
     SubclassChangesCardianlity(false, DATATYPEPROPERTY_TYPE_CHAR);
-    */
 }
