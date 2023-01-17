@@ -118,6 +118,8 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
     SetClassPropertyCardinalityRestriction(classB, propEmpty, 4, 5);
     propList.Add("Empty", 4, 5, 4, 3);
 
+    auto instanceB1 = CreateInstance(classB);
+
     if (!earlySetParent) {
         SetClassParent(classB, classA, 1);
     }
@@ -125,8 +127,10 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
     auto instance = CreateInstance(classB);
     CheckPropertiesExpected(instance, propList);
 
-    /** TODO: update properties when add cardinality after instance creation
-    CheckPropertiesExpected(instanceB0, propList);*/
+    //instance created before SetClassParent
+    CheckPropertiesExpected(instanceB1, propList);
+    //instance created before assigning properties
+    CheckPropertiesExpected(instanceB0, propList);
 
     CloseModel(model);
 }
@@ -179,6 +183,7 @@ static void MultiParentsCardinality (int64_t type)
     SetClassPropertyCardinalityRestriction(classB, propEmpty, 4, 5);
     propList.Add("Empty", 4, 5, 4, 3);
 
+    //TODO - prop classA3 only, prop classB only, prop class A1 only
 
     //
     auto instance2 = CreateInstance(classB);
@@ -190,9 +195,9 @@ static void MultiParentsCardinality (int64_t type)
     //
     CheckPropertiesExpected(instance3, propList);
     CheckPropertiesExpected(instance2, propList);
-    /** TODO: update properties when add cardinality after instance creation
+    //instance created before SetClassParent
     CheckPropertiesExpected(instance1, propList);
-    */
+    
 
     CloseModel(model);
 }
