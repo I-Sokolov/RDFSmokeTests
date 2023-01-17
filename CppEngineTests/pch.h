@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 #include <map>
+#include <set>
 
 #include "engine.h"
 #include "geom.h"

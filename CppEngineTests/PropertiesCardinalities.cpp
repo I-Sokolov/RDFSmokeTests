@@ -1,12 +1,9 @@
 
 #include "pch.h"
 
-//TODO - check parent class to existing instance
-//TODO - check add property to existing instance
-
 struct Cardinality
 {
-    Cardinality (int64_t cardMin_, int64_t cardMax_, int64_t cardMinAggr_, int64_t cardMaxAggr_)
+    Cardinality (int64_t cardMin_=0, int64_t cardMax_=0, int64_t cardMinAggr_=0, int64_t cardMaxAggr_=0)
         :cardMin(cardMin_), cardMax(cardMax_), cardMinAggr(cardMinAggr_), cardMaxAggr(cardMaxAggr_) {}
 
     int64_t     cardMin;
@@ -26,32 +23,43 @@ struct PropList : public std::map < std::string, Cardinality >
 /// <summary>
 /// 
 /// </summary>
-static void CheckPropertiesExpected(OwlInstance instance, PropList& expectedProps)
+static void CheckPropertiesExpected(OwlInstance instance, PropList expectedProps/*copy intended*/)
 {
     auto cls = GetInstanceClass(instance);
 
+    PropList actualProps;
     auto prop = GetInstancePropertyByIterator(instance, 0);
-
     while (prop)
     {
         auto name = GetNameOfProperty(prop);
+        auto& info = actualProps[name];
 
-        auto itExpected = expectedProps.find(name);
-        ASSERT(itExpected != expectedProps.end()); // strcmp(name, itExpected->name.c_str()));
-
-        int64_t minCard, maxCard;
-        GetClassPropertyCardinalityRestriction(cls, prop, &minCard, &maxCard);
-        ASSERT(minCard == itExpected->second.cardMin && maxCard == itExpected->second.cardMax);
-
-        GetClassPropertyAggregatedCardinalityRestriction (cls, prop, &minCard, &maxCard);
-        ASSERT(minCard == itExpected->second.cardMinAggr && maxCard == itExpected->second.cardMaxAggr);
-
-        expectedProps.erase(itExpected);
+        GetClassPropertyCardinalityRestriction(cls, prop, &info.cardMin, &info.cardMax);
+        GetClassPropertyAggregatedCardinalityRestriction (cls, prop, &info.cardMinAggr, &info.cardMaxAggr);
 
         prop = GetInstancePropertyByIterator(instance, prop);        
     }
 
-    ASSERT(expectedProps.empty());
+#if 1 //print actual props
+    for (auto& p : actualProps) {
+        printf("%s:\t%lld, %lld, %lld, %lld\n", p.first.c_str(), p.second.cardMin, p.second.cardMax, p.second.cardMinAggr, p.second.cardMaxAggr);
+    }
+    printf("---------------------------------\n");
+#endif
+
+    auto itA = actualProps.begin();
+    auto itE = expectedProps.begin();
+    while (itA != actualProps.end() && itE != expectedProps.end()) {
+        ASSERT(itA->first == itE->first);
+        ASSERT(itA->second.cardMin == itE->second.cardMin);
+        ASSERT(itA->second.cardMax == itE->second.cardMax);
+        ASSERT(itA->second.cardMinAggr == itE->second.cardMinAggr);
+        ASSERT(itA->second.cardMaxAggr == itE->second.cardMaxAggr);
+        itA++;
+        itE++;
+    }
+
+    ASSERT(itA == actualProps.end() && itE == expectedProps.end())
 }
 
 /// <summary>
@@ -117,7 +125,7 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
     auto instance = CreateInstance(classB);
     CheckPropertiesExpected(instance, propList);
 
-    /** TODO: update properties when add subclass
+    /** TODO: update properties when add cardinality after instance creation
     CheckPropertiesExpected(instanceB0, propList);*/
 
     CloseModel(model);
@@ -182,7 +190,9 @@ static void MultiParentsCardinality (int64_t type)
     //
     CheckPropertiesExpected(instance3, propList);
     CheckPropertiesExpected(instance2, propList);
+    /** TODO: update properties when add cardinality after instance creation
     CheckPropertiesExpected(instance1, propList);
+    */
 
     CloseModel(model);
 }
@@ -192,12 +202,11 @@ static void MultiParentsCardinality (int64_t type)
 /// </summary>
 void InstancePropertiesTests()
 {
-    /**TODO: mutlipatent test
-    MultiParentsCardinality(DATATYPEPROPERTY_TYPE_CHAR);
-    MultiParentsCardinality(OBJECTPROPERTY_TYPE);*/
-
     SubclassChangesCardianlity(true, DATATYPEPROPERTY_TYPE_CHAR);
     SubclassChangesCardianlity(true, OBJECTPROPERTY_TYPE);
     SubclassChangesCardianlity(false, OBJECTPROPERTY_TYPE);
     SubclassChangesCardianlity(false, DATATYPEPROPERTY_TYPE_CHAR);
+
+    MultiParentsCardinality(DATATYPEPROPERTY_TYPE_CHAR);
+    MultiParentsCardinality(OBJECTPROPERTY_TYPE);
 }
