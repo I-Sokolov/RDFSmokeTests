@@ -7,6 +7,7 @@
 
 #include <list>
 #include <string>
+#include <map>
 
 #include "engine.h"
 #include "geom.h"

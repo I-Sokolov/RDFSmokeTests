@@ -4,19 +4,24 @@
 //TODO - check parent class to existing instance
 //TODO - check add property to existing instance
 
-struct PropInfo
+struct Cardinality
 {
-    PropInfo (const char* name_, int64_t cardMin_, int64_t cardMax_, int64_t cardMinAggr_, int64_t cardMaxAggr_)
-        :name(name_), cardMin(cardMin_), cardMax(cardMax_), cardMinAggr(cardMinAggr_), cardMaxAggr(cardMaxAggr_) {}
+    Cardinality (int64_t cardMin_, int64_t cardMax_, int64_t cardMinAggr_, int64_t cardMaxAggr_)
+        :cardMin(cardMin_), cardMax(cardMax_), cardMinAggr(cardMinAggr_), cardMaxAggr(cardMaxAggr_) {}
 
-    std::string name;
     int64_t     cardMin;
     int64_t     cardMax;
     int64_t     cardMinAggr;
     int64_t     cardMaxAggr;
 };
 
-typedef std::list<PropInfo> PropList;
+struct PropList : public std::map < std::string, Cardinality >
+{
+    void Add(const char* name, int64_t cardMin, int64_t cardMax, int64_t cardMinAggr, int64_t cardMaxAggr)
+    {
+        insert(PropList::value_type(name, Cardinality(cardMin, cardMax, cardMinAggr, cardMaxAggr)));
+    }
+};
 
 /// <summary>
 /// 
@@ -26,26 +31,27 @@ static void CheckPropertiesExpected(OwlInstance instance, PropList& expectedProp
     auto cls = GetInstanceClass(instance);
 
     auto prop = GetInstancePropertyByIterator(instance, 0);
-    auto itExpected = expectedProps.begin();
 
-    while (prop && itExpected != expectedProps.end()) 
+    while (prop)
     {
         auto name = GetNameOfProperty(prop);
 
-        ASSERT(!strcmp(name, itExpected->name.c_str()));
+        auto itExpected = expectedProps.find(name);
+        ASSERT(itExpected != expectedProps.end()); // strcmp(name, itExpected->name.c_str()));
 
         int64_t minCard, maxCard;
         GetClassPropertyCardinalityRestriction(cls, prop, &minCard, &maxCard);
-        ASSERT(minCard == itExpected->cardMin && maxCard == itExpected->cardMax);
+        ASSERT(minCard == itExpected->second.cardMin && maxCard == itExpected->second.cardMax);
 
         GetClassPropertyAggregatedCardinalityRestriction (cls, prop, &minCard, &maxCard);
-        ASSERT(minCard == itExpected->cardMinAggr && maxCard == itExpected->cardMaxAggr);
+        ASSERT(minCard == itExpected->second.cardMinAggr && maxCard == itExpected->second.cardMaxAggr);
 
-        prop = GetInstancePropertyByIterator(instance, prop);
-        itExpected++;
+        expectedProps.erase(itExpected);
+
+        prop = GetInstancePropertyByIterator(instance, prop);        
     }
 
-    ASSERT(prop == NULL && itExpected == expectedProps.end());
+    ASSERT(expectedProps.empty());
 }
 
 /// <summary>
@@ -60,6 +66,7 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
     auto classA = CreateClass(model, "ClassA");
 
     auto classB = CreateClass(model, "ClassB");
+
     if (earlySetParent) {
         SetClassParent(classB, classA, 1);
     }
@@ -69,39 +76,47 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
     auto propFinited = CreateProperty(model, type, "Finited");
     auto propInfinited = CreateProperty(model, type, "Infinited");
     auto propEmpty = CreateProperty(model, type, "Empty");
+    auto propA = CreateProperty(model, type, "PropClassA");
+    auto propB = CreateProperty(model, type, "PropClassB");
 
     PropList propList;
 
     auto instanceB0 = CreateInstance(classB);
     CheckPropertiesExpected(instanceB0, propList);
 
+    SetClassPropertyCardinalityRestriction(classA, propA, 2, 3);
+    propList.Add("PropClassA", -1, -1, 2, 3);
+    
+    SetClassPropertyCardinalityRestriction(classB, propB, 4, 5);
+    propList.Add ("PropClassB", 4, 5, 4, 5);
+
     SetClassPropertyCardinalityRestriction(classA, propEnanced, 0, 1);
     SetClassPropertyCardinalityRestriction(classB, propEnanced, 0, 2);
-    propList.push_back(PropInfo("Enhanced", 0, 2, 0, 1));
+    propList.Add("Enhanced", 0, 2, 0, 1);
 
     SetClassPropertyCardinalityRestriction(classA, propResticted, 9, 12);
     SetClassPropertyCardinalityRestriction(classB, propResticted, 9, 11);
-    propList.push_back(PropInfo("Restricted", 9, 11, 9, 11));
+    propList.Add("Restricted", 9, 11, 9, 11);
 
     SetClassPropertyCardinalityRestriction(classA, propFinited, 3, -1);
     SetClassPropertyCardinalityRestriction(classB, propFinited, 2, 4);
-    propList.push_back(PropInfo("Finited", 2, 4, 3, 4));
+    propList.Add("Finited", 2, 4, 3, 4);
 
     SetClassPropertyCardinalityRestriction(classA, propInfinited, 2, 3);
     SetClassPropertyCardinalityRestriction(classB, propInfinited, 1, -1);
-    propList.push_back(PropInfo("Infinited", 1, -1, 2, 3));
+    propList.Add("Infinited", 1, -1, 2, 3);
 
     SetClassPropertyCardinalityRestriction(classA, propEmpty, 2, 3);
     SetClassPropertyCardinalityRestriction(classB, propEmpty, 4, 5);
-    propList.push_back(PropInfo("Empty", 4, 5, 4, 3));
-
-    auto instance = CreateInstance(classB);
+    propList.Add("Empty", 4, 5, 4, 3);
 
     if (!earlySetParent) {
         SetClassParent(classB, classA, 1);
     }
 
+    auto instance = CreateInstance(classB);
     CheckPropertiesExpected(instance, propList);
+
     /** TODO: update properties when add subclass
     CheckPropertiesExpected(instanceB0, propList);*/
 
@@ -138,23 +153,23 @@ static void MultiParentsCardinality (int64_t type)
 
     SetClassPropertyCardinalityRestriction(classA1, propEnanced, 0, 1);
     SetClassPropertyCardinalityRestriction(classB, propEnanced, 0, 2);
-    propList.push_back(PropInfo("Enhanced", 0, 2, 0, 1));
+    propList.Add("Enhanced", 0, 2, 0, 1);
 
     SetClassPropertyCardinalityRestriction(classA2, propResticted, 9, 12);
     SetClassPropertyCardinalityRestriction(classB, propResticted, 9, 11);
-    propList.push_back(PropInfo("Restricted", 9, 11, 9, 11));
+    propList.Add("Restricted", 9, 11, 9, 11);
 
     SetClassPropertyCardinalityRestriction(classA3, propFinited, 3, -1);
     SetClassPropertyCardinalityRestriction(classB, propFinited, 2, 4);
-    propList.push_back(PropInfo("Finited", 2, 4, 3, 4));
+    propList.Add("Finited", 2, 4, 3, 4);
 
     SetClassPropertyCardinalityRestriction(classA1, propInfinited, 2, 3);
     SetClassPropertyCardinalityRestriction(classB, propInfinited, 1, -1);
-    propList.push_back(PropInfo("Infinited", 1, -1, 2, 3));
+    propList.Add("Infinited", 1, -1, 2, 3);
 
     SetClassPropertyCardinalityRestriction(classA3, propEmpty, 2, 3);
     SetClassPropertyCardinalityRestriction(classB, propEmpty, 4, 5);
-    propList.push_back(PropInfo("Empty", 4, 5, 4, 3));
+    propList.Add("Empty", 4, 5, 4, 3);
 
 
     //
