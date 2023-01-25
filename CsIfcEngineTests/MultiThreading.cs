@@ -9,23 +9,39 @@ namespace CsIfcEngineTests
 {
     class MultiThreading : CsTests.TestBase
     {
+        class ThreadInfo
+        {
+            public string type;
+            public int num;
+            public ThreadInfo(string type, int num) { this.type = type; this.num = num; }
+        }
+
         public static void Test()
         {
             ENTER_TEST();
 
-            ThreadProc(-1);//do once in single thread to check all assertions correct
+            ThreadProc(null);//do once in single thread to check all assertions correct
 
+            const int N = 10;
+            int i = 0;
+
+            //Working threads
             var threads = new List<Thread>();
-
-            int N = 10;
-            while (N-->0)
+            i = 10;
+            while (i-->0)
             {
                 threads.Add(new Thread(ThreadProc));
             }
-
             foreach (var th in threads)
             {
-                th.Start(++N);
+                th.Start(new ThreadInfo ("working thread", ++i));
+            }
+
+            //thread pull
+            i = 0;
+            while (i++ < N)
+            {
+                System.Threading.ThreadPool.QueueUserWorkItem(ThreadProc, new ThreadInfo("pulled thread", i));
             }
 
             /*
@@ -42,11 +58,11 @@ namespace CsIfcEngineTests
 
         }
 
-        public static void ThreadProc(object onum)
+        public static void ThreadProc(object oti)
         {
-            int num = (int)onum;
-            if (num >= 0)
-                Thread.Sleep(10 * (10 - num % 10));
+            var ti = (ThreadInfo)oti;
+            if (ti != null)
+                Thread.Sleep(10 * (10 - ti.num % 10));
 
             long model = 0;
 
@@ -92,8 +108,8 @@ namespace CsIfcEngineTests
                 pset.put_HasProperties(props);
             }
 
-            if (num >= 0)
-                Console.WriteLine("Multi-thrad test: thread #{0} finished successfully", num);
+            if (ti!=null)
+                Console.WriteLine("\t\t\tMulti-thrad test: thread {0} #{1} finished successfully", ti.type, ti.num);
         }
     }
 }
