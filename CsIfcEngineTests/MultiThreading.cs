@@ -23,31 +23,17 @@ namespace CsIfcEngineTests
             ThreadProc(null);//do once in single thread to check all assertions correct
 
             const int N = 10;
-            int i = 0;
+            for (int i = 0; i < N; i++)
+            {
+                var th = new Thread(ThreadProc);
 
-            //Working threads
-            var threads = new List<Thread>();
-            i = 10;
-            while (i-->0)
-            {
-                threads.Add(new Thread(ThreadProc));
-            }
-            foreach (var th in threads)
-            {
-                th.Start(new ThreadInfo ("working thread", ++i));
-            }
+                //test working thread
+                th.Start(new ThreadInfo("working thread", i));
 
-            //thread pull
-            i = 0;
-            while (i++ < N)
-            {
+                //test thread pull
                 System.Threading.ThreadPool.QueueUserWorkItem(ThreadProc, new ThreadInfo("pulled thread", i));
-            }
 
-            //tasks
-            i = 0;
-            while (i++ < N)
-            {
+                //test task
                 Task.Factory.StartNew(ThreadProc, new ThreadInfo("task", i));
             }
 
