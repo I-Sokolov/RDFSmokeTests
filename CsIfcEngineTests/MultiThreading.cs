@@ -44,6 +44,13 @@ namespace CsIfcEngineTests
                 System.Threading.ThreadPool.QueueUserWorkItem(ThreadProc, new ThreadInfo("pulled thread", i));
             }
 
+            //tasks
+            i = 0;
+            while (i++ < N)
+            {
+                Task.Factory.StartNew(ThreadProc, new ThreadInfo("task", i));
+            }
+
             /*
             int cnt = -1;
             while (cnt != 0)
@@ -109,7 +116,7 @@ namespace CsIfcEngineTests
             }
 
             if (ti!=null)
-                Console.WriteLine("\t\t\tMulti-thrad test: thread {0} #{1} finished successfully", ti.type, ti.num);
+                Console.WriteLine("\t\t\tmulti-thread test: {0} #{1} finished successfully", ti.type, ti.num);
         }
     }
 }
