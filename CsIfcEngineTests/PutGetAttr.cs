@@ -22,6 +22,8 @@ namespace CsIfcEngineTests
             public string stringVal;
             public string expressStringVal;
             public string binVal;
+            public PrimitiveValues adbVal;
+            public List<PrimitiveValues> aggrVal;
         };
 
         public static void Test()
@@ -33,6 +35,7 @@ namespace CsIfcEngineTests
         static void Test (bool unicode)
         {
             TestGetPrimitiveValue(unicode);
+            TestADBWithPrimitiveValues(unicode);
             /*
             sdaiADB					1
             sdaiAGGR				sdaiADB + 1
@@ -55,49 +58,48 @@ namespace CsIfcEngineTests
 
             var wall = IfcWall.Create(model);
 
-            CheckValues(wall, "Name", null, null, null);
+            CheckValues(wall, "Name", null);
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiSTRING, "1234");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234" }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234" });
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiSTRING, "T");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T" }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T" });
 
             Int64 i = 1234;
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiINTEGER, ref i);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234 }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234 });
 
             double d = 12.34;
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiREAL, ref d);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34 }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34 });
 
             bool b = true;
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiBOOLEAN, ref b);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", binVal = "T" }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", binVal = "T" });
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiLOGICAL, "U");
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", binVal = "U" }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", binVal = "U" });
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiENUM, "EEE"); //TODO - should not return sdaiLOGICAL
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", logicalVal="EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE" }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", logicalVal="EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE" });
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiENUM, "F"); 
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", binVal = "F" }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", binVal = "F" });
 
             var typ = IfcWallType.Create(model);
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiINSTANCE, typ);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ }, null, null);
+            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ });
 
             ifcengine.sdaiCloseModel(model);
 
         }
 
+
         static void CheckValues
             (Int64 inst,
              string attrName,
-             PrimitiveValues expected,
-             PrimitiveValues expectedAdb,
-             List<PrimitiveValues> expectedAggr
+             PrimitiveValues expected
             )
         {
             var entity = ifcengine.sdaiGetInstanceType(inst);
@@ -108,10 +110,10 @@ namespace CsIfcEngineTests
 
             Int64 adbVal = 1;
             var res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiADB, out adbVal);
-            if (expectedAdb != null)
+            if (expected != null &&  expected.adbVal != null)
             {
                 ASSERT(res != 0);
-                CheckADBValues(adbVal, expectedAdb);
+                CheckADBValues(adbVal, expected.adbVal);
             }
             else
             {
@@ -120,10 +122,10 @@ namespace CsIfcEngineTests
 
             Int64 aggrVal = 1;
             res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiAGGR, out aggrVal);
-            if (expectedAggr != null)
+            if (expected != null && expected.aggrVal != null)
             {
                 ASSERT(res != 0);
-                CheckAggrValues(aggrVal, expectedAggr);
+                CheckAggrValues(aggrVal, expected.aggrVal);
             }
             else
             {
@@ -257,9 +259,203 @@ namespace CsIfcEngineTests
             }
         }
 
-        static void CheckADBValues(Int64 adbVal, PrimitiveValues expectedAdb)
+        static void TestADBWithPrimitiveValues(bool unicode)
         {
-            ASSERT(false); //todo
+            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+
+            var model = CreateModel("", "IFC4", unicode);
+            ASSERT(model != 0);
+
+            var wall = IfcWall.Create(model);
+
+            var adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "1234");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", 
+                new PrimitiveValues { adbVal = new PrimitiveValues { stringVal = "1234", expressStringVal = "1234" }, stringVal = "1234", expressStringVal = "1234" });
+
+#if notnow
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T" }, null, null);
+
+            Int64 i = 1234;
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234 }, null, null);
+
+            double d = 12.34;
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34 }, null, null);
+
+            bool b = true;
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", binVal = "T" }, null, null);
+
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", binVal = "U" }, null, null);
+
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb); //TODO - should not return sdaiLOGICAL
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", logicalVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE" }, null, null);
+
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", binVal = "F" }, null, null);
+
+            var typ = IfcWallType.Create(model);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ }, null, null);
+#endif
+            ifcengine.sdaiCloseModel(model);
+        }
+
+        static void CheckADBValues(Int64 adb, PrimitiveValues expected)
+        {
+            Int64 adbVal = 1;
+            var res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiADB, out adbVal);
+            if (expected != null && expected.adbVal != null)
+            {
+                ASSERT(res != 0);
+                CheckADBValues(adbVal, expected.adbVal);
+            }
+            else
+            {
+                ASSERT(res == 0 && adbVal == 0);
+            }
+
+            Int64 aggrVal = 1;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiAGGR, out aggrVal);
+            if (expected.aggrVal != null)
+            {
+                ASSERT(res != 0);
+                CheckAggrValues(aggrVal, expected.aggrVal);
+            }
+            else
+            {
+                ASSERT(res == 0 && aggrVal == 0);
+            }
+
+            IntPtr ptrVal = IntPtr.MaxValue;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiBINARY, out ptrVal);
+            if (expected != null && expected.binVal != null)
+            {
+                ASSERT(res != 0);
+                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
+                ASSERT(str.Equals(expected.binVal));
+            }
+            else
+            {
+                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+            }
+
+            Int64 intVal = 1;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiBOOLEAN, out intVal);
+            if (expected != null && expected.boolVal != null)
+            {
+                ASSERT(res != 0);
+                ASSERT((intVal != 0) == expected.boolVal);
+            }
+            else
+            {
+                ASSERT(res == 0 && intVal == 0);
+            }
+
+            ptrVal = IntPtr.MaxValue;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiENUM, out ptrVal);
+            if (expected != null && expected.enumVal != null)
+            {
+                ASSERT(res != 0);
+                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
+                ASSERT(str.Equals(expected.enumVal));
+            }
+            else
+            {
+                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+            }
+
+            intVal = 1;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiINSTANCE, out intVal);
+            if (expected != null && expected.instVal != null)
+            {
+                ASSERT(res != 0);
+                ASSERT(intVal == expected.instVal.Value);
+            }
+            else
+            {
+                ASSERT(res == 0 && intVal == 0);
+            }
+
+            intVal = 1;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiINTEGER, out intVal);
+            if (expected != null && expected.intVal != null)
+            {
+                ASSERT(res != 0);
+                ASSERT(intVal == expected.intVal.Value);
+            }
+            else
+            {
+                ASSERT(res == 0 && intVal == 0);
+            }
+
+            ptrVal = IntPtr.MaxValue;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiLOGICAL, out ptrVal);
+            if (expected != null && expected.logicalVal != null)
+            {
+                ASSERT(res != 0);
+                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
+                ASSERT(str.Equals(expected.logicalVal));
+            }
+            else
+            {
+                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+            }
+
+            double realVal = 1.1;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiREAL, out realVal);
+            if (expected != null && expected.realVal != null)
+            {
+                ASSERT(res != 0);
+                ASSERT(realVal == expected.realVal.Value);
+            }
+            else
+            {
+                ASSERT(res == 0 && realVal == 0);
+            }
+
+            ptrVal = IntPtr.MaxValue;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiSTRING, out ptrVal);
+            if (expected != null && expected.stringVal != null)
+            {
+                ASSERT(res != 0);
+                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
+                ASSERT(str.Equals(expected.stringVal));
+            }
+            else
+            {
+                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+            }
+
+            ptrVal = IntPtr.MaxValue;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiUNICODE, out ptrVal);
+            if (expected != null && expected.stringVal != null)
+            {
+                ASSERT(res != 0);
+                string str = System.Runtime.InteropServices.Marshal.PtrToStringUni(ptrVal);
+                ASSERT(str.Equals(expected.stringVal));
+            }
+            else
+            {
+                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+            }
+
+            ptrVal = IntPtr.MaxValue;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiEXPRESSSTRING, out ptrVal);
+            if (expected != null && expected.expressStringVal != null)
+            {
+                ASSERT(res != 0);
+                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
+                ASSERT(str.Equals(expected.expressStringVal));
+            }
+            else
+            {
+                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+            }
         }
 
         static void CheckAggrValues(Int64 aggrVal, List<PrimitiveValues> expectedAggr)
