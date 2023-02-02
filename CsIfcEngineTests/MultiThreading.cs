@@ -9,18 +9,25 @@ namespace CsIfcEngineTests
 {
     class MultiThreading : CsTests.TestBase
     {
-        class ThreadInfo
-        {
-            public string type;
-            public int num;
-            public ThreadInfo(string type, int num) { this.type = type; this.num = num; }
-        }
-
         public static void Test()
         {
-            ENTER_TEST();
+            Test(true);
+            Test(false);
+        }
 
-            ThreadProc(null);//do once in single thread to check all assertions correct
+        class ThreadInfo
+        {
+            public bool unicode;
+            public string type;
+            public int num;
+            public ThreadInfo(bool unicode, string type, int num) { this.unicode = unicode;  this.type = type; this.num = num; }
+        }
+
+        static void Test(bool unicode)
+        {
+            ENTER_TEST(unicode ? "Unicode":"Ascii");
+
+            ThreadProc(new ThreadInfo (unicode, null, 0));//do once in single thread to check all assertions correct
 
             const int N = 10;
             for (int i = 0; i < N; i++)
@@ -28,13 +35,13 @@ namespace CsIfcEngineTests
                 var th = new Thread(ThreadProc);
 
                 //test working thread
-                th.Start(new ThreadInfo("working thread", i));
+                th.Start(new ThreadInfo(unicode, "working thread", i));
 
                 //test thread pull
-                System.Threading.ThreadPool.QueueUserWorkItem(ThreadProc, new ThreadInfo("pulled thread", i));
+                System.Threading.ThreadPool.QueueUserWorkItem(ThreadProc, new ThreadInfo(unicode, "pulled thread", i));
 
                 //test task
-                Task.Factory.StartNew(ThreadProc, new ThreadInfo("task", i));
+                Task.Factory.StartNew(ThreadProc, new ThreadInfo(unicode, "task", i));
             }
 
             /*
@@ -51,19 +58,34 @@ namespace CsIfcEngineTests
 
         }
 
-        public static void ThreadProc(object oti)
+        static void ThreadProc(object oti)
         {
             var ti = (ThreadInfo)oti;
-            if (ti != null)
+            if (ti.type != null)
                 Thread.Sleep(10 * (10 - ti.num % 10));
 
             long model = 0;
 
-            //open model test
-            model = RDF.ifcengine.sdaiOpenModelBN(0, "NotExist.ifc", "IFC4");
+            //open null-model test
+            if (ti.unicode)
+            {
+                model = RDF.ifcengine.sdaiOpenModelBNUnicode(0, System.Text.Encoding.Unicode.GetBytes("NotExist.ifc"), System.Text.Encoding.Unicode.GetBytes("IFC4"));
+            }
+            else
+            {
+                model = RDF.ifcengine.sdaiOpenModelBN(0, "NotExist.ifc", "IFC4");
+            }
             ASSERT(model == 0);
 
-            model = RDF.ifcengine.sdaiOpenModelBN(0, "..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc", "IFC4x3");
+            //
+            if (ti.unicode)
+            {
+                model = RDF.ifcengine.sdaiOpenModelBNUnicode(0, System.Text.Encoding.Unicode.GetBytes("..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc"), System.Text.Encoding.Unicode.GetBytes("IFC4x3"));
+            }
+            else
+            {
+                model = RDF.ifcengine.sdaiOpenModelBN(0, "..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc", "IFC4x3");
+            }
             ASSERT(model != 0);
 
             //get data test
@@ -101,8 +123,8 @@ namespace CsIfcEngineTests
                 pset.put_HasProperties(props);
             }
 
-            if (ti!=null)
-                Console.WriteLine("\t\t\tmulti-thread test: {0} #{1} finished successfully", ti.type, ti.num);
+            if (ti.type!=null)
+                Console.WriteLine("\t\t\tmulti-thread test: {0} #{1}{2} finished successfully", ti.type, ti.num, ti.unicode?"UNICODE":"ASCII");
         }
     }
 }
