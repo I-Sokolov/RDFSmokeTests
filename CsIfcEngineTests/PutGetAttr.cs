@@ -5,23 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RDF;
 using IFC4;
-
-/*
-sdaiADB					1
-sdaiAGGR				sdaiADB + 1
-sdaiBINARY				sdaiAGGR + 1
-sdaiBOOLEAN				sdaiBINARY + 1
-sdaiENUM				sdaiBOOLEAN + 1
-sdaiINSTANCE			sdaiENUM + 1
-sdaiINTEGER				sdaiINSTANCE + 1
-sdaiLOGICAL				sdaiINTEGER + 1
-sdaiREAL				sdaiLOGICAL + 1
-sdaiSTRING				sdaiREAL + 1
-sdaiUNICODE				sdaiSTRING + 1
-sdaiEXPRESSSTRING		sdaiUNICODE + 1
-engiGLOBALID			sdaiEXPRESSSTRING + 1
-sdaiNUMBER				engiGLOBALID + 1
-*/
+using System.Runtime.InteropServices;
 
 namespace CsIfcEngineTests
 {
@@ -48,11 +32,21 @@ namespace CsIfcEngineTests
 
         static void Test (bool unicode)
         {
-            TestGetDollarValue(unicode);
+            TestGetPrimitiveValue(unicode);
+            /*
+            sdaiADB					1
+            sdaiAGGR				sdaiADB + 1
+            sdaiBINARY				sdaiAGGR + 1
+            sdaiUNICODE				sdaiSTRING + 1
+            sdaiEXPRESSSTRING		sdaiUNICODE + 1
+            engiGLOBALID			sdaiEXPRESSSTRING + 1
+            sdaiNUMBER				engiGLOBALID + 1
+            */
+
         }
 
 
-        static void TestGetDollarValue (bool unicode)
+        static void TestGetPrimitiveValue(bool unicode)
         {
             ENTER_TEST(unicode ? "Unicode" : "Ascii");
 
@@ -62,6 +56,37 @@ namespace CsIfcEngineTests
             var wall = IfcWall.Create(model);
 
             CheckValues(wall, "Name", null, null, null);
+
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiSTRING, "1234");
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234" }, null, null);
+
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiSTRING, "T");
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T" }, null, null);
+
+            Int64 i = 1234;
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiINTEGER, ref i);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234 }, null, null);
+
+            double d = 12.34;
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiREAL, ref d);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34 }, null, null);
+
+            bool b = true;
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiBOOLEAN, ref b);
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", binVal = "T" }, null, null);
+
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiLOGICAL, "U");
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", binVal = "U" }, null, null);
+
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiENUM, "EEE"); //TODO - should not return sdaiLOGICAL
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", logicalVal="EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE" }, null, null);
+
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiENUM, "F"); 
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", binVal = "F" }, null, null);
+
+            var typ = IfcWallType.Create(model);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiINSTANCE, typ);
+            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ }, null, null);
 
             ifcengine.sdaiCloseModel(model);
 
