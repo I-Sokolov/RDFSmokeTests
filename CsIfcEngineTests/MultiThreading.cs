@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -67,25 +68,11 @@ namespace CsIfcEngineTests
             long model = 0;
 
             //open null-model test
-            if (ti.unicode)
-            {
-                model = RDF.ifcengine.sdaiOpenModelBNUnicode(0, System.Text.Encoding.Unicode.GetBytes("NotExist.ifc"), System.Text.Encoding.Unicode.GetBytes("IFC4"));
-            }
-            else
-            {
-                model = RDF.ifcengine.sdaiOpenModelBN(0, "NotExist.ifc", "IFC4");
-            }
+            model = OpenModel("NotExist", "IFC4",ti.unicode);
             ASSERT(model == 0);
 
             //
-            if (ti.unicode)
-            {
-                model = RDF.ifcengine.sdaiOpenModelBNUnicode(0, System.Text.Encoding.Unicode.GetBytes("..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc"), System.Text.Encoding.Unicode.GetBytes("IFC4x3"));
-            }
-            else
-            {
-                model = RDF.ifcengine.sdaiOpenModelBN(0, "..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc", "IFC4x3");
-            }
+            model = OpenModel("..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc", "IFC4x3", ti.unicode);
             ASSERT(model != 0);
 
             //get data test

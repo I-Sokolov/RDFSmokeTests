@@ -26,6 +26,7 @@ namespace CsIfcEngineTests
            */
                 Console.WriteLine("--------- Starting IFC engine C# tests");
 
+                PutGetAttr.Test();
                 MultiThreading.Test();
                 EarlyBinding_IFC4.Test();
                 EarlyBinding_IFC4x4.Test();
