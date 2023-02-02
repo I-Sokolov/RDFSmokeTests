@@ -281,7 +281,8 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {6,     "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
     {161,   "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {151,    "IfcProdcutDefinitionShape",NULL,                  -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
+    {151,   "IfcProdcutDefinitionShape","ShapeOfProduct",       -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
+    {151,   "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
@@ -309,9 +310,9 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__ARRGEGATION_EXPECTED},
     {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {170,   "IfcUnitAssignment",    "Units",                    0,      1,r6,           enum_validation_type::__ARGUMENT_PRIM_TYPE},
-    {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {6,     "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
-    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
+    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {151,   "IfcProdcutDefinitionShape","ShapeOfProduct",       -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE}
 };
 
 static IssueInfo rExpectedIssuesIFC4[] =
