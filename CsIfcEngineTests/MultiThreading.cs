@@ -111,7 +111,7 @@ namespace CsIfcEngineTests
             }
 
             if (ti.type!=null)
-                Console.WriteLine("\t\t\tmulti-thread test: {0} #{1}{2} finished successfully", ti.type, ti.num, ti.unicode?"UNICODE":"ASCII");
+                Console.WriteLine("\t\t\tmulti-thread test: {0} #{1}-{2} finished successfully", ti.type, ti.num, ti.unicode?"UNICODE":"ASCII");
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using RDF;
 using IFC4;
-using System.Runtime.InteropServices;
 
 namespace CsIfcEngineTests
 {
@@ -90,10 +89,292 @@ namespace CsIfcEngineTests
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiINSTANCE, typ);
             CheckValues(wall, "Name", new PrimitiveValues { instVal = typ });
 
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiBINARY, "0AF");
+            //TODO - should sdaiGetAttr(sdaiENUM) return value for binary data?
+            //TODO - should sdaiGetAttr(sdaiLOGICAL) return value for binary data?
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "0AF", logicalVal = "0AF", stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF" });
+
             ifcengine.sdaiCloseModel(model);
 
         }
 
+        static void TestADBWithPrimitiveValues(bool unicode)
+        {
+            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+
+            var model = CreateModel("", "IFC4", unicode);
+            ASSERT(model != 0);
+
+            var wall = IfcWall.Create(model);
+
+            var adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "1234");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO sdaiPutAttrBN (sdaiSTRING) does not allow to get sdaiBINARY
+            //TODO sdaiCreateADB and out it gets binart from ADB but does not get from attr (similar to firts one)
+            CheckValues(wall, "Name",
+                new PrimitiveValues
+                {
+                    adbVal = new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", binVal = "1234" },
+                    stringVal = "1234",
+                    expressStringVal = "1234"
+                });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "T");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name",
+                new PrimitiveValues
+                {
+                    adbVal = new PrimitiveValues { stringVal = "T", expressStringVal = "T", binVal = "T" },
+                    stringVal = "T",
+                    expressStringVal = "T"
+                });
+
+            Int64 i = 1234;
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINTEGER, ref i);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: sdaiGetADBValue (string) does not work for ADB with integers but sdaiGetAttr(string) works
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { /*stringVal = "1234", expressStringVal = "1234",*/ intVal = 1234, realVal = 1234 },
+                stringVal = "1234",
+                expressStringVal = "1234",
+                intVal = 1234,
+                realVal = 1234
+            });
+
+            double d = 12.34;
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiREAL, ref d);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: sdaiGetADBValue (string) does not work for ADB with real but sdaiGetAttr(string) works
+            //TODO: sdaiGetADBValue (int) does not work for ADB with real but sdaiGetAttr(string) works
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { /*stringVal = "12.340000", expressStringVal = "12.340000",*/ /*intVal = 12,*/ realVal = 12.34 },
+                stringVal = "12.340000",
+                expressStringVal = "12.340000",
+                intVal = 12,
+                realVal = 12.34
+            });
+
+            bool b = true;
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: sdaiGetADBValue returns T but sdaiGetAttr returns .T.
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = "T", expressStringVal = "T", binVal = "T" },
+                boolVal = true,
+                enumVal = "T",
+                logicalVal = "T",
+                stringVal = ".T.",
+                expressStringVal = ".T.",
+                binVal = "T"
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiLOGICAL, "U");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: sdaiGetADBValue returns U but sdaiGetAttr returns .U.
+            //TODO: sdaiGetADBValue(sdaiBOOLEAN) returns false but sdaiGetAttr returns null
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { boolVal = false, enumVal = "U", logicalVal = "U", stringVal = "U", expressStringVal = "U", binVal = "U" },
+                enumVal = "U",
+                logicalVal = "U",
+                stringVal = ".U.",
+                expressStringVal = ".U.",
+                binVal = "U"
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO - should not return sdaiLOGICAL
+            //TODO: sdaiGetADBValue(sdaiBOOLEAN) returns false but sdaiGetAttr returns null
+            //TODO: sdaiGetADBValue(sdaiSTRING) returns EEE but sdaiGetAttr .EEE.
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { boolVal = false, enumVal = "EEE", logicalVal = "EEE", stringVal = "EEE", expressStringVal = "EEE", binVal = "EEE" },
+                enumVal = "EEE",
+                logicalVal = "EEE",
+                stringVal = ".EEE.",
+                expressStringVal = ".EEE.",
+                binVal = "EEE"
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = "F", expressStringVal = "F", binVal = "F" },
+                enumVal = "F",
+                logicalVal = "F",
+                boolVal = false,
+                stringVal = ".F.",
+                expressStringVal = ".F.",
+                binVal = "F"
+            });
+
+            var typ = IfcWallType.Create(model);
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINSTANCE, typ);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { instVal = typ },
+                instVal = typ
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBINARY, "0AF");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO differencies with sdaiGetAttr, see commented values
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { /*enumVal = "0AF", logicalVal = "0AF",*/ stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF" },
+                enumVal = "0AF",
+                logicalVal = "0AF",
+                stringVal = "0AF",
+                expressStringVal = "0AF",
+                binVal = "0AF"
+            });
+
+            ifcengine.sdaiCloseModel(model);
+        }
+
+        static void TestAggregationOfPrimitiveValues(bool unicode)
+        {
+            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+
+            var model = CreateModel("", "IFC4", unicode);
+            ASSERT(model != 0);
+
+            var wall = IfcWall.Create(model);
+
+            var aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "1234");
+            //ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO sdaiPutAttrBN (sdaiSTRING) does not allow to get sdaiBINARY
+            //TODO sdaiCreateADB and out it gets binart from ADB but does not get from attr (similar to firts one)
+            CheckValues(wall, "Name",
+                new PrimitiveValues
+                {
+                    isAggregation = true,
+                    stringVal = "1234", expressStringVal = "1234"
+                });
+
+#if not_now
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "T");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name",
+                new PrimitiveValues
+                {
+                    adbVal = new PrimitiveValues { stringVal = "T", expressStringVal = "T", binVal = "T" },
+                    stringVal = "T",
+                    expressStringVal = "T"
+                });
+
+            Int64 i = 1234;
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINTEGER, ref i);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: sdaiGetADBValue (string) does not work for ADB with integers but sdaiGetAttr(string) works
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { /*stringVal = "1234", expressStringVal = "1234",*/ intVal = 1234, realVal = 1234 },
+                stringVal = "1234",
+                expressStringVal = "1234",
+                intVal = 1234,
+                realVal = 1234
+            });
+
+            double d = 12.34;
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiREAL, ref d);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: sdaiGetADBValue (string) does not work for ADB with real but sdaiGetAttr(string) works
+            //TODO: sdaiGetADBValue (int) does not work for ADB with real but sdaiGetAttr(string) works
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { /*stringVal = "12.340000", expressStringVal = "12.340000",*/ /*intVal = 12,*/ realVal = 12.34 },
+                stringVal = "12.340000",
+                expressStringVal = "12.340000",
+                intVal = 12,
+                realVal = 12.34
+            });
+
+            bool b = true;
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: sdaiGetADBValue returns T but sdaiGetAttr returns .T.
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = "T", expressStringVal = "T", binVal = "T" },
+                boolVal = true,
+                enumVal = "T",
+                logicalVal = "T",
+                stringVal = ".T.",
+                expressStringVal = ".T.",
+                binVal = "T"
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiLOGICAL, "U");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: sdaiGetADBValue returns U but sdaiGetAttr returns .U.
+            //TODO: sdaiGetADBValue(sdaiBOOLEAN) returns false but sdaiGetAttr returns null
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { boolVal = false, enumVal = "U", logicalVal = "U", stringVal = "U", expressStringVal = "U", binVal = "U" },
+                enumVal = "U",
+                logicalVal = "U",
+                stringVal = ".U.",
+                expressStringVal = ".U.",
+                binVal = "U"
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO - should not return sdaiLOGICAL
+            //TODO: sdaiGetADBValue(sdaiBOOLEAN) returns false but sdaiGetAttr returns null
+            //TODO: sdaiGetADBValue(sdaiSTRING) returns EEE but sdaiGetAttr .EEE.
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { boolVal = false, enumVal = "EEE", logicalVal = "EEE", stringVal = "EEE", expressStringVal = "EEE", binVal = "EEE" },
+                enumVal = "EEE",
+                logicalVal = "EEE",
+                stringVal = ".EEE.",
+                expressStringVal = ".EEE.",
+                binVal = "EEE"
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = "F", expressStringVal = "F", binVal = "F" },
+                enumVal = "F",
+                logicalVal = "F",
+                boolVal = false,
+                stringVal = ".F.",
+                expressStringVal = ".F.",
+                binVal = "F"
+            });
+
+            var typ = IfcWallType.Create(model);
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINSTANCE, typ);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { instVal = typ },
+                instVal = typ
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBINARY, "0AF");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO differencies with sdaiGetAttr, see commented values
+            CheckValues(wall, "Name", new PrimitiveValues 
+            {
+                adbVal = new PrimitiveValues { /*enumVal = "0AF", logicalVal = "0AF",*/ stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF" },
+                enumVal = "0AF", logicalVal = "0AF", stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF" 
+            });
+#endif
+
+            ifcengine.sdaiCloseModel(model);
+        }
 
         static void CheckValues
             (Int64 inst,
