@@ -179,6 +179,21 @@ namespace CsIfcEngineTests
                 binVal = "T"
             });
 
+            b = false;
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
+            ifcengine.sdaiPutADBTypePath(adb, 1, "IFCBOOLEAN");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = "F", expressStringVal = "F", binVal = "F" },
+                boolVal = false,
+                enumVal = "F",
+                logicalVal = "F",
+                stringVal = ".F.",
+                expressStringVal = ".F.",
+                binVal = "F"
+            });
+
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiLOGICAL, "U");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
             //TODO: sdaiGetADBValue returns U but sdaiGetAttr returns .U.
@@ -191,6 +206,20 @@ namespace CsIfcEngineTests
                 stringVal = ".U.",
                 expressStringVal = ".U.",
                 binVal = "U"
+            });
+
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
+            ifcengine.sdaiPutADBTypePath(adb, 1, "IFCLOGICAL");
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues
+            {
+                adbVal = new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = "F", expressStringVal = "F", binVal = "F" },
+                boolVal = false,
+                enumVal = "F",
+                logicalVal = "F",
+                stringVal = ".F.",
+                expressStringVal = ".F.",
+                binVal = "F"
             });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
