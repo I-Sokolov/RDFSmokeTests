@@ -25,6 +25,7 @@ namespace CsIfcEngineTests
                 Console.WriteLine("Perform EXPRESS parsing tests: {0}", options.ExpressParsing);
            */
                 Console.WriteLine("--------- Starting IFC engine C# tests");
+                //RDF.ifcengine.setStringUnicode(1);
 
                 PutGetAttr.Test();
                 MultiThreading.Test();

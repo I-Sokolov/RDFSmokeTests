@@ -26,29 +26,6 @@ namespace CsTests
             }
         }
 
-        protected static Int64 CreateModel(string filePath, string schema, bool unicode)
-        {
-            if (unicode)
-            {
-                return RDF.ifcengine.sdaiCreateModelBNUnicode(0, System.Text.Encoding.Unicode.GetBytes(filePath), System.Text.Encoding.Unicode.GetBytes(schema));
-            }
-            else
-            {
-                return RDF.ifcengine.sdaiCreateModelBN(0, filePath, schema);
-            }
-        }
-
-        protected static Int64 OpenModel(string filePath, string schema, bool unicode)
-        {
-            if (unicode)
-            {
-                return  RDF.ifcengine.sdaiOpenModelBNUnicode(0, System.Text.Encoding.Unicode.GetBytes(filePath), System.Text.Encoding.Unicode.GetBytes(schema));
-            }
-            else
-            {
-                return RDF.ifcengine.sdaiOpenModelBN(0, filePath, schema);
-            }
-        }
 
         protected static void ASSERT_EQ(IEnumerable lst1, IEnumerable lst2)
         {

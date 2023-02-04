@@ -27,30 +27,25 @@ namespace CsIfcEngineTests
             public int aggrLevel;
         };
 
-        public static void Test()
+
+        public static void Test ()
         {
-            Test(true);
-            Test(false);
-        }
+            TestPrimitiveValue();
+            TestADBPrimitive();
+            TestAggregationPrimitive();
 
-        static void Test (bool unicode)
-        {
-            TestPrimitiveValue(unicode);
-            TestADBPrimitive(unicode);
-            TestAggregationPrimitive(unicode);
+            TestADBAggregation();
+            TestAggregationADB();
 
-            TestADBAggregation(unicode);
-            TestAggregationADB(unicode);
-
-            TestAggregationAggregation(unicode);
+            TestAggregationAggregation();
         }
 
 
-        static void TestPrimitiveValue(bool unicode)
+        static void TestPrimitiveValue()
         {
-            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+            ENTER_TEST();
 
-            var model = CreateModel("", "IFC4", unicode);
+            var model = ifcengine.sdaiCreateModelBN(0,"", "IFC4");
             ASSERT(model != 0);
 
             var wall = IfcWall.Create(model);
@@ -105,11 +100,11 @@ namespace CsIfcEngineTests
 
         }
 
-        static void TestADBPrimitive(bool unicode)
+        static void TestADBPrimitive()
         {
-            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+            ENTER_TEST();
 
-            var model = CreateModel("", "IFC4", unicode);
+            var model = ifcengine.sdaiCreateModelBN(0,"", "IFC4");
             ASSERT(model != 0);
 
             var wall = IfcWall.Create(model);
@@ -274,11 +269,11 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
         }
 
-        static void TestAggregationPrimitive(bool unicode)
+        static void TestAggregationPrimitive()
         {
-            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+            ENTER_TEST();
 
-            var model = CreateModel("", "IFC4", unicode);
+            var model = ifcengine.sdaiCreateModelBN(0,"", "IFC4");
             ASSERT(model != 0);
 
             var wall = IfcWall.Create(model);
@@ -336,11 +331,11 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
         }
 
-        static void TestADBAggregation(bool unicode)
+        static void TestADBAggregation()
         {
-            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+            ENTER_TEST();
 
-            var model = CreateModel("", "IFC4", unicode);
+            var model = ifcengine.sdaiCreateModelBN(0,"", "IFC4");
             ASSERT(model != 0);
 
             var wall = IfcWall.Create(model);
@@ -423,11 +418,11 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
         }
 
-        static void TestAggregationADB(bool unicode)
+        static void TestAggregationADB()
         {
-            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+            ENTER_TEST();
 
-            var model = CreateModel("", "IFC4", unicode);
+            var model = ifcengine.sdaiCreateModelBN(0,"", "IFC4");
             ASSERT(model != 0);
 
             var wall = IfcWall.Create(model);
@@ -604,11 +599,11 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
         }
 
-        static void TestAggregationAggregation(bool unicode)
+        static void TestAggregationAggregation()
         {
-            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+            ENTER_TEST();
 
-            var model = CreateModel("", "IFC4", unicode);
+            var model = ifcengine.sdaiCreateModelBN(0, "", "IFC4");
             ASSERT(model != 0);
 
             var wall = IfcWall.Create(model);

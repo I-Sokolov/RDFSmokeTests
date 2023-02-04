@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using RDF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,25 +11,18 @@ namespace CsIfcEngineTests
 {
     class MultiThreading : CsTests.TestBase
     {
-        public static void Test()
-        {
-            Test(true);
-            Test(false);
-        }
-
         class ThreadInfo
         {
-            public bool unicode;
             public string type;
             public int num;
-            public ThreadInfo(bool unicode, string type, int num) { this.unicode = unicode;  this.type = type; this.num = num; }
+            public ThreadInfo(string type, int num) { this.type = type; this.num = num; }
         }
 
-        static void Test(bool unicode)
+        public static void Test()
         {
-            ENTER_TEST(unicode ? "Unicode":"Ascii");
+            ENTER_TEST();
 
-            ThreadProc(new ThreadInfo (unicode, null, 0));//do once in single thread to check all assertions correct
+            ThreadProc(new ThreadInfo (null, 0));//do once in single thread to check all assertions correct
 
             const int N = 10;
             for (int i = 0; i < N; i++)
@@ -36,13 +30,13 @@ namespace CsIfcEngineTests
                 var th = new Thread(ThreadProc);
 
                 //test working thread
-                th.Start(new ThreadInfo(unicode, "working thread", i));
+                th.Start(new ThreadInfo("working thread", i));
 
                 //test thread pull
-                System.Threading.ThreadPool.QueueUserWorkItem(ThreadProc, new ThreadInfo(unicode, "pulled thread", i));
+                System.Threading.ThreadPool.QueueUserWorkItem(ThreadProc, new ThreadInfo("pulled thread", i));
 
                 //test task
-                Task.Factory.StartNew(ThreadProc, new ThreadInfo(unicode, "task", i));
+                Task.Factory.StartNew(ThreadProc, new ThreadInfo("task", i));
             }
 
             /*
@@ -68,11 +62,11 @@ namespace CsIfcEngineTests
             long model = 0;
 
             //open null-model test
-            model = OpenModel("NotExist", "IFC4",ti.unicode);
+            model = ifcengine.sdaiOpenModelBN(0,"NotExist", "IFC4");
             ASSERT(model == 0);
 
             //
-            model = OpenModel("..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc", "IFC4x3", ti.unicode);
+            model = ifcengine.sdaiOpenModelBN(0,"..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc", "IFC4x3");
             ASSERT(model != 0);
 
             //get data test
@@ -111,7 +105,7 @@ namespace CsIfcEngineTests
             }
 
             if (ti.type!=null)
-                Console.WriteLine("\t\t\tmulti-thread test: {0} #{1}-{2} finished successfully", ti.type, ti.num, ti.unicode?"UNICODE":"ASCII");
+                Console.WriteLine("\t\t\tmulti-thread test: {0} #{1} finished successfully", ti.type, ti.num);
         }
     }
 }
