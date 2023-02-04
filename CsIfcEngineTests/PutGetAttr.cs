@@ -35,19 +35,15 @@ namespace CsIfcEngineTests
 
         static void Test (bool unicode)
         {
-            TestGetPrimitiveValue(unicode);
-            TestADBWithPrimitiveValues(unicode);
-            TestAggregationOfPrimitiveValues(unicode);
-            /*
-            sdaiAGGR				sdaiADB + 1
-            ??engiGLOBALID			sdaiEXPRESSSTRING + 1
-            ??sdaiNUMBER				engiGLOBALID + 1
-            */
+            TestPrimitiveValue(unicode);
+            TestADBPrimitive(unicode);
+            TestAggregationPrimitive(unicode);
 
+            TestADBAggregation(unicode);
         }
 
 
-        static void TestGetPrimitiveValue(bool unicode)
+        static void TestPrimitiveValue(bool unicode)
         {
             ENTER_TEST(unicode ? "Unicode" : "Ascii");
 
@@ -106,7 +102,7 @@ namespace CsIfcEngineTests
 
         }
 
-        static void TestADBWithPrimitiveValues(bool unicode)
+        static void TestADBPrimitive(bool unicode)
         {
             ENTER_TEST(unicode ? "Unicode" : "Ascii");
 
@@ -275,7 +271,7 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
         }
 
-        static void TestAggregationOfPrimitiveValues(bool unicode)
+        static void TestAggregationPrimitive(bool unicode)
         {
             ENTER_TEST(unicode ? "Unicode" : "Ascii");
 
@@ -333,6 +329,93 @@ namespace CsIfcEngineTests
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBINARY, "0AF");
             CheckValues(wall, "Name", new PrimitiveValues { enumVal = "0AF", logicalVal = "0AF", stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel = 1 });
+
+            ifcengine.sdaiCloseModel(model);
+        }
+
+        static void TestADBAggregation(bool unicode)
+        {
+            ENTER_TEST(unicode ? "Unicode" : "Ascii");
+
+            var model = CreateModel("", "IFC4", unicode);
+            ASSERT(model != 0);
+
+            var wall = IfcWall.Create(model);
+
+            var entity = ifcengine.sdaiGetInstanceType(wall);
+            ASSERT(entity != 0);
+
+            var attr = ifcengine.sdaiGetAttrDefinition(entity, "Name");
+            ASSERT(attr != 0);
+
+            var aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "1234");
+            var adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            //TODO: when ADB contains string you can call sdaiGetAttr but when ABD contains aggr it does not work
+            CheckValues(wall, "Name", new PrimitiveValues 
+            { 
+                adbVal = new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel= 1}
+                //stringVal = "1234", expressStringVal = "1234", aggrLevel=1
+            });
+
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "T");
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel = 1 } });
+
+            Int64 i = 1234;
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiINTEGER, ref i);
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel = 1 } });
+
+            double d = 12.34;
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiREAL, ref d);
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel = 1 } });
+
+            bool b = true;
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiBOOLEAN, ref b);
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", binVal = "T", aggrLevel = 1 } });
+
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiLOGICAL, "U");
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", binVal = "U", aggrLevel = 1 } });
+
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "EEE");
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { enumVal = "EEE", logicalVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE", aggrLevel = 1 } });
+
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "F");
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", binVal = "F", aggrLevel = 1 } });
+
+            var typ = IfcWallType.Create(model);
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiINSTANCE, typ);
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { instVal = typ, adbVal = new PrimitiveValues { instVal = typ }, aggrLevel = 1 } });
+
+            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiBINARY, "0AF");
+            adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { adbVal = new PrimitiveValues { enumVal = "0AF", logicalVal = "0AF", stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel = 1 } });
 
             ifcengine.sdaiCloseModel(model);
         }
@@ -507,7 +590,7 @@ namespace CsIfcEngineTests
         {
             Int64 adbVal = 1;
             var res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiADB, out adbVal);
-            if (expected != null && expected.adbVal != null)
+            if (expected != null && expected.adbVal != null && expected.aggrLevel == 0)
             {
                 ASSERT(res != 0);
                 CheckADBValues(adbVal, expected.adbVal);
