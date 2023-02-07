@@ -7,7 +7,7 @@
 
 struct IssueHandler
 {
-    virtual void OnIssue(ValidationIssue* issue) = NULL;
+    virtual void OnIssue(ValidationIssue issue) = NULL;
 };
 
 static ValidationIssueLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pIssueHandler);
@@ -18,7 +18,7 @@ static ValidationIssueLevel CheckModel(const char* filePath, const char* express
 /// </summary>
 struct PrintIssue : public IssueHandler
 {
-    const char* GetEntityName(ValidationIssue* issue)
+    const char* GetEntityName(ValidationIssue issue)
     {
         auto ent = validateGetEntity(issue);
         if (ent) {
@@ -31,7 +31,7 @@ struct PrintIssue : public IssueHandler
         }
     }
 
-    const char* GetAttrName(ValidationIssue* issue)
+    const char* GetAttrName(ValidationIssue issue)
     {
         auto attr = validateGetAttr(issue);
         if (attr) {
@@ -44,7 +44,7 @@ struct PrintIssue : public IssueHandler
         }
     }
 
-    int_t GetAttrIndex(ValidationIssue* issue)
+    int_t GetAttrIndex(ValidationIssue issue)
     {
         auto ent = validateGetEntity(issue);
         const char* name = GetAttrName(issue);
@@ -56,7 +56,7 @@ struct PrintIssue : public IssueHandler
         }
     }
 
-    int64_t GetStepId(ValidationIssue* issue)
+    int64_t GetStepId(ValidationIssue issue)
     {
         auto inst = validateGetInstance(issue);
         if (inst) {
@@ -67,7 +67,7 @@ struct PrintIssue : public IssueHandler
         }
     }
 
-    virtual void OnIssue(ValidationIssue* issue) override
+    virtual void OnIssue(ValidationIssue issue) override
     {
         printf(INDENT "<Issue");
 
@@ -202,7 +202,7 @@ struct CheckExpectedIssuses : public PrintIssue
 {
     CheckExpectedIssuses(IssueInfo* rExpectedIssues, int nExpectedIssues) : m_rExpectedIssues(rExpectedIssues), m_nExpectedIssues(nExpectedIssues) {}
 
-    virtual void OnIssue(ValidationIssue* issue) override;
+    virtual void OnIssue(ValidationIssue issue) override;
 
 private:
     IssueInfo* m_rExpectedIssues;
@@ -210,7 +210,7 @@ private:
 };
 
 
-void CheckExpectedIssuses::OnIssue(ValidationIssue* issue)
+void CheckExpectedIssuses::OnIssue(ValidationIssue issue)
 {
     //base report
     __super::OnIssue(issue);
@@ -354,7 +354,7 @@ static void TestInvalidParameters()
 {
     printf("\t<TestInvalidParameters>\n");
 
-    ValidationResults* checks = validateModel((int_t)&checks);
+    ValidationResults checks = validateModel((int_t)&checks);
     auto issue = validateGetFirstIssue(checks);
     auto level = validateGetIssueLevel(issue);
     ASSERT(level == 100000);
