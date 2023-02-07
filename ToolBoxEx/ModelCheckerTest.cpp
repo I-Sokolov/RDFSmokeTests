@@ -328,7 +328,10 @@ static IssueInfo rExpectedIssuesIFC4[] =
     {21,    "IfcPropertyListValue",      NULL,                  -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
-    {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
+    {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {22,    "IfcIndexedColourMap",       "MappedTo",            0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+    {22,    "IfcIndexedColourMap",       "Colours",             2,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+    {22,    "IfcIndexedColourMap",       "ColourIndex",         3,      0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
 static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
@@ -340,7 +343,9 @@ static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
     {3,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r1,           enum_validation_type::__AGGREGATION_UNIQUE},
     {19,    "IfcSpatialStructureElement",NULL,                  -1,     0,NULL,         enum_validation_type::__ABSTRACT_ENTITY},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
-    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE}
+    {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
+    {22,    "IfcIndexedColourMap",       "MappedTo",            0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+    {22,    "IfcIndexedColourMap",       "Colours",             2,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS}
 };
 
 static IssueInfo rExpectedIssuesIFC4x3[] =
