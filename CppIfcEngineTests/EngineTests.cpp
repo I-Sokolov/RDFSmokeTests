@@ -28,7 +28,8 @@ static void TestBinaries(SdaiModel ifcModel)
 
     ASSERT(blobTexture.get_RasterCode() == NULL);
     blobTexture.put_RasterCode(rasterCode);
-    ASSERT(0 == strcmp(blobTexture.get_RasterCode(), rasterCode));
+    auto gotCode = blobTexture.get_RasterCode();
+    ASSERT(0 == strcmp(gotCode, rasterCode));
 
     //put/get with SDAI
     sdaiPutAttrBN(blobTexture, "RasterCode", sdaiBINARY, rasterCode);

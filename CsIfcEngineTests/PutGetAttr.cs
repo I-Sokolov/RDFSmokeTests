@@ -65,7 +65,6 @@ namespace CsIfcEngineTests
 
             double d = 12.34;
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiREAL, ref d);
-            //TODO: not sure it is correct to return sdaiINTEGER when data value is real 
             CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34 });
 
             bool b = true;
@@ -76,8 +75,7 @@ namespace CsIfcEngineTests
             CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", binVal = "U" });
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiENUM, "EEE"); 
-            //TODO - should not return sdaiLOGICAL
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", logicalVal="EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE" });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE" });
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiENUM, "F"); 
             CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", binVal = "F" });
@@ -93,8 +91,7 @@ namespace CsIfcEngineTests
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiBINARY, "0AF");
             //TODO - should sdaiGetAttr(sdaiENUM) return value for binary data?
-            //TODO - should sdaiGetAttr(sdaiLOGICAL) return value for binary data?
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "0AF", logicalVal = "0AF", stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF" });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "0AF", stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF" });
 
             ifcengine.sdaiCloseModel(model);
 
@@ -109,16 +106,15 @@ namespace CsIfcEngineTests
 
             var wall = IfcWall.Create(model);
 
-            var adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "1234");
+            var adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "1234kll");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
             //TODO sdaiPutAttrBN (sdaiSTRING) does not allow to get sdaiBINARY
             //TODO sdaiCreateADB and out it gets binart from ADB but does not get from attr (similar to firts one)
             CheckValues(wall, "Name",
                 new PrimitiveValues
                 {
-                    adbVal = new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", binVal = "1234" },
-                    stringVal = "1234",
-                    expressStringVal = "1234"
+                    adbVal = new PrimitiveValues { stringVal = "1234kll", expressStringVal = "1234kll", binVal = "1234kll" },
+                                                   stringVal = "1234kll", expressStringVal = "1234kll"
                 });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "T");
@@ -138,10 +134,7 @@ namespace CsIfcEngineTests
             CheckValues(wall, "Name", new PrimitiveValues
             {
                 adbVal = new PrimitiveValues { /*stringVal = "1234", expressStringVal = "1234",*/ intVal = 1234, realVal = 1234 },
-                stringVal = "1234",
-                expressStringVal = "1234",
-                intVal = 1234,
-                realVal = 1234
+                stringVal = "1234",  expressStringVal = "1234",  intVal = 1234,  realVal = 1234
             });
 
             double d = 12.34;
@@ -218,7 +211,7 @@ namespace CsIfcEngineTests
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            //TODO - should not return sdaiLOGICAL
+            //TODO - ADB should not return sdaiLOGICAL
             //TODO: sdaiGetADBValue(sdaiBOOLEAN) returns false but sdaiGetAttr returns null
             //TODO: sdaiGetADBValue(sdaiSTRING) returns EEE but sdaiGetAttr .EEE.
             CheckValues(wall, "Name", new PrimitiveValues
@@ -670,7 +663,7 @@ namespace CsIfcEngineTests
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINSTANCE, typ);
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            //TODO other data allows to get sdaiINSTANCE ad sdaiADB
+            //TODO other data allows to get sdaiINSTANCE ad sdaiADB????
             CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, adbVal = new PrimitiveValues { instVal = typ }, aggrLevel = 2 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
