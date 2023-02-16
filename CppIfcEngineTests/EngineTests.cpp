@@ -6,6 +6,45 @@ using namespace IFC4;
 
 #define FILE_NAME "EngineTests.ifc"
 
+static void TestADBBoolean(SdaiInstance inst, const char* attr)
+{
+    bool bVal = true;
+    void* adb = sdaiCreateADB(sdaiBOOLEAN, &bVal);
+    sdaiPutADBTypePath(adb, 1, "IFCBOOLEAN");
+    sdaiPutAttrBN(inst, attr, sdaiADB, adb);
+    sdaiDeleteADB(adb);
+
+    void* ret = sdaiGetAttr(inst, attr, sdaiADB, &adb);
+    ASSERT(ret && adb);
+
+    ret = sdaiGetADBValue(adb, sdaiBOOLEAN, &bVal);
+    ASSERT(ret && bVal);
+
+    //you can also get it as logical
+    const char* logVal = NULL;
+    ret = sdaiGetADBValue(adb, sdaiLOGICAL, &logVal);
+    ASSERT(ret && 0 == strcmp(logVal, "T"));
+
+    sdaiDeleteADB(adb);
+}
+
+static void TestADBLogical(SdaiInstance inst, const char* attr)
+{
+    void* adb = sdaiCreateADB(sdaiLOGICAL, "U");
+    sdaiPutADBTypePath(adb, 1, "IFCLOGICAL");
+    sdaiPutAttrBN(inst, attr, sdaiADB, adb);
+    sdaiDeleteADB(adb);
+    
+    void* ret = sdaiGetAttr(inst, attr, sdaiADB, &adb);
+    ASSERT(ret && adb);
+
+    const char* logVal = NULL;
+    ret = sdaiGetADBValue(adb, sdaiLOGICAL, &logVal);
+    ASSERT(ret && 0 == strcmp(logVal, "U"));
+
+    sdaiDeleteADB(adb);
+}
+
 static void TestBinaries(SdaiModel ifcModel)
 {
     ENTER_TEST
@@ -173,6 +212,9 @@ static void TestPutAttr(SdaiModel model)
 
     type = engiGetInstanceAttrTypeBN(window, "FillsVoids");
     ASSERT(type == 0);
+
+    TestADBBoolean (measureWithUnit, "ValueComponent");
+    TestADBLogical (measureWithUnit, "ValueComponent");
 }
 
 static void TestGetAttrType(SdaiModel ifcModel, const char* entityName, const char* attrName, int_t expected)

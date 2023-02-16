@@ -167,6 +167,26 @@ extern void EarlyBound_GuideExamples()
     auto gotBool = valueSelector.as_bool();
     ASSERT(gotBool.IsNull()); //IfcInteger is not convertable to bool
 
+    //put boolean
+    measure.put_ValueComponent().put_IfcSimpleValue().put_IfcBoolean(false);
+
+    //get by type - it is boolean
+    ASSERT(measure.get_ValueComponent().get_IfcSimpleValue().is_IfcBoolean());
+    gotBool = measure.get_ValueComponent().get_IfcSimpleValue().get_IfcBoolean();
+    ASSERT(!gotBool.IsNull() && gotBool.Value() == false);
+
+    //but not logical
+    ASSERT(!measure.get_ValueComponent().get_IfcSimpleValue().is_IfcLogical());
+    auto logVal = measure.get_ValueComponent().get_IfcSimpleValue().get_IfcLogical();
+    ASSERT(logVal.IsNull());
+
+    //impicit access includes conversion to any possible type
+    gotBool = measure.get_ValueComponent().as_bool();
+    ASSERT(!gotBool.IsNull() && gotBool.Value() == false);
+    
+    gotText = measure.get_ValueComponent().as_text();
+    ASSERT(gotText && 0 == strcmp(gotText, ".F."));
+
     //
     // AGGRAGATIONS
     // For each unnamed aggragaion there is a ListOf*, SetOf* or BagOf* class
