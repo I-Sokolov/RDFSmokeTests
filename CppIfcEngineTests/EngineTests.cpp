@@ -208,7 +208,7 @@ static void TestPutAttr(SdaiModel model)
     ASSERT(sdaiGetAttrBN(measureWithUnit, "ValueComponent", sdaiADB, &adb));
 
     type = sdaiGetADBType(adb);
-    ASSERT(type == sdaiLOGICAL);//TODO: it was sdaiENUM early and possible it should be?
+    ASSERT(type == sdaiBOOLEAN); //.T. is recognized as boolean but you can get as logical also
 
     type = engiGetInstanceAttrTypeBN(window, "FillsVoids");
     ASSERT(type == 0);
@@ -284,8 +284,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(!boolV);
     ASSERT(!sdaiGetADBValue(adbValue, sdaiENUM, &textV));
     ASSERT(!textV);
-    ASSERT(sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
-    ASSERT(!strcmp(textV, "List value 2"));
+    ASSERT(!sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
     ASSERT(!strcmp(textV, "List value 2"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
@@ -316,12 +315,12 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(!textV);
     ASSERT(!sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
     ASSERT(!textV);
-    ASSERT(!sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
-    ASSERT(!textV);
-    ASSERT(!sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!textV);
-    ASSERT(!sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
-    ASSERT(!wcV);
+    ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
+    ASSERT(!strcmp(textV, "13"));
+    ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
+    ASSERT(!strcmp(textV, "13"));
+    ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
+    ASSERT(!wcscmp(wcV,L"13"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
     ASSERT(doubleV == 13);
     ASSERT(sdaiGetADBValue(adbValue, sdaiINTEGER, &intV));
@@ -346,16 +345,16 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(!textV);
     ASSERT(!sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
     ASSERT(!textV);
-    ASSERT(!sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
-    ASSERT(!textV);
-    ASSERT(!sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!textV);
-    ASSERT(!sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
-    ASSERT(!wcV);
+    ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
+    ASSERT(!strcmp(textV, "8.500000"));
+    ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
+    ASSERT(!strcmp(textV, "8.500000"));
+    ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
+    ASSERT(!wcscmp(wcV,L"8.500000"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
     ASSERT(doubleV == 8.5);
-    ASSERT(!sdaiGetADBValue(adbValue, sdaiINTEGER, &intV));
-    ASSERT(intV == 0);
+    ASSERT(sdaiGetADBValue(adbValue, sdaiINTEGER, &intV));
+    ASSERT(intV == 8);
 
     /// <summary>
     /// 3-boolean
@@ -374,14 +373,14 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(boolV);
     ASSERT(sdaiGetADBValue(adbValue, sdaiENUM, &textV));
     ASSERT(!strcmp(textV, "T"));
-    ASSERT(sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
-    ASSERT(!strcmp(textV, "T"));
+    ASSERT(!sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
+    ASSERT(!textV);
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
-    ASSERT(!strcmp(textV, "T"));
+    ASSERT(!strcmp(textV, ".T."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "T"));
+    ASSERT(!strcmp(textV, ".T."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
-    ASSERT(!wcscmp(wcV, L"T"));
+    ASSERT(!wcscmp(wcV, L".T."));
     ASSERT(!sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
     ASSERT(doubleV == 0);
     ASSERT(!sdaiGetADBValue(adbValue, sdaiINTEGER, &intV));
@@ -400,21 +399,19 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(intV == 0);
     ASSERT(sdaiGetADBValue(adbValue, sdaiLOGICAL, &textV));
     ASSERT(!strcmp(textV, "U"));
-    //
-    //TODO - put logical U should not allow to get as bool
-    ASSERT(/*!*/sdaiGetADBValue(adbValue, sdaiBOOLEAN, &boolV));
+    ASSERT(!sdaiGetADBValue(adbValue, sdaiBOOLEAN, &boolV));
     ASSERT(!boolV);
     //
     ASSERT(sdaiGetADBValue(adbValue, sdaiENUM, &textV));
     ASSERT(!strcmp(textV, "U"));
-    ASSERT(sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
-    ASSERT(!strcmp(textV, "U"));
+    ASSERT(!sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
+    ASSERT(!textV);
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
-    ASSERT(!strcmp(textV, "U"));
+    ASSERT(!strcmp(textV, ".U."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "U"));
+    ASSERT(!strcmp(textV, ".U."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
-    ASSERT(!wcscmp(wcV, L"U"));
+    ASSERT(!wcscmp(wcV, L".U."));
     ASSERT(!sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
     ASSERT(doubleV == 0);
     ASSERT(!sdaiGetADBValue(adbValue, sdaiINTEGER, &intV));
