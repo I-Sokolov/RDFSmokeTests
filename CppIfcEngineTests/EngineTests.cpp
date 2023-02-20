@@ -250,7 +250,7 @@ static void TestGetAttrType(SdaiModel ifcModel)
 static void TestGetADBValue(SdaiModel ifcModel)
 {
     ENTER_TEST
-
+        //TODO return value tests
     ///
     auto instance = internalGetInstanceFromP21Line(ifcModel, 319);
 
@@ -525,25 +525,21 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(intV == 0);
     ASSERT(!sdaiGetADBValue(adbValue, sdaiINSTANCE, &intV));
     ASSERT(intV == 0);
-    //
-    //TODO - put enum BELL should not allow get logicals
-    ASSERT(/*!*/sdaiGetADBValue(adbValue, sdaiLOGICAL, &textV));
-    ASSERT(!strcmp(textV, "BELL")); //ASSERT(!textV);
-    //
-    //TODO - put enum BELL should not allow get bool
-    ASSERT(/*!*/sdaiGetADBValue(adbValue, sdaiBOOLEAN, &boolV));
+    ASSERT(!sdaiGetADBValue(adbValue, sdaiLOGICAL, &textV));
+    ASSERT(!textV);
+    ASSERT(!sdaiGetADBValue(adbValue, sdaiBOOLEAN, &boolV));
     ASSERT(!boolV);
     //
     ASSERT(sdaiGetADBValue(adbValue, sdaiENUM, &textV));
     ASSERT(!strcmp(textV, "BELL"));
-    ASSERT(sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
-    ASSERT(!strcmp(textV, "BELL"));
+    ASSERT(!sdaiGetADBValue(adbValue, sdaiBINARY, &textV));
+    ASSERT(!textV);
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
-    ASSERT(!strcmp(textV, "BELL"));
+    ASSERT(!strcmp(textV, ".BELL."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "BELL"));
+    ASSERT(!strcmp(textV, ".BELL."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
-    ASSERT(!wcscmp(wcV, L"BELL"));
+    ASSERT(!wcscmp(wcV, L".BELL."));
     ASSERT(!sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
     ASSERT(doubleV == 0);
     ASSERT(!sdaiGetADBValue(adbValue, sdaiINTEGER, &intV));
