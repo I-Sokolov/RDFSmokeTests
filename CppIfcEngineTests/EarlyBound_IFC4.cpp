@@ -146,9 +146,9 @@ extern void EarlyBound_IFC4_test()
     ASSERT(as_double.Value() == 0.5 && 0 == strcmp(as_text, "0.500000") && as_int.Value() == 0 && as_bool.IsNull());
 
     //detached select behaviour
-    //detached select is not changed when instance changed
+    //detached select is changed when instance changed
     dval = measureValue_detachedSelect.get_IfcRatioMeasure();
-    ASSERT(dval.IsNull());
+    ASSERT(dval.Value() == 0.5);
     //but changing the detached select will change host instance
     measureValue_detachedSelect.put_IfcAreaMeasure(2.7);
     dval = measureValue_detachedSelect.get_IfcAreaMeasure();
