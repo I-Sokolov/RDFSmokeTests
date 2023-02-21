@@ -420,7 +420,7 @@ namespace CsIfcEngineTests
             points = 0;
 
             var pts = poly.get_Points();
-            points = new IfcCartesianPointList2D(pts); //TODO isInstanceOf!
+            points = new IfcCartesianPointList2D(pts); 
             ASSERT(points != 0);
 
             building = new IfcBuilding(pts);

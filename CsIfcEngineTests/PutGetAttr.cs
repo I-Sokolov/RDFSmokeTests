@@ -10,11 +10,6 @@ namespace CsIfcEngineTests
 {
     internal class PutGetAttr : CsTests.TestBase
     {
-        enum Nest
-        {
-            Aggregation, ADB
-        };
-
         class PrimitiveValues
         {
             public Int64? intVal;
@@ -26,8 +21,10 @@ namespace CsIfcEngineTests
             public string stringVal;
             public string expressStringVal;
             public string binVal;
-                        
-            public Stack<Nest> nests = new Stack<Nest>();
+
+            public int aggrLevel;
+            public bool complexArg;
+            public bool complexArgAggregated;
         };
 
 
@@ -87,7 +84,6 @@ namespace CsIfcEngineTests
             CheckValues(wall, "Name", new PrimitiveValues { instVal = typ });
 
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiBINARY, "0AF");
-            //TODO - should sdaiGetAttr(sdaiENUM) return value for binary data?
             CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF" });
 
             ifcengine.sdaiCloseModel(model);
@@ -130,7 +126,7 @@ namespace CsIfcEngineTests
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
             ifcengine.sdaiPutADBTypePath(adb, 1, "IFCBOOLEAN"); //adding typePath changes ADB to complex
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", nests = Nests(Nest.ADB)});
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", complexArg = true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiLOGICAL, "U");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
@@ -139,7 +135,7 @@ namespace CsIfcEngineTests
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
             ifcengine.sdaiPutADBTypePath(adb, 1, "IFCLOGICAL");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);//adding typePath changes ADB to complex
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", nests = Nests(Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", complexArg = true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
@@ -161,15 +157,7 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
         }
 
-        static Stack<Nest> Nests(params Nest[] nests)
-        {
-            var ret = new Stack<Nest>();
-            foreach (var n in nests) {
-                ret.Push(n);
-            }
-            return ret;
-        }
-
+      
         static void TestAggregationPrimitive()
         {
             ENTER_TEST();
@@ -187,47 +175,47 @@ namespace CsIfcEngineTests
 
             var aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "1234");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234",  aggrLevel = 1 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "T");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel = 1 });
 
             Int64 i = 1234;
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINTEGER, ref i);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel = 1 });
 
             double d = 12.34;
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiREAL, ref d);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel = 1 });
 
             bool b = true;
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBOOLEAN, ref b);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel = 1 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiLOGICAL, "U");
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel = 1 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "EEE");
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel = 1 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "F");
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel = 1 });
 
             var typ = IfcWallType.Create(model);
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINSTANCE, typ);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, aggrLevel = 1 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBINARY, "0AF");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel = 1 });
 
             ifcengine.sdaiCloseModel(model);
         }
@@ -251,14 +239,14 @@ namespace CsIfcEngineTests
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "1234");
             var adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", nests = Nests(Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel = 1 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "T");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");  //put typePath makes complex
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=1, complexArg=true });
 
             Int64 i = 1234;
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
@@ -266,7 +254,7 @@ namespace CsIfcEngineTests
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=1, complexArg=true });
 
             double d = 12.34;
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
@@ -274,7 +262,7 @@ namespace CsIfcEngineTests
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=1, complexArg=true });
 
             bool b = true;
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
@@ -282,28 +270,28 @@ namespace CsIfcEngineTests
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=1, complexArg=true });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiLOGICAL, "U");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=1, complexArg=true });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "EEE");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=1, complexArg=true });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "F");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArg=true });
 
             var typ = IfcWallType.Create(model);
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
@@ -311,14 +299,14 @@ namespace CsIfcEngineTests
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, aggrLevel=1, complexArg=true });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBINARY, "0AF");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", nests = Nests(Nest.Aggregation, Nest.ADB) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=1, complexArg=true });
 
             ifcengine.sdaiCloseModel(model);
         }
@@ -336,67 +324,77 @@ namespace CsIfcEngineTests
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             var aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "T");
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=1, complexArgAggregated=true });
 
             Int64 i = 1234;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINTEGER, ref i);
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=1, complexArgAggregated=true });
 
             double d = 12.34;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiREAL, ref d);
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=1, complexArgAggregated=true });
 
             bool b = true;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", binVal = "T", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=1, complexArgAggregated=true });
 
             b = false;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", binVal = "F", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiLOGICAL, "U");
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", binVal = "U", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", binVal = "F", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", logicalVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", binVal = "F", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
 
             var typ = IfcWallType.Create(model);
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINSTANCE, typ);
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, aggrLevel=1 });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBINARY, "0AF");
+            ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", nests = Nests(Nest.ADB, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=1, complexArgAggregated=true });
 
             ifcengine.sdaiCloseModel(model);
         }
@@ -420,65 +418,65 @@ namespace CsIfcEngineTests
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "1234");
             var aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel=2 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "T");
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=2 });
 
             Int64 i = 1234;
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINTEGER, ref i);
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=2 });
 
             double d = 12.34;
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiREAL, ref d);
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=2 });
 
             bool b = true;
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBOOLEAN, ref b);
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", binVal = "T", nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=2 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiLOGICAL, "U");
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", binVal = "U", nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=2 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "EEE");
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", logicalVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", binVal = "EEE", nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=2 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "F");
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", binVal = "F", nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=2 });
 
             var typ = IfcWallType.Create(model);
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINSTANCE, typ);
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, aggrLevel=2 });
 
             aggr = ifcengine.sdaiCreateAggr(wall, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBINARY, "0AF");
             aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "0AF", logicalVal = "0AF", stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", nests = Nests(Nest.Aggregation, Nest.Aggregation) });
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=2 });
 
             ifcengine.sdaiCloseModel(model);
         }
@@ -510,12 +508,12 @@ namespace CsIfcEngineTests
 
             Int64 aggrVal = 1;
             res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiAGGR, out aggrVal);
-            if (expected != null && expected.nests.Count>0 && expected.nests.First()==Nest.Aggregation)
+            if (expected != null && expected.aggrLevel > 0)
             {
                 ASSERT(res != 0);
-                expected.nests.Pop();
+                expected.aggrLevel--;
                 CheckAggrValues(aggrVal, expected);
-                expected.nests.Push(Nest.Aggregation);
+                expected.aggrLevel++;
                 expected = null; //>>>>>> all other get attempts should fail
             }
             else
@@ -654,12 +652,12 @@ namespace CsIfcEngineTests
         {
             Int64 adbVal = 1;
             var res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiADB, out adbVal);
-            if (expected != null && expected.nests.Count > 0 && expected.nests.First() == Nest.ADB)
+            if (expected != null && expected.complexArg)
             {
                 ASSERT(res != 0);
-                expected.nests.Pop();
+                expected.complexArg = false;
                 CheckADBValues(adbVal, expected);
-                //do not push
+                expected.complexArg = true;
             }
             else
             {
@@ -668,12 +666,12 @@ namespace CsIfcEngineTests
 
             Int64 aggrVal = 1;
             res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiAGGR, out aggrVal);
-            if (expected != null && expected.nests.Count > 0 && expected.nests.First()==Nest.Aggregation)
+            if (expected != null && expected.aggrLevel > 0)
             {
                 ASSERT(res != 0);
-                expected.nests.Pop();
+                expected.aggrLevel--;
                 CheckAggrValues(aggrVal, expected);
-                expected.nests.Push(Nest.Aggregation);
+                expected.aggrLevel++;
                 expected = null; //>>>>>>>>>> all other attempts to get should return NULL
             }
             else
@@ -821,7 +819,17 @@ namespace CsIfcEngineTests
             if (expected != null)
             {
                 ASSERT(res != 0);
+
+                bool save = expected.complexArg;
+                expected.complexArg = false;
+                if (expected.complexArgAggregated && expected.aggrLevel == 0)
+                    expected.complexArg = true;
+                else
+                    expected.complexArg = false;
+
                 CheckADBValues(adbVal, expected);
+
+                expected.complexArg = save;
             }
             else
             {
@@ -830,12 +838,12 @@ namespace CsIfcEngineTests
 
             Int64 aggrVal = 1;
             res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiAGGR, out aggrVal);
-            if (expected != null && expected.nests.Count > 0 && expected.nests.First()==Nest.Aggregation)
+            if (expected != null && expected.aggrLevel > 0)
             {
                 ASSERT(res != 0);
-                expected.nests.Pop();
+                expected.aggrLevel--;
                 CheckAggrValues(aggrVal, expected);
-                expected.nests.Push(Nest.Aggregation);
+                expected.aggrLevel++;
                 expected = null; //>>>>>>>>>> all other attempts to get should return NULL
             }
             else
