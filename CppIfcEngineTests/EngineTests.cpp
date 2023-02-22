@@ -14,7 +14,7 @@ static void TestADBBoolean(SdaiInstance inst, const char* attr)
     sdaiPutAttrBN(inst, attr, sdaiADB, adb);
     sdaiDeleteADB(adb);
 
-    void* ret = sdaiGetAttr(inst, attr, sdaiADB, &adb);
+    void* ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
     ASSERT(ret && adb);
 
     ret = sdaiGetADBValue(adb, sdaiBOOLEAN, &bVal);
@@ -35,7 +35,7 @@ static void TestADBLogical(SdaiInstance inst, const char* attr)
     sdaiPutAttrBN(inst, attr, sdaiADB, adb);
     sdaiDeleteADB(adb);
     
-    void* ret = sdaiGetAttr(inst, attr, sdaiADB, &adb);
+    void* ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
     ASSERT(ret && adb);
 
     const char* logVal = NULL;
