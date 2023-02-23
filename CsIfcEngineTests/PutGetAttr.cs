@@ -481,8 +481,44 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
         }
 
-
         static void CheckValues
+            (Int64 inst,
+             string attrName,
+             PrimitiveValues expected
+            )
+        {
+            CheckValuesInModel(inst, attrName, expected);
+
+            var fileName = "PutGetAttrTest.ifc";
+            var stepId = ifcengine.internalGetP21Line(inst);
+
+            var entity = ifcengine.sdaiGetInstanceType(inst);
+            var model = ifcengine.engiGetEntityModel(entity);
+
+            ifcengine.SetSPFFHeaderItem(model, 9, 0, ifcengine.sdaiSTRING, "IFC4");
+            ifcengine.SetSPFFHeaderItem(model, 9, 1, ifcengine.sdaiSTRING, (string)null);
+
+            ifcengine.sdaiSaveModelBN(model, fileName);
+
+            var model2 = ifcengine.sdaiOpenModelBN(0, fileName, "IFC4");
+            ASSERT(model2 != 0);
+
+            var inst2 = ifcengine.internalGetInstanceFromP21Line(model2, stepId);
+            ASSERT(inst2 != 0);
+
+            if (expected != null && expected.instVal != null)
+            {
+                var stepIdRef = ifcengine.internalGetP21Line(expected.instVal.Value);
+                expected.instVal = ifcengine.internalGetInstanceFromP21Line(model2, stepIdRef);
+                ASSERT(expected.instVal.Value != 0);
+            }
+
+            CheckValuesInModel(inst2, attrName, expected);
+
+            ifcengine.sdaiCloseModel(model2);
+        }
+
+        static void CheckValuesInModel
             (Int64 inst,
              string attrName,
              PrimitiveValues expected
