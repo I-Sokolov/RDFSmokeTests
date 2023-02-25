@@ -13,6 +13,7 @@ static void TestADBBoolean(SdaiInstance inst, const char* attr)
     sdaiPutADBTypePath(adb, 1, "IFCBOOLEAN");
     sdaiPutAttrBN(inst, attr, sdaiADB, adb);
     sdaiDeleteADB(adb);
+    adb = NULL;
 
     void* ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
     ASSERT(ret==adb && adb);
@@ -26,6 +27,27 @@ static void TestADBBoolean(SdaiInstance inst, const char* attr)
     ASSERT(ret==&logVal && 0 == strcmp(logVal, "T"));
 
     sdaiDeleteADB(adb);
+    adb = NULL;
+
+    //put double
+    double dVal = 5.4;
+    sdaiPutAttrBN(inst, attr, sdaiREAL, &dVal);
+    
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    ASSERT(ret == adb && adb);
+
+    //value is double now
+    ret = sdaiGetADBValue(adb, sdaiREAL, &dVal);
+    ASSERT(ret == &dVal && dVal == 5.4);
+    ret = sdaiGetADBValue(adb, sdaiBOOLEAN, &bVal);
+    ASSERT(ret == NULL); 
+
+    //but typePath is IFCBOOLEAN
+    auto typePath = sdaiGetADBTypePath(adb, sdaiSTRING);
+    ASSERT(!strcmp(typePath, "IFCBOOLEAN"));
+
+    sdaiDeleteADB(adb);
+    adb = NULL;
 }
 
 static void TestADBLogical(SdaiInstance inst, const char* attr)
