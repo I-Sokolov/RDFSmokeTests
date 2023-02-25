@@ -115,6 +115,18 @@ extern void EarlyBound_IFC4_test()
     //set to numeric
     measureWithUnit.put_ValueComponent().put_IfcMeasureValue().put_IfcRatioMeasure(0.5);
 
+    int_t ival = 0;
+    auto res = sdaiGetAttrBN(measureWithUnit, "ValueComponent", sdaiINTEGER, &ival);
+    ASSERT(res == &ival && ival == 0);
+
+    double rval = 0;
+    res = sdaiGetAttrBN(measureWithUnit, "ValueComponent", sdaiREAL, &rval);
+    ASSERT(res == &rval && rval == 0.5);
+
+    sval = 0;
+    res = sdaiGetAttrBN(measureWithUnit, "ValueComponent", sdaiSTRING, &sval);
+    ASSERT(res == &sval);
+       
     dval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcRatioMeasure();
     ASSERT(dval.Value() == 0.5);
 
@@ -201,6 +213,14 @@ extern void EarlyBound_IFC4_test()
     as_bool = measureWithUnit.get_ValueComponent().as_bool();
     ASSERT(as_double.IsNull() && 0 == strcmp(as_text, "my text") && as_int.IsNull() && as_bool.IsNull());
 
+    //
+    measureWithUnit.put_ValueComponent().put_IfcSimpleValue().put_IfcBoolean(false);
+    bool bval = true;
+    res = sdaiGetAttrBN(measureWithUnit, "ValueComponent", sdaiBOOLEAN, &bval);
+    ASSERT(res == &bval && !bval);
+    res = sdaiGetAttrBN(measureWithUnit, "ValueComponent", sdaiLOGICAL, &txt);
+    ASSERT(res == &txt && !strcmp(txt, "F"));
+    
     //
     // entities select
     //
@@ -418,7 +438,7 @@ extern void EarlyBound_IFC4_test()
     segments.clear();
 
     auto pts = poly.get_Points();
-    points = IfcCartesianPointList2D(pts); //TODO isInstanceOf!
+    points = IfcCartesianPointList2D(pts); 
     ASSERT(points != 0);
 
     points.get_CoordList(coordList);

@@ -15,15 +15,15 @@ static void TestADBBoolean(SdaiInstance inst, const char* attr)
     sdaiDeleteADB(adb);
 
     void* ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
-    ASSERT(ret && adb);
+    ASSERT(ret==adb && adb);
 
     ret = sdaiGetADBValue(adb, sdaiBOOLEAN, &bVal);
-    ASSERT(ret && bVal);
+    ASSERT(ret==&bVal && bVal);
 
     //you can also get it as logical
     const char* logVal = NULL;
     ret = sdaiGetADBValue(adb, sdaiLOGICAL, &logVal);
-    ASSERT(ret && 0 == strcmp(logVal, "T"));
+    ASSERT(ret==&logVal && 0 == strcmp(logVal, "T"));
 
     sdaiDeleteADB(adb);
 }
@@ -73,8 +73,8 @@ static void TestBinaries(SdaiModel ifcModel)
     //put/get with SDAI
     sdaiPutAttrBN(blobTexture, "RasterCode", sdaiBINARY, rasterCode);
     IfcBinary gotData = NULL;
-    sdaiGetAttrBN(blobTexture, "RasterCode", sdaiBINARY, &gotData);
-    ASSERT(!strcmp(gotData, rasterCode));
+    auto res = sdaiGetAttrBN(blobTexture, "RasterCode", sdaiBINARY, &gotData);
+    ASSERT(res == &gotData && !strcmp(gotData, rasterCode));
 
     //can also get as string
     sdaiGetAttrBN(blobTexture, "RasterCode", sdaiSTRING, &gotData);
@@ -255,7 +255,8 @@ static void TestGetADBValue(SdaiModel ifcModel)
     auto instance = internalGetInstanceFromP21Line(ifcModel, 319);
 
     SdaiAggr listValues = 0;
-    sdaiGetAttrBN(instance, "ListValues", sdaiAGGR, &listValues);
+    auto res = sdaiGetAttrBN(instance, "ListValues", sdaiAGGR, &listValues);
+    ASSERT(res == listValues);
 
     auto count = sdaiGetMemberCount(listValues);
     ASSERT(count == 9);
@@ -622,8 +623,8 @@ static void TestAttrIndex(SdaiModel ifcModel)
     sdaiGetAttr(wall, attr, sdaiENUM, &type);
     ASSERT(!strcmp(type, "SOLIDWALL"));
 
-    sdaiGetAttrBN(wall, "PredefinedType", sdaiENUM, &type);
-    ASSERT(!strcmp(type, "SOLIDWALL"));
+    auto res = sdaiGetAttrBN(wall, "PredefinedType", sdaiENUM, &type);
+    ASSERT(res == &type && !strcmp(type, "SOLIDWALL"));
 
     auto ind = engiGetEntityAttributeIndexEx(wall, "PredefinedType", true, true);
     ASSERT(ind == 32);
@@ -638,7 +639,8 @@ static void TestAttrIndex(SdaiModel ifcModel)
     attr = engiGetEntityAttributeByIndex(wall, 9, true, true);
 
     SdaiInstance building = 0;
-    sdaiGetAttr(story, attr, sdaiINSTANCE, &building);
+    res = sdaiGetAttr(story, attr, sdaiINSTANCE, &building);
+    ASSERT(res == (void*)building);
     auto stepId = internalGetP21Line(building);
     ASSERT(stepId == 7);
 
