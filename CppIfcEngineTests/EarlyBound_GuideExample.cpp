@@ -302,4 +302,5 @@ extern void EarlyBound_GuideExamples()
     prop.get_NominalValue().get_IfcMeasureValue().get_IfcComplexNumber(cplxNum);
     ASSERT(cplxNum.size() == 2 && cplxNum.front() == 2.1 && cplxNum.back() == 1.5);
 
+    sdaiCloseModel(model);
 }

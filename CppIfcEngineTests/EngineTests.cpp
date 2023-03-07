@@ -186,6 +186,7 @@ static void TestBinaries(SdaiModel ifcModel)
         ASSERT(!strcmp(v, rasterCode));
     }
 
+    sdaiCloseModel(readModel);
 }
 
 static void TestPutAttr(SdaiModel model)
