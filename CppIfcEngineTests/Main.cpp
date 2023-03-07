@@ -45,7 +45,7 @@ extern int main()
             if (i % 100 == 0)
                 {
                 auto heapSize = HeapUsed();
-                printf("Cycle %d, heap used %d\n", i, heapSize);
+                printf("Cycle %d, lost memory %d\n", i, heapSize-startingHeap);
                 }
         } while (!stop);
 
