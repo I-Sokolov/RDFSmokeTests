@@ -8,14 +8,42 @@ using namespace IFC4;
 
 static void TestADBBoolean(SdaiInstance inst, const char* attr)
 {
+    //get $
+    SdaiADB adb = nullptr;
+    void* ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    ASSERT(!ret && !adb);
+
+    //variants
+    adb = sdaiCreateEmptyADB();
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, adb);
+    ASSERT(!ret && !sdaiGetADBType(adb));
+    sdaiDeleteADB(adb);
+
+    adb = sdaiCreateEmptyADB();
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    ASSERT(!ret && !sdaiGetADBType(adb));
+    sdaiDeleteADB(adb);
+
+    adb = sdaiCreateADB(sdaiSTRING, "2");
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, adb);
+    ASSERT(!ret && !sdaiGetADBType(adb));
+    sdaiDeleteADB(adb);
+
+    adb = sdaiCreateADB(sdaiSTRING, "2");
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    ASSERT(!ret && !sdaiGetADBType(adb));
+    sdaiDeleteADB(adb);
+
+
+    //put
     bool bVal = true;
-    void* adb = sdaiCreateADB(sdaiBOOLEAN, &bVal);
+    adb = sdaiCreateADB(sdaiBOOLEAN, &bVal);
     sdaiPutADBTypePath(adb, 1, "IFCBOOLEAN");
     sdaiPutAttrBN(inst, attr, sdaiADB, adb);
     sdaiDeleteADB(adb);
     adb = NULL;
 
-    void* ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
     ASSERT(ret==adb && adb);
 
     ret = sdaiGetADBValue(adb, sdaiBOOLEAN, &bVal);
@@ -27,6 +55,29 @@ static void TestADBBoolean(SdaiInstance inst, const char* attr)
     ASSERT(ret==&logVal && 0 == strcmp(logVal, "T"));
 
     sdaiDeleteADB(adb);
+
+    //variants
+    adb = sdaiCreateEmptyADB();
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, adb);
+    ASSERT(ret == adb && sdaiGetADBType(adb) == sdaiBOOLEAN);
+    sdaiDeleteADB(adb);
+
+    adb = sdaiCreateEmptyADB();
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    ASSERT(ret == adb && sdaiGetADBType(adb) == sdaiBOOLEAN);
+    sdaiDeleteADB(adb);
+
+    adb = sdaiCreateADB(sdaiSTRING, "2");
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, adb);
+    ASSERT(ret == adb && sdaiGetADBType(adb) == sdaiBOOLEAN);
+    sdaiDeleteADB(adb);
+
+    adb = sdaiCreateADB(sdaiSTRING, "2");
+    ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    ASSERT(ret == adb && sdaiGetADBType(adb) == sdaiBOOLEAN);
+    sdaiDeleteADB(adb);
+
+    //
     adb = NULL;
 
     //put double
@@ -236,6 +287,7 @@ static void TestPutAttr(SdaiModel model)
     type = engiGetInstanceAttrTypeBN(window, "FillsVoids");
     ASSERT(type == 0);
 
+    measureWithUnit = IfcMeasureWithUnit::Create(model);
     TestADBBoolean (measureWithUnit, "ValueComponent");
     TestADBLogical (measureWithUnit, "ValueComponent");
 }
