@@ -51,7 +51,7 @@ namespace CsIfcEngineTests
             {
 
                 Int64 inst = 0;
-                ifcengine.engiGetAggrElement(extent, i, ifcengine.sdaiINSTANCE, out inst);
+                ifcengine.sdaiGetAggrByIndex(extent, i, ifcengine.sdaiINSTANCE, out inst);
 
                 lstGet = ((IFC4x4.IfcLogicalVoxelData)(inst)).get_Values();
                 ASSERT_EQ(lstGet, arrSet);
@@ -66,7 +66,7 @@ namespace CsIfcEngineTests
             {
 
                 Int64 inst = 0;
-                ifcengine.engiGetAggrElement(extent, i, ifcengine.sdaiINSTANCE, out inst);
+                ifcengine.sdaiGetAggrByIndex(extent, i, ifcengine.sdaiINSTANCE, out inst);
 
                 lstGetB = ((IFC4x4.IfcVoxelGrid)(inst)).get_Voxels();
                 ASSERT_EQ(lstGetB, arrSetB);

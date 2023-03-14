@@ -851,7 +851,7 @@ namespace CsIfcEngineTests
             ASSERT(cnt == 1);
 
             Int64 adbVal;
-            var res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiADB, out adbVal);
+            var res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiADB, out adbVal);
             if (expected != null)
             {
                 ASSERT(res != 0);
@@ -873,7 +873,7 @@ namespace CsIfcEngineTests
             }
 
             Int64 aggrVal = 1;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiAGGR, out aggrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiAGGR, out aggrVal);
             if (expected != null && expected.aggrLevel > 0)
             {
                 ASSERT(res != 0);
@@ -888,7 +888,7 @@ namespace CsIfcEngineTests
             }
 
             IntPtr ptrVal = IntPtr.MaxValue;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiBINARY, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiBINARY, out ptrVal);
             if (expected != null && expected.binVal != null)
             {
                 ASSERT(res != 0);
@@ -901,7 +901,7 @@ namespace CsIfcEngineTests
             }
 
             Int64 intVal = 1;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiBOOLEAN, out intVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiBOOLEAN, out intVal);
             if (expected != null && expected.boolVal != null)
             {
                 ASSERT(res != 0);
@@ -913,7 +913,7 @@ namespace CsIfcEngineTests
             }
 
             ptrVal = IntPtr.MaxValue;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiENUM, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiENUM, out ptrVal);
             if (expected != null && expected.enumVal != null)
             {
                 ASSERT(res != 0);
@@ -926,7 +926,7 @@ namespace CsIfcEngineTests
             }
 
             intVal = 1;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiINSTANCE, out intVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiINSTANCE, out intVal);
             if (expected != null && expected.instVal != null)
             {
                 ASSERT(res != 0);
@@ -938,7 +938,7 @@ namespace CsIfcEngineTests
             }
 
             intVal = 1;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiINTEGER, out intVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiINTEGER, out intVal);
             if (expected != null && expected.intVal != null)
             {
                 ASSERT(res != 0);
@@ -950,7 +950,7 @@ namespace CsIfcEngineTests
             }
 
             ptrVal = IntPtr.MaxValue;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiLOGICAL, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiLOGICAL, out ptrVal);
             if (expected != null && expected.logicalVal != null)
             {
                 ASSERT(res != 0);
@@ -963,7 +963,7 @@ namespace CsIfcEngineTests
             }
 
             double realVal = 1.1;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiREAL, out realVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiREAL, out realVal);
             if (expected != null && expected.realVal != null)
             {
                 ASSERT(res != 0);
@@ -975,7 +975,7 @@ namespace CsIfcEngineTests
             }
 
             ptrVal = IntPtr.MaxValue;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiSTRING, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiSTRING, out ptrVal);
             if (expected != null && expected.stringVal != null)
             {
                 ASSERT(res != 0);
@@ -988,7 +988,7 @@ namespace CsIfcEngineTests
             }
 
             ptrVal = IntPtr.MaxValue;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiUNICODE, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiUNICODE, out ptrVal);
             if (expected != null && expected.stringVal != null)
             {
                 ASSERT(res != 0);
@@ -1001,7 +1001,7 @@ namespace CsIfcEngineTests
             }
 
             ptrVal = IntPtr.MaxValue;
-            res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiEXPRESSSTRING, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiEXPRESSSTRING, out ptrVal);
             if (expected != null && expected.expressStringVal != null)
             {
                 ASSERT(res != 0);

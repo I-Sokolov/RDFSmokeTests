@@ -43,7 +43,7 @@ extern void EarlyBound_IFC4x4_test()
     for (int i = 0; i < N; i++) {
 
         int_t inst = 0;
-        engiGetAggrElement(extent, i, sdaiINSTANCE, &inst);
+        sdaiGetAggrByIndex(extent, i, sdaiINSTANCE, &inst);
 
         lstGet.clear();
         IFC4x4::IfcLogicalVoxelData(inst).get_Values(lstGet);
@@ -58,7 +58,7 @@ extern void EarlyBound_IFC4x4_test()
     for (int i = 0; i < N; i++) {
 
         int_t inst = 0;
-        engiGetAggrElement(extent, i, sdaiINSTANCE, &inst);
+        sdaiGetAggrByIndex(extent, i, sdaiINSTANCE, &inst);
 
         lstGetB.clear();
         IFC4x4::IfcVoxelGrid(inst).get_Voxels(lstGetB);

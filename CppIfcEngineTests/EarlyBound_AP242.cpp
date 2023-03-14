@@ -199,7 +199,7 @@ static void test_list3()
     for (int_t i = 0; i < N_volumes; i++) {
      
         int_t volume = 0;
-        engiGetAggrElement(volumes, i, sdaiINSTANCE, &volume);
+        sdaiGetAggrByIndex(volumes, i, sdaiINSTANCE, &volume);
 
         list_of_list_of_list_of_double weights2;
         rational_b_spline_volume(volume).get_weights_data(weights2);
@@ -268,7 +268,7 @@ static void test_multi_parent()
     for (int_t i = 0; i < N_items; i++) {
 
         int_t item = 0;
-        engiGetAggrElement(items, i, sdaiINSTANCE, &item);
+        sdaiGetAggrByIndex(items, i, sdaiINSTANCE, &item);
 
         auto name = a3m_equivalence_criterion(item).get_name();
         ASSERT(!strcmp(name, NAME));
@@ -283,7 +283,7 @@ static void test_multi_parent()
     for (int_t i = 0; i < N_items; i++) {
 
         int_t item = 0;
-        engiGetAggrElement(items, i, sdaiINSTANCE, &item);
+        sdaiGetAggrByIndex(items, i, sdaiINSTANCE, &item);
 
         eloop = edge_loop(item);
         auto name = eloop.get_name();

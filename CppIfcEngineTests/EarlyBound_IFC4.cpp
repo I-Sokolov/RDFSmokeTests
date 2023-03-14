@@ -580,7 +580,7 @@ extern void EarlyBound_IFC4_test()
     for (i = 0; i < N_rels; i++) {
 
         int_t rel = 0;
-        engiGetAggrElement(rels, i, sdaiINSTANCE, &rel);
+        sdaiGetAggrByIndex(rels, i, sdaiINSTANCE, &rel);
 
         auto get = IfcRelDefinesByProperties(rel).get_RelatingPropertyDefinition();
         ASSERT(get.get_IfcPropertySetDefinition() == 0);

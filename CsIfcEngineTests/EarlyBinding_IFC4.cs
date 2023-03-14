@@ -556,7 +556,7 @@ namespace CsIfcEngineTests
             {
 
                 Int64 rel = 0;
-                ifcengine.engiGetAggrElement(rels, i, ifcengine.sdaiINSTANCE, out rel);
+                ifcengine.sdaiGetAggrByIndex(rels, i, ifcengine.sdaiINSTANCE, out rel);
 
                 var get = ((IfcRelDefinesByProperties)(rel)).get_RelatingPropertyDefinition();
                 ASSERT(get.get_IfcPropertySetDefinition() == 0);

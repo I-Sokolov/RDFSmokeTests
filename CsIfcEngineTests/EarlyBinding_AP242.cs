@@ -161,7 +161,7 @@ namespace CsIfcEngineTests
             {
 
                 long volume = 0;
-                RDF.ifcengine.engiGetAggrElement(volumes, i, RDF.ifcengine.sdaiINSTANCE, out volume);
+                RDF.ifcengine.sdaiGetAggrByIndex(volumes, i, RDF.ifcengine.sdaiINSTANCE, out volume);
 
                 list_of_list_of_list_of_double weights2 = ((rational_b_spline_volume)volume).get_weights_data();
 
@@ -208,7 +208,7 @@ namespace CsIfcEngineTests
             {
 
                 long item = 0;
-                RDF.ifcengine.engiGetAggrElement(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
+                RDF.ifcengine.sdaiGetAggrByIndex(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
 
                 var name = ((a3m_equivalence_criterion)item).get_name();
                 ASSERT(!strcmp(name, NAME));
@@ -223,7 +223,7 @@ namespace CsIfcEngineTests
             {
 
                 long item = 0;
-                RDF.ifcengine.engiGetAggrElement(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
+                RDF.ifcengine.sdaiGetAggrByIndex(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
 
                 eloop = (edge_loop)item;
                 var name = eloop.get_name();

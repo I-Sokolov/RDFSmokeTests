@@ -201,7 +201,7 @@ static void TestBinaries(SdaiModel ifcModel)
     ASSERT(N == 1);
     for (int_t i = 0; i < N; i++) {
         int_t inst = 0;
-        engiGetAggrElement(blobTextureAggr, i, sdaiINSTANCE, &inst);
+        sdaiGetAggrByIndex(blobTextureAggr, i, sdaiINSTANCE, &inst);
         auto code = IfcBlobTexture(inst).get_RasterCode();
         ASSERT(0 == strcmp(code, rasterCode));
     }
@@ -220,7 +220,7 @@ static void TestBinaries(SdaiModel ifcModel)
     ASSERT(N == 1);
     for (int_t i = 0; i < N; i++) {
         int_t inst = 0;
-        engiGetAggrElement(pixelTextureAggr, i, sdaiINSTANCE, &inst);
+        sdaiGetAggrByIndex(pixelTextureAggr, i, sdaiINSTANCE, &inst);
         ListOfIfcBinary lstBin2;
         IfcPixelTexture(inst).get_Pixel(lstBin2);
         ASSERT(lstBin2.size() == 2 && !strcmp(lstBin2.front(), rasterCode) && !strcmp(lstBin2.back(), rasterCode));
@@ -232,7 +232,7 @@ static void TestBinaries(SdaiModel ifcModel)
     ASSERT(N == 1);
     for (int_t i = 0; i < N; i++) {
         int_t inst = 0;
-        engiGetAggrElement(valueAggr, i, sdaiINSTANCE, &inst);
+        sdaiGetAggrByIndex(valueAggr, i, sdaiINSTANCE, &inst);
         auto v = IfcAppliedValue(inst).get_AppliedValue().get_IfcValue().get_IfcSimpleValue().get_IfcBinary();
         ASSERT(!strcmp(v, rasterCode));
     }
@@ -346,7 +346,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 0-string
     /// </summary>
-    engiGetAggrElement(listValues, 0, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 0, sdaiADB, &adbValue);
     auto type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiSTRING);
 
@@ -375,7 +375,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 1-integer
     /// </summary>
-    engiGetAggrElement(listValues, 1, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 1, sdaiADB, &adbValue);
     type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiINTEGER);
 
@@ -405,7 +405,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 2-real
     /// </summary>
-    engiGetAggrElement(listValues, 2, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 2, sdaiADB, &adbValue);
     type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiREAL);
 
@@ -435,7 +435,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 3-boolean
     /// </summary>
-    engiGetAggrElement(listValues, 3, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 3, sdaiADB, &adbValue);
     type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiBOOLEAN);
 
@@ -465,7 +465,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 4-logical
     /// </summary>
-    engiGetAggrElement(listValues, 4, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 4, sdaiADB, &adbValue);
     type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiLOGICAL);
 
@@ -496,7 +496,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 5-binary
     /// </summary>
-    engiGetAggrElement(listValues, 5, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 5, sdaiADB, &adbValue);
     type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiBINARY);
 
@@ -526,7 +526,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 6-instance
     /// </summary>
-    engiGetAggrElement(listValues, 6, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 6, sdaiADB, &adbValue);
     type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiINSTANCE);
 
@@ -563,7 +563,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 7-aggregation
     /// </summary>
-    engiGetAggrElement(listValues, 7, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 7, sdaiADB, &adbValue);
     type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiAGGR);
 
@@ -593,7 +593,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     /// <summary>
     /// 8-enum
     /// </summary>
-    engiGetAggrElement(listValues, 8, sdaiADB, &adbValue);
+    sdaiGetAggrByIndex(listValues, 8, sdaiADB, &adbValue);
     type = sdaiGetADBType(adbValue);
     ASSERT(type == sdaiENUM);
 
