@@ -530,7 +530,7 @@ namespace CsIfcEngineTests
             var attr = ifcengine.sdaiGetAttrDefinition(entity, attrName);
             ASSERT(attr != 0);
 
-            Int64 adbVal = 1;
+            Int64 adbVal;
             var res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiADB, out adbVal);
             if (expected != null)
             {
@@ -686,7 +686,7 @@ namespace CsIfcEngineTests
 
         static void CheckADBValues(Int64 adb, PrimitiveValues expected)
         {
-            Int64 adbVal = 1;
+            Int64 adbVal;
             var res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiADB, out adbVal);
             if (expected != null && expected.complexArg)
             {
@@ -850,7 +850,7 @@ namespace CsIfcEngineTests
             var cnt = ifcengine.sdaiGetMemberCount(aggr);
             ASSERT(cnt == 1);
 
-            Int64 adbVal = 1;
+            Int64 adbVal;
             var res = ifcengine.engiGetAggrElement(aggr, 0, ifcengine.sdaiADB, out adbVal);
             if (expected != null)
             {
