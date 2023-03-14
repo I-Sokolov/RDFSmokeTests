@@ -557,17 +557,16 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && aggrVal == 0);
             }
 
-            IntPtr ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiBINARY, out ptrVal);
+            string strVal;
+            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiBINARY, out strVal);
             if (expected != null && expected.binVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.binVal));
+                ASSERT(strVal.Equals(expected.binVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
             Int64 intVal = 1;
@@ -582,17 +581,15 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && intVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiENUM, out ptrVal);
+            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiENUM, out strVal);
             if (expected != null && expected.enumVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.enumVal));
+                ASSERT(strVal.Equals(expected.enumVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
             intVal = 1;
@@ -619,17 +616,15 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && intVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiLOGICAL, out ptrVal);
+            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiLOGICAL, out strVal);
             if (expected != null && expected.logicalVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.logicalVal));
+                ASSERT(strVal.Equals(expected.logicalVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
             double realVal = 1.1;
@@ -644,20 +639,18 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && realVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiSTRING, out ptrVal);
+            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiSTRING, out strVal);
             if (expected != null && expected.stringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.stringVal));
+                ASSERT(strVal.Equals(expected.stringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
-            ptrVal = IntPtr.MaxValue;
+            IntPtr ptrVal = IntPtr.MaxValue;
             res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiUNICODE, out ptrVal);
             if (expected != null && expected.stringVal != null)
             {
