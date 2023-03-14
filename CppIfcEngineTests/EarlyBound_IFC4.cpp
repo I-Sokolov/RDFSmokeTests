@@ -17,6 +17,11 @@ extern void EarlyBound_IFC4_test()
 
     auto wall = IfcWall::Create(ifcModel);
 
+    SdaiAggr aggrRelDefined = 0;
+    void* ret = sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggrRelDefined);
+    //expected null? ASSERT(!ret && !aggrRelDefined);
+    ASSERT(ret && (SdaiAggr) ret == aggrRelDefined);
+
     IfcGloballyUniqueId guid = wall.get_GlobalId();
     IfcLabel name = wall.get_Name();
     IfcText descr = wall.get_Description();
@@ -564,6 +569,17 @@ extern void EarlyBound_IFC4_test()
     relProps.get_RelatingPropertyDefinition().get_IfcPropertySetDefinitionSet(psSet);
     ASSERT(psSet.size() == 1 && psSet.front()==emptyPset);
 
+    //
+    aggrRelDefined = 0;
+    ret = sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggrRelDefined);
+    ASSERT(ret && (SdaiAggr)ret == aggrRelDefined);
+
+    ret = sdaiGetAggrByIndex(aggrRelDefined, 0, sdaiINSTANCE, &instance);
+    ASSERT(ret && (SdaiInstance)ret == instance);
+
+    ret = sdaiGetAggrByIndex(aggrRelDefined, 100, sdaiINSTANCE, &instance);
+    ASSERT(!ret && !instance);
+
     /// 
     /// 
     sdaiSaveModelBN(ifcModel, "ebTest.ifc");
@@ -580,7 +596,8 @@ extern void EarlyBound_IFC4_test()
     for (i = 0; i < N_rels; i++) {
 
         int_t rel = 0;
-        sdaiGetAggrByIndex(rels, i, sdaiINSTANCE, &rel);
+        void* ret = sdaiGetAggrByIndex(rels, i, sdaiINSTANCE, &rel);
+        ASSERT(ret && (SdaiInstance)ret == rel);
 
         auto get = IfcRelDefinesByProperties(rel).get_RelatingPropertyDefinition();
         ASSERT(get.get_IfcPropertySetDefinition() == 0);
@@ -590,6 +607,10 @@ extern void EarlyBound_IFC4_test()
         name = psSet.front().get_Name();
         ASSERT(!strcmp (name, "Empty property set"));
     }
+
+    int_t rel = 0;
+    ret = sdaiGetAggrByIndex(rels, N_rels+3, sdaiINSTANCE, &rel);
+    ASSERT(ret == 0 && rel == 0);
 
     sdaiCloseModel(ifcModel);
 }

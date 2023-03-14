@@ -40,7 +40,7 @@ extern void EarlyBound_GuideExamples()
     // 
 
     wall.put_Name("MyWall");
-    ASSERT(!- strcmp(wall.get_Name(), "MyWall"));
+    ASSERT(!strcmp(wall.get_Name(), "MyWall"));
 
     //
     // Nullable values

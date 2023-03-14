@@ -196,15 +196,19 @@ static void TestBinaries(SdaiModel ifcModel)
     SdaiModel readModel = sdaiOpenModelBN(NULL, FILE_NAME, "IFC4");
 
     auto entityBlobTexture = sdaiGetEntity(readModel, "IfcBlobTexture");
-    auto blobTextureAggr = sdaiGetEntityExtent(readModel, entityBlobTexture);
+    auto blobTextureAggr = xxxxGetEntityAndSubTypesExtent(readModel, entityBlobTexture);
     auto N = sdaiGetMemberCount(blobTextureAggr);
     ASSERT(N == 1);
     for (int_t i = 0; i < N; i++) {
         int_t inst = 0;
-        sdaiGetAggrByIndex(blobTextureAggr, i, sdaiINSTANCE, &inst);
+        void* ret = sdaiGetAggrByIndex(blobTextureAggr, i, sdaiINSTANCE, &inst);
+        ASSERT(ret && (SdaiInstance)ret == inst);
         auto code = IfcBlobTexture(inst).get_RasterCode();
         ASSERT(0 == strcmp(code, rasterCode));
     }
+    int_t inst = 0;
+    void* ret = sdaiGetAggrByIndex(blobTextureAggr, N+1, sdaiINSTANCE, &inst);
+    ASSERT(!ret && !inst);
 
     const char* argName = NULL;
     engiGetEntityArgumentName(entityBlobTexture, 1, sdaiSTRING, &argName);
@@ -743,6 +747,14 @@ extern void EngineTests(void)
     TestBinaries(ifcModel);
     TestPutAttr(ifcModel);
     TestGetAttrType(ifcModel);
+
+    auto aggrAll = xxxxGetAllInstances(ifcModel);
+    auto nInst = sdaiGetMemberCount(aggrAll);
+    SdaiInstance inst = 0;
+    void* ret = sdaiGetAggrByIndex(aggrAll, 0, sdaiINSTANCE, &inst);
+    ASSERT(ret && (SdaiInstance)ret == inst);
+    ret = sdaiGetAggrByIndex(aggrAll, nInst + 10, sdaiINSTANCE, &inst);
+    ASSERT(!ret && !inst);
 
     sdaiSaveModelBN(ifcModel, FILE_NAME);
     sdaiCloseModel(ifcModel);
