@@ -135,14 +135,25 @@ namespace Configurator
             CreateSymLink(cbDllFile.Text, null, folder, null, cfgFile);
             CreateSymLink(cbEngineCs.Text, "engine.cs", folder, null, cfgFile);
             CreateSymLink(cbGeomCs.Text, "geom.cs", folder, null, cfgFile);
+            CreateSymLink(cbGeomCs.Text, "geom.h", folder, null, cfgFile);
 
             if (!chkOnlyKernel.Checked)
             {
                 CreateSymLink(cbIfcEngineCs.Text, "ifcengine.cs", folder, null, cfgFile);
-                CreateSymLink(cbIFC4cs.Text, "IFC4.cs", folder, null, cfgFile);
-                CreateSymLink(cbIFC4cs.Text, "IFC4x3.cs", folder, null, cfgFile);
-                CreateSymLink(cbIFC4cs.Text, "IFC4x4.cs", folder, null, cfgFile);
-                CreateSymLink(cbAP242cs.Text, "AP242.cs", folder, null, cfgFile);
+
+                CreateSymLink(cbEbApi.Text, "IFC4.cs", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "IFC4x3.cs", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "IFC4x4.cs", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "IFC2x3.cs", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "AP242.cs", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "CIS2.cs", folder, null, cfgFile);
+
+                CreateSymLink(cbEbApi.Text, "IFC4.h", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "IFC4x3.h", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "IFC4x4.h", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "IFC2x3.h", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "AP242.h", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "CIS2.h", folder, null, cfgFile);
 
                 CreateSymLink(".", "ifcEngine.dll", ".", "engine.dll", cfgFile); //trick because engine.cs refers to engine.dll, not ifcengine.dll
                 CreateSymLink(".", "ifcEngine.lib", ".", "engine.lib", cfgFile);
@@ -158,8 +169,7 @@ namespace Configurator
                 && CheckDirExist(cbGeomCs)
                 && (chkOnlyKernel.Checked ||
                       CheckDirExist(cbIfcEngineCs)
-                      && CheckDirExist(cbIFC4cs)
-                      && CheckDirExist(cbAP242cs)
+                      && CheckDirExist(cbEbApi)
                 );
         }
 
@@ -209,8 +219,7 @@ namespace Configurator
             SettingsExchange(cbEngineCs, load);
             SettingsExchange(cbGeomCs, load);
             SettingsExchange(cbIfcEngineCs, load);
-            SettingsExchange(cbIFC4cs, load);
-            SettingsExchange(cbAP242cs, load);
+            SettingsExchange(cbEbApi, load);
 
             if (load)
             {
@@ -295,8 +304,7 @@ namespace Configurator
         private void UpdateUI()
         {
             cbIfcEngineCs.Enabled = !chkOnlyKernel.Checked;
-            cbIFC4cs.Enabled = !chkOnlyKernel.Checked;
-            cbAP242cs.Enabled = !chkOnlyKernel.Checked;
+            cbEbApi.Enabled = !chkOnlyKernel.Checked;
             chkToolBoxEx.Enabled = !chkOnlyKernel.Checked;
         }
 

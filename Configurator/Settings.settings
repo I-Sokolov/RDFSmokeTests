@@ -20,10 +20,7 @@
     <Setting Name="cbIfcEngineCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="cbIFC4cs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="cbAP242cs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="cbEbApi_history" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="KernelTest_cbIncludePath_value" Type="System.String" Scope="User">
@@ -56,16 +53,10 @@
     <Setting Name="KernelTest_cbIfcEngineCs_value" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="KernelTest_cbIFC4cs_value" Type="System.String" Scope="User">
+    <Setting Name="KernelTest_cbEbApi_value" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="IFCTest_cbIFC4cs_value" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="KernelTest_cbAP242cs_value" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="IFCTest_cbAP242cs_value" Type="System.String" Scope="User">
+    <Setting Name="IFCTest_cbEbApi_value" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="cbGeomCs_history" Type="System.Collections.Specialized.StringCollection" Scope="User">

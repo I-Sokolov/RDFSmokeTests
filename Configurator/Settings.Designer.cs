@@ -12,7 +12,7 @@ namespace Configurator {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -92,23 +92,12 @@ namespace Configurator {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection cbIFC4cs_history {
+        public global::System.Collections.Specialized.StringCollection cbEbApi_history {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["cbIFC4cs_history"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["cbEbApi_history"]));
             }
             set {
-                this["cbIFC4cs_history"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection cbAP242cs_history {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["cbAP242cs_history"]));
-            }
-            set {
-                this["cbAP242cs_history"] = value;
+                this["cbEbApi_history"] = value;
             }
         }
         
@@ -235,48 +224,24 @@ namespace Configurator {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string KernelTest_cbIFC4cs_value {
+        public string KernelTest_cbEbApi_value {
             get {
-                return ((string)(this["KernelTest_cbIFC4cs_value"]));
+                return ((string)(this["KernelTest_cbEbApi_value"]));
             }
             set {
-                this["KernelTest_cbIFC4cs_value"] = value;
+                this["KernelTest_cbEbApi_value"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string IFCTest_cbIFC4cs_value {
+        public string IFCTest_cbEbApi_value {
             get {
-                return ((string)(this["IFCTest_cbIFC4cs_value"]));
+                return ((string)(this["IFCTest_cbEbApi_value"]));
             }
             set {
-                this["IFCTest_cbIFC4cs_value"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string KernelTest_cbAP242cs_value {
-            get {
-                return ((string)(this["KernelTest_cbAP242cs_value"]));
-            }
-            set {
-                this["KernelTest_cbAP242cs_value"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string IFCTest_cbAP242cs_value {
-            get {
-                return ((string)(this["IFCTest_cbAP242cs_value"]));
-            }
-            set {
-                this["IFCTest_cbAP242cs_value"] = value;
+                this["IFCTest_cbEbApi_value"] = value;
             }
         }
         
