@@ -329,7 +329,6 @@ static void TestGetAttrType(SdaiModel ifcModel)
 static void TestGetADBValue(SdaiModel ifcModel)
 {
     ENTER_TEST
-        //TODO return value tests
     ///
     auto instance = internalGetInstanceFromP21Line(ifcModel, 319);
 
@@ -735,6 +734,45 @@ static void TestAttrIndex(SdaiModel ifcModel)
     ASSERT(ind == -1);
 }
 
+static void GetAllInstancesTest(SdaiModel ifcModel, int_t expectedNum)
+{
+    ENTER_TEST
+
+    auto aggrAll = xxxxGetAllInstances(ifcModel);
+    ASSERT(aggrAll);
+    auto nInst = sdaiGetMemberCount(aggrAll);
+    ASSERT(nInst == expectedNum);
+
+    SdaiInstance inst = 0;
+    void* ret = sdaiGetAggrByIndex(aggrAll, expectedNum, sdaiINSTANCE, &inst);
+    ASSERT(ret == 0 && inst == 0);
+    ret = sdaiGetAggrByIndex(aggrAll, -1, sdaiINSTANCE, &inst);
+    ASSERT(ret == 0 && inst == 0);
+
+    std::vector<SdaiInstance> rInst;
+    for (int i = 0; i < expectedNum; i++) {
+        ret = sdaiGetAggrByIndex(aggrAll, i, sdaiINSTANCE, &inst);
+        ASSERT(ret && (SdaiInstance)ret == inst);
+        rInst.push_back(inst);
+    }
+
+    for (int k = 0; k < 2; k++) {
+        for (int_t i = expectedNum - 1; i >= 0; i--) {
+            ret = sdaiGetAggrByIndex(aggrAll, i, sdaiINSTANCE, &inst);
+            ASSERT(ret && (SdaiInstance)ret == inst && inst == rInst[i]);
+        }
+        for (int_t i = expectedNum - 1; i >= 0; i-=2) {
+            ret = sdaiGetAggrByIndex(aggrAll, i, sdaiINSTANCE, &inst);
+            ASSERT(ret && (SdaiInstance)ret == inst && inst == rInst[i]);
+        }
+        for (int_t i = 0; i < expectedNum; i += 3) {
+            ret = sdaiGetAggrByIndex(aggrAll, i, sdaiINSTANCE, &inst);
+            ASSERT(ret && (SdaiInstance)ret == inst && inst == rInst[i]);
+        }
+        aggrAll = xxxxGetAllInstances(ifcModel);
+    }
+}
+
 extern void EngineTests(void)
 {
     ENTER_TEST
@@ -744,17 +782,13 @@ extern void EngineTests(void)
     SetSPFFHeaderItem(ifcModel, 9, 0, sdaiSTRING, "IFC4");
     SetSPFFHeaderItem(ifcModel, 9, 1, sdaiSTRING, 0);
 
+    GetAllInstancesTest(ifcModel, 0);
+
     TestBinaries(ifcModel);
     TestPutAttr(ifcModel);
     TestGetAttrType(ifcModel);
 
-    auto aggrAll = xxxxGetAllInstances(ifcModel);
-    auto nInst = sdaiGetMemberCount(aggrAll);
-    SdaiInstance inst = 0;
-    void* ret = sdaiGetAggrByIndex(aggrAll, 0, sdaiINSTANCE, &inst);
-    ASSERT(ret && (SdaiInstance)ret == inst);
-    ret = sdaiGetAggrByIndex(aggrAll, nInst + 10, sdaiINSTANCE, &inst);
-    ASSERT(!ret && !inst);
+    GetAllInstancesTest(ifcModel, 7);
 
     sdaiSaveModelBN(ifcModel, FILE_NAME);
     sdaiCloseModel(ifcModel);
@@ -762,6 +796,7 @@ extern void EngineTests(void)
     //
     ifcModel = sdaiOpenModelBN(NULL, "..\\TestData\\IFC4_test.ifc", "IFC4");
     ASSERT(ifcModel);
+    GetAllInstancesTest(ifcModel, 17);
 
     TestAttrIndex(ifcModel);
     TestGetADBValue(ifcModel);
