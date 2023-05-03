@@ -165,6 +165,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MetaProperties.cpp" />
     <ClCompile Include="PropertiesCardinalities.cpp" />
     <ClCompile Include="EarlyBinding.cpp" />
     <ClCompile Include="Main.cpp" />
