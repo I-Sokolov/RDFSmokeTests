@@ -22,6 +22,26 @@ template <typename T> void SetGetDatatypeProp(OwlClass cls, const char* propName
     ASSERT(card == 1 && IsEqual (val[0],v) && res == 0);
 }
 
+static void SetGetObjecttypeProp(OwlClass cls, const char* propName, OwlInstance value)
+{
+    auto model = GetModel(cls);
+
+    auto prop = GetPropertyByName(model, propName);
+    ASSERT(prop);
+
+    int64_t card = 0;
+    OwlInstance* val = NULL;
+    int64_t res = 0;// GetObjectTypeProperty(cls, prop, &val, &card);
+    //ASSERT(card == 0 && res == 0);
+
+    res = SetObjectTypeProperty(cls, prop, &value, 1);
+    ASSERT(res == 0);
+
+    res = GetObjectTypeProperty(cls, prop, &val, &card);
+    ASSERT(card == 1 && IsEqual(val[0], value) && res == 0);
+}
+
+
 extern void MetaPropertiesTest()
 {
     ENTER_TEST;
@@ -29,19 +49,28 @@ extern void MetaPropertiesTest()
     OwlModel model = OpenModel(NULL);
     ASSERT(model);
 
-    auto propEnanced = CreateProperty(model, DATATYPEPROPERTY_TYPE_CHAR, "MyPropery");
+    CreateProperty(model, DATATYPEPROPERTY_TYPE_CHAR, "MyPropery");
+    CreateProperty(model, OBJECTTYPEPROPERTY_TYPE, "MyObjectPropery");
 
     auto internalClass = GetClassByName(model, "Box");
     ASSERT(internalClass);
 
+    auto inst = GEOM::Material::Create(model);
+
     SetGetDatatypeProp(internalClass, "length", 2.4);
     SetGetDatatypeProp(internalClass, "MyPropery", "my valye");
+
+    SetGetObjecttypeProp(internalClass, "object", inst);
+    SetGetObjecttypeProp(internalClass, "MyObjectPropery", inst);
 
     auto customClass = CreateClass(model, "ClassA");
     SetClassParent(customClass, internalClass, 1);
 
     SetGetDatatypeProp(customClass, "length", 2.4);
     SetGetDatatypeProp(customClass, "MyPropery", "my valye");
+
+    SetGetObjecttypeProp(customClass, "object", inst);
+    SetGetObjecttypeProp(customClass, "MyObjectPropery", inst);
 
     CloseModel(model);
 

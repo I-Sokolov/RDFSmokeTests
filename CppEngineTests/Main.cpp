@@ -2,8 +2,9 @@
 #include "pch.h"
 
 extern void InstancePropertiesTests();
-extern void MetaPropertiesTest();
 extern void EarlyBindingTests();
+extern void MetaPropertiesTest();
+extern void ExtAppMemTest();
 
 extern int main()
 {
@@ -13,6 +14,7 @@ extern int main()
         InstancePropertiesTests();
         EarlyBindingTests();
         MetaPropertiesTest();
+        ExtAppMemTest();
 
         printf("--------- Finished Geometry enginde C++ tests\n");
         return 0;
