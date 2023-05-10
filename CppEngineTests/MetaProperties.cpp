@@ -9,7 +9,7 @@ template <typename T> void SetGetDatatypeProp(OwlClass cls, const char* propName
 
     auto prop = GetPropertyByName(model, propName);
     ASSERT(prop);
-    ASSERT(IsRdfProperty(prop));
+    ASSERT(IsProperty(prop));
     ASSERT(model == GetModel(prop));
 
     int64_t card = 0;
@@ -29,7 +29,7 @@ static void SetGetObjecttypeProp(OwlClass cls, const char* propName, OwlInstance
     auto model = GetModel(cls);
     auto prop = GetPropertyByName(model, propName);
     ASSERT(prop);
-    ASSERT(IsRdfProperty(prop));
+    ASSERT(IsProperty(prop));
     ASSERT(model == GetModel(prop));
 
     int64_t card = 0;
@@ -51,10 +51,10 @@ extern void MetaPropertiesTest()
 
     OwlModel model = OpenModel(NULL);
     ASSERT(model);
-    ASSERT(IsOwlModel(model));
-    ASSERT(!IsOwlClass(model));
-    ASSERT(!IsOwlInstance(model));
-    ASSERT(!IsRdfProperty(model));
+    ASSERT(IsModel(model));
+    ASSERT(!IsClass(model));
+    ASSERT(!IsInstance(model));
+    ASSERT(!IsProperty(model));
     ASSERT(model == GetModel(model));
 
     CreateProperty(model, DATATYPEPROPERTY_TYPE_CHAR, "MyPropery");
@@ -62,12 +62,12 @@ extern void MetaPropertiesTest()
 
     auto internalClass = GetClassByName(model, "Box");
     ASSERT(internalClass);
-    ASSERT(IsOwlClass(internalClass));
-    ASSERT(!IsOwlModel(internalClass));
+    ASSERT(IsClass(internalClass));
+    ASSERT(!IsModel(internalClass));
     ASSERT(model == GetModel(internalClass));
 
     auto inst = GEOM::Material::Create(model);
-    ASSERT(IsOwlInstance(inst));
+    ASSERT(IsInstance(inst));
     ASSERT(model == GetModel(inst));
 
     SetGetDatatypeProp(internalClass, "length", 2.4);

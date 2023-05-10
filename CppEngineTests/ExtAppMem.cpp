@@ -1,6 +1,6 @@
 #include "pch.h"
 
-static void    CheckData(GKEntity entity, int_t dataId1, void* data1, int_t dataId2, void* data2)
+static void    CheckData(RdfsResource entity, int64_t dataId1, void* data1, int64_t dataId2, void* data2)
 {
     void* data = GetExternalReferenceData(entity, dataId1);
     ASSERT(data==data1);
@@ -10,7 +10,7 @@ static void    CheckData(GKEntity entity, int_t dataId1, void* data1, int_t data
 
 }
 
-static void    SetGetData(GKEntity entity, int_t dataId1, int_t dataId2)
+static void    SetGetData(RdfsResource entity, int64_t dataId1, int64_t dataId2)
 {
     CheckData(entity, dataId1, 0, dataId2, 0);
 
