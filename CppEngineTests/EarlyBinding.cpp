@@ -4,7 +4,7 @@ using namespace GEOM;
 
 static int64_t CreateRedBox(int64_t model);
 static void TestTypesOfProperties(int64_t model);
-static void RemoveInstanceTest(int64_t box);
+static void ClassParentTest(int64_t box);
 
 
 /// <summary>
@@ -19,7 +19,7 @@ void EarlyBindingTests()
 
 	TestTypesOfProperties(model);
 
-	RemoveInstanceTest(box);
+	ClassParentTest(box);
 
 	CloseModel(model);
 }
@@ -230,16 +230,32 @@ static void TestTypesOfProperties(int64_t model)
 	ASSERT_ARR_EQ(ptg64, pts, cnt);
 }
 
-static void RemoveInstanceTest(int64_t box)
+static void ClassParentTest(int64_t box)
 {
 	ENTER_TEST;
 
 	auto model = GetModel(box);
+
 	auto boxClass = GetInstanceClass(box);
 	auto collectionClass = GetClassByName(model, "Collection");
+	auto item = GetClassByName(model, "GeometricItem");
 
 	RemoveInstance(box);
 
 	auto newClass = CreateClass(model, "New class");
-	SetClassParent(newClass, collectionClass, 1);
+	
+	auto gen = IsClassAncestor(newClass, collectionClass);
+	ASSERT(gen == 0);
+	gen = IsClassAncestor(collectionClass, newClass);
+	ASSERT(gen == 0);
+	gen = SetClassParent(newClass, collectionClass, 1);
+	ASSERT(gen == 1);
+	gen = SetClassParent(collectionClass, newClass, 1);
+	ASSERT(gen == 0);
+	gen = SetClassParent(newClass, item, 1); 
+	ASSERT(gen > 1);
+	gen = IsClassAncestor(newClass, item);
+	ASSERT(gen > 1);
+	gen = SetClassParent(newClass, collectionClass, 0);
+	ASSERT(gen == 1);
 }
