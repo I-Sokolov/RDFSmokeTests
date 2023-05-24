@@ -2,10 +2,10 @@
 
 static void    CheckData(RdfsResource entity, int64_t dataId1, void* data1, int64_t dataId2, void* data2)
 {
-    void* data = GetExternalReferenceData(entity, dataId1);
+    void* data = (void*)GetExternalReferenceData(entity, dataId1);
     ASSERT(data==data1);
 
-    data = GetExternalReferenceData(entity, dataId2);
+    data = (void*)GetExternalReferenceData(entity, dataId2);
     ASSERT(data == data2);
 
 }
