@@ -164,6 +164,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ADBcreate.cpp" />
     <ClCompile Include="EarlyBound_AP242.cpp" />
     <ClCompile Include="EarlyBound_GuideExample.cpp" />
     <ClCompile Include="EarlyBound_IFC4.cpp" />
