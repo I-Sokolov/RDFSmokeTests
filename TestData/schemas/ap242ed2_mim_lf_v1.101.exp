@@ -37635,7 +37635,7 @@ END_LOCAL;
     RETURN(make_listed_product_space(factors));
   END_IF;
 END_FUNCTION;
-
+END_FUNCTION;
 
 FUNCTION derive_dimensional_exponents(x : unit) : dimensional_exponents;
 LOCAL
@@ -38557,6 +38557,7 @@ FUNCTION strictly_in(z : REAL;
                      zitv : real_interval) : LOGICAL;
   RETURN((NOT min_exists(zitv) OR (z > real_min(zitv))) AND (NOT max_exists(zitv) OR (z < real_max(zitv))));
 END_FUNCTION;
+END_FUNCTION;
 
 FUNCTION enclose_pregion_in_cregion(prgn : polar_complex_number_region) : cartesian_complex_number_region;
 PROCEDURE nearest_good_direction(acart : REAL; aitv : finite_real_interval; VAR a : REAL; VAR a_in : BOOLEAN);
@@ -38788,6 +38789,7 @@ FUNCTION strictly_in(a : REAL;
                      aitv : finite_real_interval) : LOGICAL;
   a := angle(a);
   RETURN({aitv.min < a < aitv.max} OR {aitv.min < a + 2.0 * PI < aitv.max});
+END_FUNCTION;
 END_FUNCTION;
 
 FUNCTION equal_cregion_pregion(crgn : cartesian_complex_number_region;
@@ -39177,6 +39179,7 @@ FUNCTION mem_of_vs(val1 : maths_value;
     RETURN(false);
   END_IF;
   RETURN(unknown);
+END_FUNCTION;
 END_FUNCTION;
 
 FUNCTION es_subspace_of_es(es1 : elementary_space_enumerators;

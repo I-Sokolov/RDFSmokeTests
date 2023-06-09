@@ -12,8 +12,11 @@ enum class enum_embedded_schema : unsigned char
     IFC4X3_ADD1,
     IFC4X4,
     AP242,
+    AP214,
+    AP203,
     CIS2
 };
+
 
 extern __declspec(dllimport) const char* parsingReadSchema_SetGeneratedSchemaFile(
     enum_embedded_schema	schema,
@@ -133,4 +136,6 @@ extern void ReadWriteSchemaTest()
     ReadWriteSchema("IFC4X4.exp", "IFC4x4", enum_embedded_schema::IFC4X4);
     ReadWriteSchema("structural_frame_schema.exp", "CIS2", enum_embedded_schema::CIS2);
     ReadWriteSchema("ap242ed2_mim_lf_v1.101.exp", "AP242", enum_embedded_schema::AP242);
+    ReadWriteSchema("AP214E3_2010.exp", "AP214", enum_embedded_schema::AP214);
+    ReadWriteSchema("part403ts_wg3n2635mim_lf.exp", "AP203", enum_embedded_schema::AP203);
 }
