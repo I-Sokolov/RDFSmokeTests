@@ -14,13 +14,13 @@ template <typename T> void SetGetDatatypeProp(OwlClass cls, const char* propName
 
     int64_t card = 0;
     T* val;
-    int64_t res = GetDataTypeProperty(cls, prop, (void**)&val, &card);
+    int64_t res = GetDataTypeProperty(cls, prop, (const void**)&val, &card);
     ASSERT(card == 0 && res == 0);
 
     res = SetDatatypeProperty(cls, prop, v);
     ASSERT(res == 0);
 
-    res = GetDataTypeProperty(cls, prop, (void**)&val, &card);
+    res = GetDataTypeProperty(cls, prop, (const void**)&val, &card);
     ASSERT(card == 1 && IsEqual (val[0],v) && res == 0);
 }
 
@@ -33,7 +33,7 @@ static void SetGetObjecttypeProp(OwlClass cls, const char* propName, OwlInstance
     ASSERT(model == GetModel(prop));
 
     int64_t card = 0;
-    OwlInstance* val = NULL;
+    const OwlInstance* val = NULL;
     int64_t res = GetObjectTypeProperty(cls, prop, &val, &card);
     ASSERT(card == 0 && res == 0);
 
