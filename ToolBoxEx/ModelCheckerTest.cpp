@@ -241,6 +241,7 @@ void CheckExpectedIssuses::OnIssue(ValidationIssue issue)
     ASSERT(found);
 }
 
+static int_t r0[] = { 0 };
 static int_t r1[] = { 1 };
 static int_t r2[] = { 2 };
 static int_t r3[] = { 3 };
@@ -253,8 +254,11 @@ static int_t r32[] = { 3,2 };
 static IssueInfo rExpectedIssuesIFC2x3[] =
 {
     //id   class                    attrName                    ind     aggrLev/aggrInd         Issue
+    {24,    "IfcLocalPlacement",    "PlacesObject",             -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
     {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
+    {52,    "IfcShapeRepresentation","OfProductRepresentation", -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
+    {81,    "IfcShapeRepresentation","OfProductRepresentation", -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {151,   "IfcProductDefinitionShape","Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
     {74,    "IfcPolyLoop",          "Polygon",                  0,      1,r1,           enum_validation_type::__REFERENCE_EXISTS},
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
@@ -287,11 +291,11 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
 {
+    {24,    "IfcLocalPlacement",            "PlacesObject",         -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {51,    "IfcProductDefinitionShape",    "Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
     {51,    "IfcProdcutDefinitionShape",    NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {74,    "IfcPolyLoop",                  "Polygon",              0,      1,r1,           enum_validation_type::__REFERENCE_EXISTS},
-    {84,    "IFCCARTESIANPOINTLIST2D",      NULL,                   -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
-    {110,   "IfcProject",                   "GlobalId",             0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS}
+    {52,    "IfcShapeRepresentation",       "OfProductRepresentation", -1,  0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
+    {74,    "IfcPolyLoop",                  "Polygon",              0,      1,r1,           enum_validation_type::__REFERENCE_EXISTS}
 };
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitTime[] =
@@ -302,6 +306,7 @@ static IssueInfo rExpectedIssuesIFC2x3_LimitTime[] =
 static IssueInfo rExpectedIssuesIFC2x3_once[] =
 {
     //id   class                    attrName                    ind     aggrLev/aggrInd         Issue
+    {24,    "IfcLocalPlacement",    "PlacesObject",             -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
     {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
@@ -311,12 +316,13 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {170,   "IfcUnitAssignment",    "Units",                    0,      1,r6,           enum_validation_type::__ARGUMENT_PRIM_TYPE},
     {6,     "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
-    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {151,   "IfcProdcutDefinitionShape","ShapeOfProduct",       -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE}
+    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
 static IssueInfo rExpectedIssuesIFC4[] =
 {
+    {2,     "IfcSite",                  "Decomposes",           -1,     1,r0,           enum_validation_type::__AGGREGATION_UNIQUE},
+    {2,     "IfcSite",                  "Decomposes",           -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {14,    "IfcShapeRepresentation",   "ContextOfItems",       0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {14,    "IfcShapeRepresentation",   NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      2,r32,          enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
@@ -336,6 +342,8 @@ static IssueInfo rExpectedIssuesIFC4[] =
 
 static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
 {
+    {2,     "IfcSite",                  "Decomposes",           -1,     1,r0,           enum_validation_type::__AGGREGATION_UNIQUE},
+    {2,     "IfcSite",                  "Decomposes",           -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {14,    "IfcShapeRepresentation",   "ContextOfItems",       0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      2,r32,          enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      1,r2,           enum_validation_type::__AGGREGATION_SIZE},
