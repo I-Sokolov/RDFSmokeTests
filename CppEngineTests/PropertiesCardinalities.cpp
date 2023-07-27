@@ -23,7 +23,8 @@ struct PropList : public std::map < std::string, Cardinality >
 /// <summary>
 /// 
 /// </summary>
-static void CheckPropertiesExpected(OwlInstance instance, PropList expectedProps/*copy intended*/)
+static void CheckPropertiesExpected(OwlInstance instance, PropList expectedProps/*copy intended*/,                                     
+                                    const char* namea = NULL, const wchar_t* namew = NULL)
 {
     auto cls = GetInstanceClass(instance);
 
@@ -59,7 +60,20 @@ static void CheckPropertiesExpected(OwlInstance instance, PropList expectedProps
         itE++;
     }
 
-    ASSERT(itA == actualProps.end() && itE == expectedProps.end())
+    ASSERT(itA == actualProps.end() && itE == expectedProps.end());
+
+    //instance name
+    if (namea) {
+        char* nameA;
+        GetNameOfInstance(instance, &nameA);
+        ASSERT(0 == strcmp(namea, nameA));
+    }
+    if (namew) {
+        wchar_t* nameW;
+        GetNameOfInstanceW(instance, &nameW);
+        ASSERT(0 == wcscmp(namew, nameW));
+    }
+
 }
 
 /// <summary>
@@ -138,7 +152,7 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
 /// <summary>
 /// 
 /// </summary>
-static void MultiParentsCardinality (int64_t type)
+static void MultiParentsCardinalityAndInstanceName(int64_t type)
 {
     ENTER_TEST_EX(type == OBJECTPROPERTY_TYPE ? "object" : "datatype");
 
@@ -152,7 +166,7 @@ static void MultiParentsCardinality (int64_t type)
     SetClassParent(classB, classA1, 1);
     SetClassParent(classB, classA2, 1);
 
-    auto instance1 = CreateInstance(classB);
+    auto instance1 = CreateInstance(classB, "instance1");
 
     PropList propList;
     CheckPropertiesExpected(instance1, propList);
@@ -186,7 +200,7 @@ static void MultiParentsCardinality (int64_t type)
     auto propOnlyA3 = CreateProperty(model, type, "OnlyForClassA3");
     SetClassPropertyCardinalityRestriction(classA3, propOnlyA3, 2, -1);
     propList.Add("OnlyForClassA3", -1, -1, 2, -1);
-    
+
     auto propOnlyA2 = CreateProperty(model, type, "OnlyForClassA2");
     SetClassPropertyCardinalityRestriction(classA2, propOnlyA2, 2, 8);
     propList.Add("OnlyForClassA2", -1, -1, 2, 8);
@@ -196,21 +210,68 @@ static void MultiParentsCardinality (int64_t type)
     propList.Add("OnlyForClassB", 1, 8, 1, 8);
 
     //
-    auto instance2 = CreateInstance(classB);
+    auto instance2 = CreateInstanceW(classB, L"instance2");
 
     SetClassParent(classB, classA3, 1);
 
-    auto instance3 = CreateInstance(classB);
-
-
+    auto instance3 = CreateInstance(classB, "instance3");
 
     //
-    CheckPropertiesExpected(instance3, propList);
+    SaveModel(model, "testCardinalities.bin");
+    CloseModel(model);
+    model = OpenModel("testCardinalities.bin");
+
+    auto read = GetInstancesByIterator(model, 0);
+    CheckPropertiesExpected(read, propList, "instance3", L"instance3");
+
     //instance created before SetClassParent
-    CheckPropertiesExpected(instance2, propList);
+    read = GetInstancesByIterator(model, read);
+    CheckPropertiesExpected(read, propList, "instance2", 0);
+
     //instance created before assigning properties
-    CheckPropertiesExpected(instance1, propList);
-    
+    read = GetInstancesByIterator(model, read);
+    CheckPropertiesExpected(read, propList, 0, L"instance1");
+
+    ASSERT(!GetInstancesByIterator(model, read));
+
+    CloseModel(model);
+}
+
+static void InstanceNameTest()
+{
+    //
+    auto model = OpenModel((const char*)NULL);
+
+    auto cls = GetClassByName(model, "Box");
+
+    CreateInstance(cls, "Test1");
+    CreateInstanceW(cls, L"Test2");
+
+    SaveModel(model, "InstancceNameTest.bin");
+    CloseModel(model);
+
+    //
+    model = OpenModel("InstancceNameTest.bin");
+
+    //
+    auto inst = GetInstancesByIterator(model, 0);
+
+    auto nameW = GetNameOfInstanceW(inst);
+    ASSERT(0 == wcscmp(nameW, L"Test2"));
+
+    auto nameA = GetNameOfInstance(inst);
+    ASSERT(0 == strcmp(nameA, "Test2"));
+
+    //
+    inst = GetInstancesByIterator(model, inst);
+
+    nameW = GetNameOfInstanceW(inst);
+    ASSERT(0 == wcscmp(nameW, L"Test1"));
+
+    nameA = GetNameOfInstance(inst);
+    ASSERT(0 == strcmp(nameA, "Test1"));
+
+    ASSERT(!GetInstancesByIterator(model, inst));
 
     CloseModel(model);
 }
@@ -220,11 +281,13 @@ static void MultiParentsCardinality (int64_t type)
 /// </summary>
 void InstancePropertiesTests()
 {
+    InstanceNameTest();
+
     SubclassChangesCardianlity(true, DATATYPEPROPERTY_TYPE_CHAR);
     SubclassChangesCardianlity(true, OBJECTPROPERTY_TYPE);
     SubclassChangesCardianlity(false, OBJECTPROPERTY_TYPE);
     SubclassChangesCardianlity(false, DATATYPEPROPERTY_TYPE_CHAR);
 
-    MultiParentsCardinality(DATATYPEPROPERTY_TYPE_CHAR);
-    MultiParentsCardinality(OBJECTPROPERTY_TYPE);
+    MultiParentsCardinalityAndInstanceName(DATATYPEPROPERTY_TYPE_CHAR);
+    MultiParentsCardinalityAndInstanceName(OBJECTPROPERTY_TYPE);
 }
