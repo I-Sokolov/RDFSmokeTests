@@ -13,7 +13,7 @@ static void ClassParentTest(int64_t box);
 /// <returns></returns>
 void EarlyBindingTests()
 {
-	int64_t model = OpenModel(NULL);
+	int64_t model = OpenModel((const char*)0);
 
 	auto box = CreateRedBox(model);
 
@@ -51,7 +51,7 @@ static int64_t CreateRedBox(int64_t model)
 
 	//or you easy use existing instance handlers with classes
 	int64_t colorClass = GetClassByName(model, "Color");
-	int64_t colorInstance = CreateInstance(colorClass, NULL);
+	int64_t colorInstance = CreateInstance(colorClass, (const char*)0);
 
 	//get wrapper object from instance handler
 	Color color(colorInstance);

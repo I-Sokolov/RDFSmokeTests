@@ -49,7 +49,7 @@ extern void MetaPropertiesTest()
 {
     ENTER_TEST;
 
-    OwlModel model = OpenModel(NULL);
+    OwlModel model = OpenModel((const char*)0);
     ASSERT(model);
     ASSERT(IsModel(model));
     ASSERT(!IsClass(model));

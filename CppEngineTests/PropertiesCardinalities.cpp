@@ -69,7 +69,7 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
 {
     ENTER_TEST_EX2(earlySetParent ? "Early set parent" : "Late set parent", type == OBJECTPROPERTY_TYPE ? "object" : "datatype");
 
-    int64_t model = OpenModel(NULL);
+    int64_t model = OpenModel((const char*)0);
 
     auto classA = CreateClass(model, "ClassA");
 
@@ -142,7 +142,7 @@ static void MultiParentsCardinality (int64_t type)
 {
     ENTER_TEST_EX(type == OBJECTPROPERTY_TYPE ? "object" : "datatype");
 
-    int64_t model = OpenModel(NULL);
+    int64_t model = OpenModel((const char*)0);
 
     auto classA1 = CreateClass(model, "ClassA1");
     auto classA2 = CreateClass(model, "ClassA2");

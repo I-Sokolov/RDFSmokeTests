@@ -32,7 +32,7 @@ extern void ExtAppMemTest()
 {
     ENTER_TEST;
 
-    OwlModel model = OpenModel(NULL);
+    OwlModel model = OpenModel((const char*)0);
     ASSERT(model);
     
     auto mem = AllocModelMemory(model, 12);
