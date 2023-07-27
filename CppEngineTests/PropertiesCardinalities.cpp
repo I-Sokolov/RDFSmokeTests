@@ -237,24 +237,49 @@ static void MultiParentsCardinalityAndInstanceName(int64_t type)
     CloseModel(model);
 }
 
-static void InstanceNameTest()
+/// <summary>
+/// 
+/// </summary>
+static void WriteReadTest()
 {
+    //
     //
     auto model = OpenModel((const char*)NULL);
 
     auto cls = GetClassByName(model, "Box");
 
-    CreateInstance(cls, "Test1");
+    auto propLen = GetPropertyByName(model, "length");
+    auto propCnt = GetPropertyByName(model, "count");
+    auto propStr = CreateProperty(model, DATATYPEPROPERTY_TYPE_CHAR, "str");
+
+    //
+    auto inst = CreateInstance(cls, "Test1");
+
+    double dval[] = { 10 };
+    int64_t ival[] = { 12 };
+    const char* sval[] = { "text1", "text2" };
+
+    SetDataTypeProperty(inst, propLen, dval, 1);
+    SetDataTypeProperty(inst, propCnt, ival, 1);
+    SetDataTypeProperty(inst, propStr, sval, 2);
+
+    //
     CreateInstanceW(cls, L"Test2");
 
+    //
+    //
+    //
     SaveModel(model, "InstancceNameTest.bin");
     CloseModel(model);
-
-    //
     model = OpenModel("InstancceNameTest.bin");
 
+
+    propLen = GetPropertyByName(model, "length");
+    propCnt = GetPropertyByName(model, "count");
+    propStr = GetPropertyByName(model, "str");
+
     //
-    auto inst = GetInstancesByIterator(model, 0);
+    inst = GetInstancesByIterator(model, 0);
 
     auto nameW = GetNameOfInstanceW(inst);
     ASSERT(0 == wcscmp(nameW, L"Test2"));
@@ -271,17 +296,32 @@ static void InstanceNameTest()
     nameA = GetNameOfInstance(inst);
     ASSERT(0 == strcmp(nameA, "Test1"));
 
+    int64_t card;
+    double* _dval;
+    GetDatatypeProperty(inst, propLen, (void**) &_dval, &card);
+    ASSERT(card == 1 && _dval[0] == dval[0]);
+
+    int64_t* _ival;
+    GetDatatypeProperty(inst, propCnt, (void**)&_ival, &card);
+    ASSERT(card == 1 && _ival[0] == ival[0]);
+
+    const char** _sval;
+    GetDataTypeProperty(inst, propStr, (void**)&_sval, &card);
+    ASSERT(card == 2 && !strcmp(_sval[0], sval[0]) && !strcmp(_sval[1], sval[1]));
+
     ASSERT(!GetInstancesByIterator(model, inst));
 
     CloseModel(model);
 }
+
+
 
 /// <summary>
 /// 
 /// </summary>
 void InstancePropertiesTests()
 {
-    InstanceNameTest();
+    WriteReadTest();
 
     SubclassChangesCardianlity(true, DATATYPEPROPERTY_TYPE_CHAR);
     SubclassChangesCardianlity(true, OBJECTPROPERTY_TYPE);
