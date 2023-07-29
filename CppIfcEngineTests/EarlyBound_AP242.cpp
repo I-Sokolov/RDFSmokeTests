@@ -59,7 +59,7 @@ static void test_list3()
     /// 
     int_t  model = sdaiCreateModelBN(0, NULL, "AP242");
     SetSPFFHeaderItem(model, 9, 0, sdaiSTRING, "AP242");
-    SetSPFFHeaderItem(model, 9, 1, sdaiSTRING, 0);
+    SetSPFFHeaderItem(model, 9, 1, sdaiSTRING, (const char*)0);
 
     ASSERT(model);
 
@@ -218,7 +218,7 @@ static void test_multi_parent()
     ASSERT(model);
 
     SetSPFFHeaderItem(model, 9, 0, sdaiSTRING, "AP242");
-    SetSPFFHeaderItem(model, 9, 1, sdaiSTRING, 0);
+    SetSPFFHeaderItem(model, 9, 1, sdaiSTRING, (const char*)0);
 
     //engine test
     int_t entity = sdaiGetEntity(model, "a3m_equivalence_criterion");

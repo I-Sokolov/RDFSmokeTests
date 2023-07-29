@@ -253,13 +253,13 @@ static void TestPutAttr(SdaiModel model)
     ASSERT(window.get_PredefinedType().IsNull());
     window.put_PredefinedType(IfcWindowTypeEnum::SKYLIGHT);
     ASSERT(window.get_PredefinedType().Value()==IfcWindowTypeEnum::SKYLIGHT);
-    sdaiPutAttrBN(window, "PredefinedType", sdaiENUM, NULL);
+    sdaiPutAttrBN(window, "PredefinedType", sdaiENUM, (void*)NULL);
     ASSERT(window.get_PredefinedType().IsNull());
 
     ASSERT(window.get_OverallWidth().IsNull());
     window.put_OverallWidth(50);
     ASSERT(window.get_OverallWidth().Value() == 50);
-    sdaiPutAttrBN(window, "OverallWidth", sdaiREAL, NULL);
+    sdaiPutAttrBN(window, "OverallWidth", sdaiREAL, (void*)NULL);
     ASSERT(window.get_OverallWidth().IsNull());
 
     //*/$
@@ -780,7 +780,7 @@ extern void EngineTests(void)
     SdaiModel  ifcModel = sdaiCreateModelBN(0, NULL, "IFC4");
     ASSERT(ifcModel);
     SetSPFFHeaderItem(ifcModel, 9, 0, sdaiSTRING, "IFC4");
-    SetSPFFHeaderItem(ifcModel, 9, 1, sdaiSTRING, 0);
+    SetSPFFHeaderItem(ifcModel, 9, 1, sdaiSTRING, (char*)0);
 
     GetAllInstancesTest(ifcModel, 0);
 
