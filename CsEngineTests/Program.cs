@@ -10,6 +10,7 @@ namespace CsEngineTests
             {
                 Console.WriteLine("--------- Starting Geometry Kernel C# tests");
 
+                Rename.Run();
                 EarlyBinding.Run();
 
                 Console.WriteLine("--------- Finished Geometry Kernel C# tests");
