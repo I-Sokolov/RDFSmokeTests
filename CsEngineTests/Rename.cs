@@ -15,6 +15,8 @@ namespace CsEngineTests
         {
             RenameClass(false);
             RenameClass(true);
+            RenameProperty(false);
+            RenameProperty(true);
         }
 
         private static void RenameClass (bool w)
@@ -43,6 +45,43 @@ namespace CsEngineTests
             {
                 RenameClass(model, "NewName", "Юникод", 0, w);
                 RenameClass(model, "UsedName", "Юникод", 3, w);
+            }
+
+            engine.CloseModel(model);
+        }
+
+        private static void RenameProperty(bool w)
+        {
+            ENTER_TEST(w ? "SetNameOfPropertyW" : "SetNameOfProperty");
+
+            var model = engine.OpenModel(null as byte[]);
+
+            RenameProperty(model, "length", "RenameLen", 2, w);
+            if (w)
+            {
+                RenameProperty(model, "length", "Юникод", 2, w);
+            }
+
+            engine.CreateClass(model, "UsedClass");
+            engine.CreateProperty(model, 1, "UsedProp");
+
+            for (int type = 1; type < 3; type++)
+            {
+                var propName = string.Format("CustomProp_{0}", type);
+                
+                engine.CreateProperty(model, type, propName);
+                
+                RenameProperty(model, propName, "UsedClass", 3, w);
+                RenameProperty(model, propName, "Box", 3, w);
+                RenameProperty(model, propName, "length", 3, w);
+                RenameProperty(model, propName, "UsedProp", 3, w);
+                RenameProperty(model, propName, "NewName" + type.ToString(), 0, w);
+
+                if (w)
+                {
+                    RenameProperty(model, "NewName" + type.ToString(), "Юникод" + type.ToString(), 0, w);
+                    RenameProperty(model, "UsedProp", "Юникод" + type.ToString(), 3, w);
+                }
             }
 
             engine.CloseModel(model);
@@ -94,5 +133,53 @@ namespace CsEngineTests
             cls = engine.GetClassByName(model, oldName);
             ASSERT (cls == 0);
         }
+
+        private static void RenameProperty(Int64 model, string oldName, string newName, int expect, bool w)
+        {
+            var prp = engine.GetPropertyByName(model, oldName);
+            ASSERT(prp != 0);
+
+            byte[] ucodeName = Encoding.Unicode.GetBytes(newName);
+
+            long res = 9999;
+            if (w)
+            {
+                res = engine.SetNameOfPropertyW(prp, ucodeName);
+            }
+            else
+            {
+                res = engine.SetNameOfProperty(prp, newName);
+            }
+            ASSERT(res == expect);
+
+            if (res != 0)
+                return;
+
+            Int64 prp2 = 0;
+            if (w)
+            {
+                prp2 = engine.GetPropertyByNameW(model, ucodeName);
+            }
+            else
+            {
+                prp2 = engine.GetPropertyByName(model, newName);
+            }
+            ASSERT(prp2 == prp);
+
+            string name2;
+            if (w)
+            {
+                name2 = engine.GetNameOfPropertyW(prp2);
+            }
+            else
+            {
+                name2 = engine.GetNameOfProperty(prp2);
+            }
+            ASSERT(name2 == newName);
+
+            prp = engine.GetPropertyByName(model, oldName);
+            ASSERT(prp == 0);
+        }
+
     }
 }
