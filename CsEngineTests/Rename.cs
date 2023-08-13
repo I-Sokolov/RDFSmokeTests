@@ -25,26 +25,26 @@ namespace CsEngineTests
 
             var model = engine.OpenModel(null as byte[]);
 
-            RenameClass(model, "Box", "RenameBox", 2, w);
+            RenameClass(model, "Box", "RenameBox", engine.enum_error_code_set_uri.LOCKED_NAME, w);
             if (w)
             {
-                RenameClass(model, "Box", "Юникод", 2, w);
+                RenameClass(model, "Box", "Юникод", engine.enum_error_code_set_uri.LOCKED_NAME, w);
             }
 
             engine.CreateClass(model, "UsedName");
             engine.CreateProperty(model, 1, "UsedProp");
 
             engine.CreateClass(model, "CustomClass");
-            RenameClass(model, "CustomClass", "UsedName", 3, w);
-            RenameClass(model, "CustomClass", "Box", 3, w);
-            RenameClass(model, "CustomClass", "length", 3, w);
-            RenameClass(model, "CustomClass", "UsedProp", 3, w);
-            RenameClass(model, "CustomClass", "NewName", 0, w);
+            RenameClass(model, "CustomClass", "UsedName", engine.enum_error_code_set_uri.NAME_USED_BY_CLASS, w);
+            RenameClass(model, "CustomClass", "Box", engine.enum_error_code_set_uri.NAME_USED_BY_CLASS, w);
+            RenameClass(model, "CustomClass", "length", engine.enum_error_code_set_uri.NAME_USED_BY_PROPERTY, w);
+            RenameClass(model, "CustomClass", "UsedProp", engine.enum_error_code_set_uri.NAME_USED_BY_PROPERTY, w);
+            RenameClass(model, "CustomClass", "NewName", engine.enum_error_code_set_uri.SUCCESSFUL, w);
 
             if (w)
             {
-                RenameClass(model, "NewName", "Юникод", 0, w);
-                RenameClass(model, "UsedName", "Юникод", 3, w);
+                RenameClass(model, "NewName", "Юникод", engine.enum_error_code_set_uri.SUCCESSFUL, w);
+                RenameClass(model, "UsedName", "Юникод", engine.enum_error_code_set_uri.NAME_USED_BY_CLASS, w);
             }
 
             engine.CloseModel(model);
@@ -56,10 +56,10 @@ namespace CsEngineTests
 
             var model = engine.OpenModel(null as byte[]);
 
-            RenameProperty(model, "length", "RenameLen", 2, w);
+            RenameProperty(model, "length", "RenameLen", engine.enum_error_code_set_uri.LOCKED_NAME, w);
             if (w)
             {
-                RenameProperty(model, "length", "Юникод", 2, w);
+                RenameProperty(model, "length", "Юникод", engine.enum_error_code_set_uri.LOCKED_NAME, w);
             }
 
             engine.CreateClass(model, "UsedClass");
@@ -71,30 +71,30 @@ namespace CsEngineTests
                 
                 engine.CreateProperty(model, type, propName);
                 
-                RenameProperty(model, propName, "UsedClass", 3, w);
-                RenameProperty(model, propName, "Box", 3, w);
-                RenameProperty(model, propName, "length", 3, w);
-                RenameProperty(model, propName, "UsedProp", 3, w);
-                RenameProperty(model, propName, "NewName" + type.ToString(), 0, w);
+                RenameProperty(model, propName, "UsedClass", engine.enum_error_code_set_uri.NAME_USED_BY_CLASS, w);
+                RenameProperty(model, propName, "Box", engine.enum_error_code_set_uri.NAME_USED_BY_CLASS, w);
+                RenameProperty(model, propName, "length", engine.enum_error_code_set_uri.NAME_USED_BY_PROPERTY, w);
+                RenameProperty(model, propName, "UsedProp", engine.enum_error_code_set_uri.NAME_USED_BY_PROPERTY, w);
+                RenameProperty(model, propName, "NewName" + type.ToString(), engine.enum_error_code_set_uri.SUCCESSFUL, w);
 
                 if (w)
                 {
-                    RenameProperty(model, "NewName" + type.ToString(), "Юникод" + type.ToString(), 0, w);
-                    RenameProperty(model, "UsedProp", "Юникод" + type.ToString(), 3, w);
+                    RenameProperty(model, "NewName" + type.ToString(), "Юникод" + type.ToString(), engine.enum_error_code_set_uri.SUCCESSFUL, w); ;
+                    RenameProperty(model, "UsedProp", "Юникод" + type.ToString(), engine.enum_error_code_set_uri.NAME_USED_BY_PROPERTY, w);
                 }
             }
 
             engine.CloseModel(model);
         }
 
-        private static void RenameClass (Int64 model, string oldName, string newName, int expect, bool w)
+        private static void RenameClass (Int64 model, string oldName, string newName, engine.enum_error_code_set_uri expect, bool w)
         {
             var cls = engine.GetClassByName(model, oldName);
             ASSERT(cls != 0);
 
             byte[] ucodeName = Encoding.Unicode.GetBytes(newName);
 
-            long res = 9999;
+            engine.enum_error_code_set_uri res = engine.enum_error_code_set_uri.OTHER_ERROR;
             if (w)
             {
                 res = engine.SetNameOfClassW(cls, ucodeName);
@@ -134,14 +134,14 @@ namespace CsEngineTests
             ASSERT (cls == 0);
         }
 
-        private static void RenameProperty(Int64 model, string oldName, string newName, int expect, bool w)
+        private static void RenameProperty(Int64 model, string oldName, string newName, engine.enum_error_code_set_uri expect, bool w)
         {
             var prp = engine.GetPropertyByName(model, oldName);
             ASSERT(prp != 0);
 
             byte[] ucodeName = Encoding.Unicode.GetBytes(newName);
 
-            long res = 9999;
+            engine.enum_error_code_set_uri res = engine.enum_error_code_set_uri.OTHER_ERROR;
             if (w)
             {
                 res = engine.SetNameOfPropertyW(prp, ucodeName);
