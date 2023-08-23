@@ -264,7 +264,12 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         enum_validation_type::__STAR_USAGE},
     {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__AGGREGATION_NOT_EXPECTED},
-    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
+    {113,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+    {113,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+    {113,   "IfcProject",           "UnitsInContext",           8,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
     {114,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
     {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__ARRGEGATION_EXPECTED},
     {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
@@ -316,6 +321,8 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {170,   "IfcUnitAssignment",    "Units",                    0,      1,r6,           enum_validation_type::__ARGUMENT_PRIM_TYPE},
     {6,     "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
+    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
