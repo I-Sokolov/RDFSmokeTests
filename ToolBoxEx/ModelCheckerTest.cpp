@@ -365,9 +365,10 @@ static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
 
 static IssueInfo rExpectedIssuesIFC4x3[] =
 {
-    {1158,    "IfcPointByDistanceExpression",   "DistanceAlong",       0,       0,NULL,         enum_validation_type::__WHERE_RULE},
-    {19,      "IfcRelContainedInSpatialStructure",NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {17,      "IfcGeometricRepresentationContext",NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
+    {1158,    "IfcPointByDistanceExpression",       "DistanceAlong",       0,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {19,      "IfcRelContainedInSpatialStructure",  NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {17,      "IfcGeometricRepresentationContext",  NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1560,    "IfcPresentationLayerWithStyle",      NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
 static void TestInvalidParameters()
