@@ -132,7 +132,7 @@ extern void ReadWriteSchemaTest()
     ReadWriteSchema("IFC2X3_TC1.exp", "IFC2x3", enum_embedded_schema::IFC2X3_TC1);
     ReadWriteSchema("IFC4x1.exp", "IFC4x1", enum_embedded_schema::IFC4X1_FINAL);
     ReadWriteSchema("IFC4x2.exp", "IFC4x2", enum_embedded_schema::IFC4X2_DRAFT);
-    ReadWriteSchema("IFC4X3_ADD1.exp", "IFC4x3", enum_embedded_schema::IFC4X3_ADD1);
+    ReadWriteSchema("IFC4X3_ADD2.exp", "IFC4x3", enum_embedded_schema::IFC4X3_ADD1);
     ReadWriteSchema("IFC4X4.exp", "IFC4x4", enum_embedded_schema::IFC4X4);
     ReadWriteSchema("structural_frame_schema.exp", "CIS2", enum_embedded_schema::CIS2);
     ReadWriteSchema("ap242ed3_mim_lf_v1.152.exp", "AP242", enum_embedded_schema::AP242);
