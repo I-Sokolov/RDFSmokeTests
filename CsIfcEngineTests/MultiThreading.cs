@@ -66,7 +66,7 @@ namespace CsIfcEngineTests
             ASSERT(model == 0);
 
             //
-            model = ifcengine.sdaiOpenModelBN(0,"..\\TestData\\ModelCheckerTESTSWE_UT_LP_4.ifc", "IFC4x3");
+            model = ifcengine.sdaiOpenModelBN(0,"..\\TestData\\ModelCheckerIFC4x3.ifc", "IFC4x3");
             ASSERT(model != 0);
 
             //get data test

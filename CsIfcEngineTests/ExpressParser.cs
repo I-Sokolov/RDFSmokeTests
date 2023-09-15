@@ -16,7 +16,7 @@ namespace CsIfcEngineTests
             ParseExpressFile("..\\TestData\\schemas\\IFC2X3_TC1.exp");
             ParseExpressFile("..\\TestData\\schemas\\IFC4x1.exp");
             ParseExpressFile("..\\TestData\\schemas\\IFC4x2.exp");
-            ParseExpressFile("..\\TestData\\schemas\\IFC4X3_ADD1.exp");
+            ParseExpressFile("..\\TestData\\schemas\\IFC4X3_ADD2.exp");
             ParseExpressFile("..\\TestData\\schemas\\IFC4_ADD2_TC1.exp");
             ParseExpressFile("..\\TestData\\schemas\\IFC4x4.exp");
             ParseExpressFile("..\\TestData\\schemas\\structural_frame_schema.exp");

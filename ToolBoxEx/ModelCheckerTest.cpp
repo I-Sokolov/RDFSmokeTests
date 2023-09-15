@@ -365,10 +365,11 @@ static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
 
 static IssueInfo rExpectedIssuesIFC4x3[] =
 {
-    {1158,    "IfcPointByDistanceExpression",       "DistanceAlong",       0,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {19,      "IfcRelContainedInSpatialStructure",  NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {17,      "IfcGeometricRepresentationContext",  NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {1560,    "IfcPresentationLayerWithStyle",      NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
+    {1560,    "IfcPresentationLayerWithStyle",      NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {138,     "IfcCurveSegment",                    "SegmentLength",       3,     0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
+    {1173,    "IfcRailwayPart",                     "PredefinedType",     10,     0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE}
 };
 
 static void TestInvalidParameters()
@@ -425,7 +426,7 @@ extern void ModelCheckerTests()
 
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), enum_validation_status::__COMPLETE_ALL);
     CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), enum_validation_status::__COMPLETE_ALL);
-    CheckModelTest("ModelCheckerTESTSWE_UT_LP_4.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), enum_validation_status::__COMPLETE_ALL);
+    CheckModelTest("ModelCheckerIFC4x3.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), enum_validation_status::__COMPLETE_ALL);
  
     uint64_t issueTypesAll = validateGetOptions(NULL, NULL, NULL, 0);
     ASSERT(issueTypesAll == 0xFFFF);
