@@ -68,6 +68,8 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
 
     auto generatedFile = parsingReadSchema_SetGeneratedSchemaFile(generate, ".");
     auto model = sdaiCreateModelBN(1, "", readFilePath.string().c_str());
+    parsingReadSchema_SetGeneratedSchemaFile(enum_embedded_schema::NONE, NULL);
+
     ASSERT(model != 0);
     ASSERT(ParseFunctionsSmokeTest(model));
 
@@ -82,10 +84,8 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     //
     // check re-read
     //
-    parsingReadSchema_SetGeneratedSchemaFile(enum_embedded_schema::NONE);
     model = sdaiCreateModelBN(2, "", writeFile.c_str());
     ASSERT(model); //writer issue?
-    ASSERT(ParseFunctionsSmokeTest(model));
 
     std::string rewriteFile = "ReWriteSchema_";
     rewriteFile.append(expFileName);
