@@ -57,7 +57,7 @@ extern void MetaPropertiesTest()
     ASSERT(!IsProperty(model));
     ASSERT(model == GetModel(model));
 
-    CreateProperty(model, DATATYPEPROPERTY_TYPE_CHAR, "MyPropery");
+    CreateProperty(model, DATATYPEPROPERTY_TYPE_STRING, "MyPropery");
     CreateProperty(model, OBJECTTYPEPROPERTY_TYPE, "MyObjectPropery");
 
     auto internalClass = GetClassByName(model, "Box");

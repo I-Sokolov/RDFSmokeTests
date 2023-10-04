@@ -250,7 +250,7 @@ static void WriteReadTest()
 
     auto propLen = GetPropertyByName(model, "length");
     auto propCnt = GetPropertyByName(model, "count");
-    auto propStr = CreateProperty(model, DATATYPEPROPERTY_TYPE_CHAR, "str");
+    auto propStr = CreateProperty(model, DATATYPEPROPERTY_TYPE_STRING, "str");
 
     //
     auto inst = CreateInstance(cls, "Test1");
@@ -323,11 +323,11 @@ void InstancePropertiesTests()
 {
     WriteReadTest();
 
-    SubclassChangesCardianlity(true, DATATYPEPROPERTY_TYPE_CHAR);
+    SubclassChangesCardianlity(true, DATATYPEPROPERTY_TYPE_STRING);
     SubclassChangesCardianlity(true, OBJECTPROPERTY_TYPE);
     SubclassChangesCardianlity(false, OBJECTPROPERTY_TYPE);
-    SubclassChangesCardianlity(false, DATATYPEPROPERTY_TYPE_CHAR);
+    SubclassChangesCardianlity(false, DATATYPEPROPERTY_TYPE_STRING);
 
-    MultiParentsCardinalityAndInstanceName(DATATYPEPROPERTY_TYPE_CHAR);
+    MultiParentsCardinalityAndInstanceName(DATATYPEPROPERTY_TYPE_STRING);
     MultiParentsCardinalityAndInstanceName(OBJECTPROPERTY_TYPE);
 }
