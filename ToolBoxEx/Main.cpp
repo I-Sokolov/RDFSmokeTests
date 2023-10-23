@@ -9,9 +9,8 @@ extern int main()
     try {
         printf("--------- Starting ToolBoxEx tests\n");
 
-        ReadWriteSchemaTest();
-
         ModelCheckerTests();
+        ReadWriteSchemaTest();
 
         printf("---------- Finished ToolBoxEx tests\n");
         return 0;
