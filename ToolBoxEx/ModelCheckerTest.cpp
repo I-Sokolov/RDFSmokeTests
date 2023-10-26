@@ -326,8 +326,12 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {170,   "IfcUnitAssignment",    "Units",                    0,      1,r6,           enum_validation_type::__ARGUMENT_PRIM_TYPE},
     {6,     "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
+    {74,    "IfcPolyLoop",          NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
@@ -374,9 +378,13 @@ static IssueInfo rExpectedIssuesIFC4x3[] =
 {
     {19,      "IfcRelContainedInSpatialStructure",  NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {17,      "IfcGeometricRepresentationContext",  NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {1560,    "IfcPresentationLayerWithStyle",      NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {138,     "IfcCurveSegment",                    "SegmentLength",       3,     0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
-    {1173,    "IfcRailwayPart",                     "PredefinedType",     10,     0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE}
+    {143,     "IfcShapeRepresentation",             NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1173,    "IfcRailwayPart",                     "PredefinedType",     10,     0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
+    {1176,    "IfcShapeRepresentation",             NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1184,    "IfcShapeRepresentation",             NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1192,    "IfcShapeRepresentation",             NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1560,    "IfcPresentationLayerWithStyle",      NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
 };
 
 static void TestInvalidParameters()
