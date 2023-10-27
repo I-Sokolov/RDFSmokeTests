@@ -773,6 +773,34 @@ static void GetAllInstancesTest(SdaiModel ifcModel, int_t expectedNum)
     }
 }
 
+static void TestPrimitiveOverComplex()
+{
+    ENTER_TEST;
+
+    SdaiModel  ifcModel = sdaiCreateModelBN(0, NULL, "IFC4");
+    ASSERT(ifcModel);
+    SetSPFFHeaderItem(ifcModel, 9, 0, sdaiSTRING, "IFC4");
+    SetSPFFHeaderItem(ifcModel, 9, 1, sdaiSTRING, (char*)0);
+
+    auto inst = sdaiCreateInstanceBN(ifcModel, "IfcMeasureWithUnit");
+    ASSERT(inst);
+
+    bool bval = true;
+    auto adb = sdaiCreateADB(sdaiBOOLEAN, &bval);
+    sdaiPutADBTypePath(adb, 1, "IFCBOOLEAN");
+    sdaiPutAttrBN(inst, "ValueComponent", sdaiADB, adb);
+    
+    double dval = 3.1415;
+    sdaiPutAttrBN(inst, "ValueComponent", sdaiREAL, &dval);
+
+    sdaiGetAttrBN(inst, "ValueComponent", sdaiADB, &adb);
+    auto type = sdaiGetADBTypePath(adb, 0);
+    ASSERT(!strcmp(type, "IFCBOOLEAN")); //subject to change
+
+    sdaiCloseModel(ifcModel);
+
+}
+
 extern void EngineTests(void)
 {
     ENTER_TEST
@@ -802,4 +830,6 @@ extern void EngineTests(void)
     TestGetADBValue(ifcModel);
 
     sdaiCloseModel(ifcModel);
+
+    TestPrimitiveOverComplex();
 }
