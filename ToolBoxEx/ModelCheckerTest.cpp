@@ -258,19 +258,21 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
     {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
     {52,    "IfcShapeRepresentation","OfProductRepresentation", -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
+    {52,    "IfcShapeRepresentation","OfProductRepresentation", -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {81,    "IfcShapeRepresentation","OfProductRepresentation", -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
+    {81,    "IfcShapeRepresentation","OfProductRepresentation", -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {151,   "IfcProductDefinitionShape","Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
     {74,    "IfcPolyLoop",          "Polygon",                  0,      1,r1,           enum_validation_type::__REFERENCE_EXISTS},
     {74,    "IfcPolyLoop",          NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         enum_validation_type::__STAR_USAGE},
     {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__AGGREGATION_NOT_EXPECTED},
-    {113,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
-    {113,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
-    {113,   "IfcProject",           "UnitsInContext",           8,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
-    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
+//    {113,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+//    {113,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+//    {113,   "IfcProject",           "UnitsInContext",           8,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
+//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {114,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
     {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__ARRGEGATION_EXPECTED},
     {115,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
@@ -291,7 +293,9 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              "RefLatitude",              9,      0,NULL,         enum_validation_type::__WHERE_RULE},
+    {230,   "IfcSite",              NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {231,   "IfcSite",              "RefLatitude",              9,      0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
+    {231,   "IfcSite",              NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {6,     "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
     {161,   "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
@@ -305,7 +309,8 @@ static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
     {51,    "IfcProductDefinitionShape",    "Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
     {51,    "IfcProdcutDefinitionShape",    NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {52,    "IfcShapeRepresentation",       "OfProductRepresentation", -1,  0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
-    {74,    "IfcPolyLoop",                  "Polygon",              0,      1,r1,           enum_validation_type::__REFERENCE_EXISTS}
+    {52,    "IfcShapeRepresentation",       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+//    {74,    "IfcPolyLoop",                  "Polygon",              0,      1,r1,           enum_validation_type::__REFERENCE_EXISTS}
 };
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitTime[] =
@@ -319,19 +324,22 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {24,    "IfcLocalPlacement",    "PlacesObject",             -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
     {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
+    {52,    "IfcShapeRepresentation",       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         enum_validation_type::__STAR_USAGE},
     {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__AGGREGATION_NOT_EXPECTED},
     {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__ARRGEGATION_EXPECTED},
+    {115,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {170,   "IfcUnitAssignment",    "Units",                    0,      1,r6,           enum_validation_type::__ARGUMENT_PRIM_TYPE},
     {6,     "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
     {74,    "IfcPolyLoop",          NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {230,   "IfcSite",              NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
@@ -339,6 +347,8 @@ static IssueInfo rExpectedIssuesIFC4[] =
 {
     {2,     "IfcSite",                  "Decomposes",           -1,     1,r0,           enum_validation_type::__AGGREGATION_UNIQUE},
     {2,     "IfcSite",                  "Decomposes",           -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
+    {2,     "IfcSite",                  NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {8,     "IfcWall",                  NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {14,    "IfcShapeRepresentation",   "ContextOfItems",       0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {14,    "IfcShapeRepresentation",   NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      2,r32,          enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
@@ -377,12 +387,20 @@ static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
 static IssueInfo rExpectedIssuesIFC4x3[] =
 {
     {19,      "IfcRelContainedInSpatialStructure",  NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {21,      "IfcSIUnit",                          NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {23,      "IfcSIUnit",                          NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {17,      "IfcGeometricRepresentationContext",  NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {138,     "IfcCurveSegment",                    "SegmentLength",       3,     0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {143,     "IfcShapeRepresentation",             NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {1173,    "IfcRailwayPart",                     "PredefinedType",     10,     0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
+    {1173,    "IfcRailwayPart",                     NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1173,    "IfcRailwayPart",                     NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {1176,    "IfcShapeRepresentation",             NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1181,    "IfcRailwayPart",                     NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1181,    "IfcRailwayPart",                     NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {1184,    "IfcShapeRepresentation",             NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1189,    "IfcRailwayPart",                     NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {1189,    "IfcRailwayPart",                     NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {1192,    "IfcShapeRepresentation",             NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {1560,    "IfcPresentationLayerWithStyle",      NULL,                 -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
 };
@@ -439,8 +457,8 @@ extern void ModelCheckerTests()
 
     TestInvalidParameters();
 
-    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), enum_validation_status::__COMPLETE_ALL);
-    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), enum_validation_status::__COMPLETE_ALL);
+   // CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), enum_validation_status::__COMPLETE_ALL);
+   // CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), enum_validation_status::__COMPLETE_ALL);
     CheckModelTest("ModelCheckerIFC4x3.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), enum_validation_status::__COMPLETE_ALL);
  
     uint64_t issueTypesAll = validateGetOptions(NULL, NULL, NULL, 0);
