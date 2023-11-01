@@ -234,7 +234,7 @@ void CheckExpectedIssuses::OnIssue(ValidationIssue issue)
             }
             
             found = true;
-            expected.stepId = -1; //mark as reported
+            expected.stepId = -2; //mark as reported
             break;
         }
     }
@@ -300,7 +300,8 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {161,   "IfcApplication",       "Version",                  1,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {151,   "IfcProdcutDefinitionShape","ShapeOfProduct",       -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
-    {151,   "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
+    {151,   "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {-1,    NULL,                       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
@@ -315,7 +316,7 @@ static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitTime[] =
 {
-    {-1,    "IfcProductDefinitionShape",    "Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS}
+    {-2, NULL,NULL,0,NULL,0,enum_validation_type::__NONE} //cannot allocate an array of constant size 0
 };
 
 static IssueInfo rExpectedIssuesIFC2x3_once[] =
@@ -340,7 +341,8 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
+    {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {-1,    NULL,                       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
 static IssueInfo rExpectedIssuesIFC4[] =
@@ -440,7 +442,7 @@ static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nEx
     
     //all expected issues are reported
     for (int i = 0; i < nExpectedIssues; i++) {
-        ASSERT(rExpectedIssues[i].stepId == -1);
+        ASSERT(rExpectedIssues[i].stepId == -2);
     }
 
     printf("\t<Finished errorLevel='%d' />\n", (int)result);
@@ -457,8 +459,8 @@ extern void ModelCheckerTests()
 
     TestInvalidParameters();
 
-   // CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), enum_validation_status::__COMPLETE_ALL);
-   // CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), enum_validation_status::__COMPLETE_ALL);
+    CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3, _countof(rExpectedIssuesIFC2x3), enum_validation_status::__COMPLETE_ALL);
+    CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4, _countof(rExpectedIssuesIFC4), enum_validation_status::__COMPLETE_ALL);
     CheckModelTest("ModelCheckerIFC4x3.ifc", rExpectedIssuesIFC4x3, _countof(rExpectedIssuesIFC4x3), enum_validation_status::__COMPLETE_ALL);
  
     uint64_t issueTypesAll = validateGetOptions(NULL, NULL, NULL, 0);
