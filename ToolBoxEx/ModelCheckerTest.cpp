@@ -444,18 +444,11 @@ static void CheckModelTest(const char* file, IssueInfo* rExpectedIssues, int nEx
     for (int i = 0; i < nExpectedIssues; i++) {
         ASSERT(rExpectedIssues[i].stepId == -2);
     }
-
-    printf("\t<Finished errorLevel='%d' />\n", (int)result);
 }
 
-
-extern void ModelCheckerTests()
+static void CompositeTests()
 {
-    ENTER_TEST;
-
-    printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    printf("<RDFExpressModelChecker>\n");
-
+    printf(" <CompositeTests>\n");
 
     TestInvalidParameters();
 
@@ -491,6 +484,96 @@ extern void ModelCheckerTests()
     issueTypes = validateGetOptions(&sec, &cnt, &showOnce, ~(uint64_t(0)));
     ASSERT(sec == -1 && cnt == -1 && showOnce && issueTypes == issueTypesAll);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_once, _countof(rExpectedIssuesIFC2x3_once), enum_validation_status::__COMPLETE_NOT_ALL);
+
+    printf(" </CompositeTests>\n");
+}
+
+static void PassOrFailCheck(const char* filePath)
+{
+    printf("\t<PassOrFailCheck file='%s'>\n", filePath);
+
+    bool expectFail = false;
+    if (strstr(filePath, "fail")) {
+        expectFail = true;
+        ASSERT(!strstr(filePath, "pass"));
+    }
+    else {
+        ASSERT(strstr(filePath, "pass"));
+    }
+
+    SdaiModel model = sdaiOpenModelBN(NULL, filePath, "");
+    ASSERT(model);
+
+    auto checks = validateModel(model);
+    ASSERT(validateGetStatus(checks) == enum_validation_status::__COMPLETE_ALL);
+
+    int_t result = 0;
+    PrintIssue log;
+    for (auto issue = validateGetFirstIssue(checks); issue; issue = validateGetNextIssue(issue)) {
+        log.OnIssue(issue);
+        result = max(result, validateGetIssueLevel(issue));
+    }
+    validateFreeResults(checks);
+
+    if (expectFail == (result > 0)) {
+        printf("\t\t<CheckResult>OK</CheckResult>\n");
+    }
+    else {
+        printf("\t\t<CheckResult>TEST NOT PASSED</CheckResult>\n");
+        ASSERT(0);
+    }
+
+    printf("\t</PassOrFailCheck>\n");
+}
+
+static void PassOrFailTests(const char* subfolder)
+{
+    ValidationIssueLevel res = 0;
+
+    auto directory = std::filesystem::path{ "..\\TestData" };
+    directory.append(subfolder);
+    
+    auto modelPathWC = directory;
+    modelPathWC.append("*.ifc");
+
+    WIN32_FIND_DATA ffd;
+    auto hFind = FindFirstFile(modelPathWC.c_str(), &ffd);
+    ASSERT(hFind != INVALID_HANDLE_VALUE);
+
+    do {
+        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            //_tprintf(TEXT("  %s   <DIR>\n"), ffd.cFileName);
+        }
+        else {
+            std::filesystem::path filePath(directory);
+            filePath.append(ffd.cFileName);
+            PassOrFailCheck(filePath.string().c_str());
+        }
+    } while (FindNextFile(hFind, &ffd) != 0);
+
+    FindClose(hFind);
+}
+
+static void PassOrFailTests()
+{
+    printf(" <PassOrFailTests>\n");
+
+    PassOrFailTests("IfcOpenShell\\validate");
+    PassOrFailTests("IfcOpenShell\\rules");
+
+    printf(" <PassOrFailTests>\n");
+}
+
+extern void ModelCheckerTests()
+{
+    ENTER_TEST;
+
+    printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    printf("<RDFExpressModelChecker>\n");
+
+    PassOrFailTests();
+
+    CompositeTests();
 
     printf("</RDFExpressModelChecker>\n");
 }
