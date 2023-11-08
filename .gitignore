@@ -7,7 +7,4 @@ CppEngineTests/x64/
 CsIfcEngineTests/bin/
 CsEngineTests/bin/
 Configurator.bin/
-**/launchSettings.json
-ExpressParser/x64/
-ModelChecker/x64/
 ToolBoxEx/x64/

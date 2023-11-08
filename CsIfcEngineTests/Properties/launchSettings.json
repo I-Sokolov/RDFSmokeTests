@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "CsIfcEngineTests": {
+      "commandName": "Project",
+      "workingDirectory": "..\\output",
+      "nativeDebugging": true
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "CsEngineTests": {
+      "commandName": "Project",
+      "workingDirectory": "..\\output",
+      "nativeDebugging": true
+    }
+  }
+}

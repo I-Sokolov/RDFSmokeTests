@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Configurator": {
+      "commandName": "Project",
+      "workingDirectory": "..\\output",
+      "nativeDebugging": false
+    }
+  }
+}
