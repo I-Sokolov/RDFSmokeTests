@@ -559,8 +559,8 @@ static void PassOrFailTests()
     printf(" <PassOrFailTests>\n");
 
     PassOrFailTests("IfcOpenShell\\validate");
-    PassOrFailTests("IfcOpenShell\\rules");
-
+    PassOrFailTests("IfcOpenShell\\rules");    
+    
     printf(" <PassOrFailTests>\n");
 }
 
@@ -571,9 +571,8 @@ extern void ModelCheckerTests()
     printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     printf("<RDFExpressModelChecker>\n");
 
-    PassOrFailTests();
-
     CompositeTests();
+    PassOrFailTests();
 
     printf("</RDFExpressModelChecker>\n");
 }
