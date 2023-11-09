@@ -301,6 +301,7 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {151,   "IfcProdcutDefinitionShape","ShapeOfProduct",       -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {151,   "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {85,    "IfcPropertyEnumeration","EnumerationValues",        1,     1,r1,           enum_validation_type::__AGGREGATION_NOT_EXPECTED},
     {-1,    NULL,                       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
@@ -328,7 +329,7 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {52,    "IfcShapeRepresentation",       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         enum_validation_type::__STAR_USAGE},
-    {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__AGGREGATION_NOT_EXPECTED},
+//    {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__AGGREGATION_NOT_EXPECTED},
     {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__ARRGEGATION_EXPECTED},
     {115,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
@@ -342,6 +343,7 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {230,   "IfcSite",              "RefLatitude",               9,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {85,    "IfcPropertyEnumeration","EnumerationValues",        1,     1,r1,           enum_validation_type::__AGGREGATION_NOT_EXPECTED},
     {-1,    NULL,                       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
 };
 
@@ -485,6 +487,7 @@ static void CompositeTests()
     ASSERT(sec == -1 && cnt == -1 && showOnce && issueTypes == issueTypesAll);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_once, _countof(rExpectedIssuesIFC2x3_once), enum_validation_status::__COMPLETE_NOT_ALL);
 
+    validateSetOptions(-1, -1, false, ~0, ~0);
     printf(" </CompositeTests>\n");
 }
 

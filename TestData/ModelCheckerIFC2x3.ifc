@@ -113,5 +113,6 @@ DATA;
 #82 = IFCBOUNDINGBOX(#83, 5400., 200., 5000.);
 #83 = IFCCARTESIANPOINT((0., 0., 0.));
 #84 = IFCCARTESIANPOINTLIST2D(((0., 0.), (5457., -1272.), (2240., -5586.), (2227., -5900.), (5294., -260.), (-240., 171.)));
+#85 = IFCPROPERTYENUMERATION('Test', (IFCLABEL('actualservicelife', 'expectedservicelife')), $);
 ENDSEC;
 END-ISO-10303-21;
