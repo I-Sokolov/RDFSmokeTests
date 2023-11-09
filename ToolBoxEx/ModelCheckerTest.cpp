@@ -459,20 +459,20 @@ static void CompositeTests()
     uint64_t issueTypesAll = validateGetOptions(NULL, NULL, NULL, 0);
     ASSERT(issueTypesAll == 0xFFFF);
 
-    validateSetOptions(-1, 4, false, 0, 0);
+    validateSetOptions(0, 4, false, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitCount, _countof(rExpectedIssuesIFC2x3_LimitCount), enum_validation_status::__COUNT_EXCEED);
 
     int_t sec;
     int_t cnt;
     bool  showOnce;
     auto issueTypes = validateGetOptions(&sec, &cnt, &showOnce, 0);
-    ASSERT(sec == -1 && cnt == 4 && !showOnce && issueTypes == issueTypesAll);
+    ASSERT(sec == 0 && cnt == 4 && !showOnce && issueTypes == issueTypesAll);
 
-    validateSetOptions(0, -1, false, 0, 0);
+    validateSetOptions(1, -1, false, 0, 0);
     CheckModelTest("ModelCheckerIFC2x3.ifc", rExpectedIssuesIFC2x3_LimitTime, _countof(rExpectedIssuesIFC2x3_LimitTime), enum_validation_status::__TIME_EXCEED);
 
     issueTypes = validateGetOptions(&sec, &cnt, &showOnce, ~(uint64_t(0)));
-    ASSERT(sec == 0 && cnt == -1 && !showOnce && issueTypes == issueTypesAll);
+    ASSERT(sec == 1 && cnt == -1 && !showOnce && issueTypes == issueTypesAll);
 
     validateSetOptions(-1, -1, false, 0, uint64_t(enum_validation_type::__UNIQUE_RULE) | uint64_t(enum_validation_type::__WHERE_RULE));
     CheckModelTest("ModelCheckerIFC4.ifc", rExpectedIssuesIFC4_ExcludeRules , _countof(rExpectedIssuesIFC4_ExcludeRules), enum_validation_status::__COMPLETE_NOT_ALL);
