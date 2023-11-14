@@ -154,6 +154,12 @@ namespace CsIfcEngineTests
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
             CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF" });
 
+            //empty ADB
+            adb = ifcengine.sdaiCreateEmptyADB();
+            CheckADBValues(adb, null);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", null);
+
             ifcengine.sdaiCloseModel(model);
         }
 
@@ -395,6 +401,14 @@ namespace CsIfcEngineTests
             aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
             CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=1, complexArgAggregated=true });
+
+            //empty ADB
+            /* creates empty aggregation
+            adb = ifcengine.sdaiCreateEmptyADB();
+            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
+            CheckValues(wall, "Name", new PrimitiveValues { aggrLevel = 1 });
+            */
 
             ifcengine.sdaiCloseModel(model);
         }
