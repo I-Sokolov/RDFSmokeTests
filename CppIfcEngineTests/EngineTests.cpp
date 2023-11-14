@@ -75,11 +75,15 @@ static void TestADBBoolean(SdaiInstance inst, const char* attr)
     adb = sdaiCreateADB(sdaiSTRING, "2");
     ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
     ASSERT(ret == adb && sdaiGetADBType(adb) == sdaiBOOLEAN);
+    auto typePath = sdaiGetADBTypePath(adb, sdaiSTRING);
+    ASSERT(!strcmp(typePath, "IFCBOOLEAN"));
     sdaiDeleteADB(adb);
 
     //
     adb = NULL;
 
+    //replace select value with primitive value
+    // 
     //put double
     double dVal = 5.4;
     sdaiPutAttrBN(inst, attr, sdaiREAL, &dVal);
@@ -87,15 +91,15 @@ static void TestADBBoolean(SdaiInstance inst, const char* attr)
     ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
     ASSERT(ret == adb && adb);
 
-    //value is double now
+    //value is REAL now
     ret = sdaiGetADBValue(adb, sdaiREAL, &dVal);
     ASSERT(ret == &dVal && dVal == 5.4);
     ret = sdaiGetADBValue(adb, sdaiBOOLEAN, &bVal);
     ASSERT(ret == NULL); 
 
-    //but typePath is IFCBOOLEAN
-    auto typePath = sdaiGetADBTypePath(adb, sdaiSTRING);
-    ASSERT(!strcmp(typePath, "IFCBOOLEAN"));
+    //and typePath is ""
+    typePath = sdaiGetADBTypePath(adb, sdaiSTRING);
+    ASSERT(!strcmp(typePath, ""));
 
     sdaiDeleteADB(adb);
     adb = NULL;
@@ -773,34 +777,6 @@ static void GetAllInstancesTest(SdaiModel ifcModel, int_t expectedNum)
     }
 }
 
-static void TestPrimitiveOverComplex()
-{
-    ENTER_TEST;
-
-    SdaiModel  ifcModel = sdaiCreateModelBN(0, NULL, "IFC4");
-    ASSERT(ifcModel);
-    SetSPFFHeaderItem(ifcModel, 9, 0, sdaiSTRING, "IFC4");
-    SetSPFFHeaderItem(ifcModel, 9, 1, sdaiSTRING, (char*)0);
-
-    auto inst = sdaiCreateInstanceBN(ifcModel, "IfcMeasureWithUnit");
-    ASSERT(inst);
-
-    bool bval = true;
-    auto adb = sdaiCreateADB(sdaiBOOLEAN, &bval);
-    sdaiPutADBTypePath(adb, 1, "IFCBOOLEAN");
-    sdaiPutAttrBN(inst, "ValueComponent", sdaiADB, adb);
-    
-    double dval = 3.1415;
-    sdaiPutAttrBN(inst, "ValueComponent", sdaiREAL, &dval);
-
-    sdaiGetAttrBN(inst, "ValueComponent", sdaiADB, &adb);
-    auto type = sdaiGetADBTypePath(adb, 0);
-    ASSERT(!strcmp(type, "IFCBOOLEAN")); //subject to change
-
-    sdaiCloseModel(ifcModel);
-
-}
-
 extern void EngineTests(void)
 {
     ENTER_TEST
@@ -830,6 +806,4 @@ extern void EngineTests(void)
     TestGetADBValue(ifcModel);
 
     sdaiCloseModel(ifcModel);
-
-    TestPrimitiveOverComplex();
 }
