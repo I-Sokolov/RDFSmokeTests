@@ -369,7 +369,9 @@ static IssueInfo rExpectedIssuesIFC4[] =
     {17,    "IfcBlobTexture",            NULL,                  -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {22,    "IfcIndexedColourMap",       "MappedTo",            0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {22,    "IfcIndexedColourMap",       "Colours",             2,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
-    {22,    "IfcIndexedColourMap",       "ColourIndex",         3,      0,NULL,         enum_validation_type::__WHERE_RULE}
+    {22,    "IfcIndexedColourMap",       "ColourIndex",         3,      0,NULL,         enum_validation_type::__WHERE_RULE},
+    {24,    "IfcMeasureWithUnit",        "ValueComponent",      0,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
+    {25,    "IfcMeasureWithUnit",        "ValueComponent",      0,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE}
 };
 
 static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
