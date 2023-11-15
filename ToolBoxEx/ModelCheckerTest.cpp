@@ -387,7 +387,9 @@ static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {22,    "IfcIndexedColourMap",       "MappedTo",            0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
-    {22,    "IfcIndexedColourMap",       "Colours",             2,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS}
+    {22,    "IfcIndexedColourMap",       "Colours",             2,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
+    {24,    "IfcMeasureWithUnit",        "ValueComponent",      0,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
+    {25,    "IfcMeasureWithUnit",        "ValueComponent",      0,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE}
 };
 
 static IssueInfo rExpectedIssuesIFC4x3[] =
@@ -493,6 +495,25 @@ static void CompositeTests()
     printf(" </CompositeTests>\n");
 }
 
+
+static const std::string& GetSchemaPath(const char* schemaName)
+{
+    static std::map<std::string, std::string> map;
+
+    if (map.empty()) {
+        map["IFC2X3"] = "";
+        map["IFC4"] = "";
+        map["IFC4X3_RC4"] = R"(..\TestData\schemas\IFC4x3_RC4.exp)";
+        map["IFC4X3_ADD1"] = R"(..\TestData\schemas\IFC4x3_ADD1.exp)";
+    }
+    
+    auto it = map.find(schemaName);
+
+    ASSERT(it != map.end());
+
+    return it->second;
+}
+
 static void PassOrFailCheck(const char* filePath)
 {
     printf("\t<PassOrFailCheck file='%s'>\n", filePath);
@@ -506,7 +527,21 @@ static void PassOrFailCheck(const char* filePath)
         ASSERT(strstr(filePath, "pass"));
     }
 
-    SdaiModel model = sdaiOpenModelBN(NULL, filePath, "");
+    //read header and schema
+    SdaiModel model = sdaiOpenModelBN(NULL, filePath, NULL);
+    ASSERT(model);
+
+    const char* schemaName = nullptr;        
+    GetSPFFHeaderItem(model, 9, 0, sdaiSTRING, &schemaName);
+    ASSERT(schemaName);
+    
+    auto& schemaPath = GetSchemaPath(schemaName);
+
+    printf("\t\t<Schema name='%s' path='%s'/>\n", schemaName, schemaPath.c_str());
+    
+    sdaiCloseModel(model);
+    
+    model = sdaiOpenModelBN(NULL, filePath, schemaPath.c_str());
     ASSERT(model);
 
     auto checks = validateModel(model);
@@ -576,8 +611,8 @@ extern void ModelCheckerTests()
     printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     printf("<RDFExpressModelChecker>\n");
 
-    CompositeTests();
     PassOrFailTests();
+    CompositeTests();
 
     printf("</RDFExpressModelChecker>\n");
 }
