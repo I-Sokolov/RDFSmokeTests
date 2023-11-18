@@ -25,6 +25,21 @@ extern __declspec(dllimport) const char* parsingReadSchema_SetGeneratedSchemaFil
 
 extern __declspec(dllimport) bool ParseFunctionsSmokeTest(int_t model);
 
+static long HeapUsed()
+{
+    _HEAPINFO info = { 0, 0, 0 };
+    long used = 0;
+    int rc;
+
+    while ((rc = _heapwalk(&info)) == _HEAPOK) {
+        if (info._useflag == _USEDENTRY)
+            used += (long)info._size;
+    }
+    if (rc != _HEAPEND && rc != _HEAPEMPTY)
+        used = (used ? -used : -1);
+
+    return used;
+}
 
 static bool FileEquals(std::string& file1, std::string& file2)
 {
@@ -70,7 +85,9 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     auto model = sdaiCreateModelBN(1, "", readFilePath.string().c_str());
     parsingReadSchema_SetGeneratedSchemaFile(enum_embedded_schema::NONE, NULL);
 
+    //test expression parsing
     ASSERT(model != 0);
+
     ASSERT(ParseFunctionsSmokeTest(model));
 
     std::string writeFile = "WriteSchema_";
