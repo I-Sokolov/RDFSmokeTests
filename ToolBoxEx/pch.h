@@ -32,3 +32,18 @@ static void DoAssert(bool c, int line, const char* file)
 #define ENTER_TEST_NAME(name) printf ("Running " __FUNCTION__ " %s.\n", (name));
 
 
+static long HeapUsed()
+{
+    _HEAPINFO info = { 0, 0, 0 };
+    long used = 0;
+    int rc;
+
+    while ((rc = _heapwalk(&info)) == _HEAPOK) {
+        if (info._useflag == _USEDENTRY)
+            used += (long)info._size;
+    }
+    if (rc != _HEAPEND && rc != _HEAPEMPTY)
+        used = (used ? -used : -1);
+
+    return used;
+}

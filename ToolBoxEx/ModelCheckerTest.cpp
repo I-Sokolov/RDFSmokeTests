@@ -115,37 +115,6 @@ struct PrintIssue : public IssueHandler
     }
 };
 
-#if 0
-static ValidationIssueLevel CheckModels(const char* filePathWC, const char* expressSchemaFilePath)
-{
-    ValidationIssueLevel res = 0;
-
-    const auto directory = std::filesystem::path {filePathWC}.parent_path();
-
-    WIN32_FIND_DATAA ffd;
-    auto hFind = FindFirstFileA(filePathWC, &ffd);
-    if (hFind == INVALID_HANDLE_VALUE) {
-        printf("\t\t<Failure call='FindFirstFile'>%s</Failure>\n", filePathWC);
-        return -13;
-    }
-
-    do {
-        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            //_tprintf(TEXT("  %s   <DIR>\n"), ffd.cFileName);
-        }
-        else {
-            std::filesystem::path filePath(directory);
-            filePath.append(ffd.cFileName);
-            res += CheckModel (filePath.string().c_str(), expressSchemaFilePath, NULL);
-        }
-    } while (FindNextFileA(hFind, &ffd) != 0);
-
-    FindClose(hFind);
-
-    return res;
-}
-#endif
-
 static ValidationIssueLevel CheckModel(const char* filePath, const char* expressSchemaFilePath, IssueHandler* pLog, enum_validation_status status)
 {
     printf("\t<CheckModel file='%s'", filePath);
@@ -540,7 +509,7 @@ static void PassOrFailCheck(const char* filePath)
     printf("\t\t<Schema name='%s' path='%s'/>\n", schemaName, schemaPath.c_str());
     
     sdaiCloseModel(model);
-    
+   
     model = sdaiOpenModelBN(NULL, filePath, schemaPath.c_str());
     ASSERT(model);
 
@@ -562,6 +531,8 @@ static void PassOrFailCheck(const char* filePath)
         printf("\t\t<CheckResult>TEST NOT PASSED</CheckResult>\n");
         ASSERT(0);
     }
+    
+    sdaiCloseModel(model);
 
     printf("\t</PassOrFailCheck>\n");
 }

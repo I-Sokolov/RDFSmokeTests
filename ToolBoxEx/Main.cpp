@@ -9,10 +9,18 @@ extern int main()
     try {
         printf("--------- Starting ToolBoxEx tests\n");
 
-        ModelCheckerTests();
-        ReadWriteSchemaTest();
+        auto startingHeap = HeapUsed();
 
-        printf("---------- Finished ToolBoxEx tests\n");
+        ReadWriteSchemaTest();
+        ModelCheckerTests();
+        
+        auto finalHeap = HeapUsed();
+
+        auto lostMem = finalHeap - startingHeap;
+       // ASSERT(lostMem <= ); 
+
+        printf("---------- Finished ToolBoxEx enginde C++ tests. Lost memory %dKB\n", lostMem / 1024);
+
         return 0;
     }
     catch (int& code) {
