@@ -115,7 +115,7 @@ namespace Configurator
             if (CreateSymbolicLink(targetPath, srcPath, type))
                 cfgFile.WriteLine("echo SYMLINK {0} = {1}", targetPath, srcPath);
             else
-                throw new System.ApplicationException("Failed CreateSymbolicLink(" + targetPath + ", " + srcPath + ", SymbolicLink.File)");
+                throw new System.ApplicationException("Failed CreateSymbolicLink(" + targetPath + ", " + srcPath + ", " + type.ToString());
         }
 
         void CreateConfiguration(string folder, System.IO.StreamWriter cfgFile)
