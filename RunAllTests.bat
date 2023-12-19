@@ -11,8 +11,8 @@ git pull
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED Pull from test reprository. Press Ctr+C to stop or any key to continue !!!! & pause)
 git log -1
 
-IF .%RDF_TEST_DEVENV% == . set RDF_TEST_DEVENV="C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\devenv.com"
-IF not EXIST %RDF_TEST_DEVENV% (echo "Not found devenv.com from Visual Studio 2019. Set RDF_TEST_DEVENV" & goto END)
+IF .%RDF_TEST_DEVENV% == . set RDF_TEST_DEVENV="C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\devenv.com"
+IF not EXIST %RDF_TEST_DEVENV% (echo "Not found devenv.com from Visual Studio 2022. Set RDF_TEST_DEVENV" & goto END)
 
 IF EXIST output rd output /s /q
 IF EXIST output (echo !!!!  Failed to cleanup output !!! & goto END)
