@@ -222,21 +222,60 @@ static void test_multi_parent()
 
     //engine test
     int_t entity = sdaiGetEntity(model, "a3m_equivalence_criterion");
+    
     ASSERT(entity);
     ASSERT(7 == engiGetEntityNoAttributes(entity));
+
     const char* rAttr[] =
         {"name","assessment_specification","comparing_element_types","compared_element_types","measured_data_type", "detected_difference_types","accuracy_types"};
     const int_t rTypes[] =
         {sdaiSTRING, sdaiINSTANCE, sdaiAGGR, sdaiAGGR, sdaiENUM, sdaiAGGR, sdaiAGGR};
+    const bool rInverse[]
+        { false, false, false, false, false, false, false };
+    const char* rDefiningEntity[] = 
+        { "representation_item", "a3m_equivalence_criterion", "a3m_equivalence_criterion", "a3m_equivalence_criterion", "a3m_equivalence_criterion", "a3m_equivalence_criterion", "a3m_equivalence_criterion" };
+    enum_express_attr_type rAttrType[] =
+        { enum_express_attr_type::__NONE, enum_express_attr_type::__NONE, enum_express_attr_type::__NONE, enum_express_attr_type::__NONE,
+        enum_express_attr_type::__NONE ,enum_express_attr_type::__NONE ,enum_express_attr_type::__NONE };
+    const char* rDomainEntity[] =
+        { "label", "a3m_equivalence_assessment_specification_select", "a3m_element_type_name", "a3m_element_type_name", "a3m_measured_data_type_name", "a3m_detected_difference_type_name", "a3m_accuracy_type_name" };
+    bool rIsAggr[] =
+        { false, false, false, false, false, false, false };
+    bool rOptional[] = 
+        { false, false, false, false, false, false, false };
+    bool rUnique[] =
+        { false, false, false, false, false, false, false };
+
     for (int i = 0; i < 7; i++) {
+
         auto attribute = engiGetEntityAttributeByIndex(entity, i, true, true);
         const char* name = NULL;
-        engiGetAttributeTraits(attribute, &name, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        bool inverse = false;
+        SdaiEntity definingEntity = 0;
+        enum_express_attr_type attrType = enum_express_attr_type::__NONE;
+        SdaiEntity domainEntity = 0;
+        SchemaAggr aggrDescr = 0;
+        bool optional = false;
+        bool unique = false;
+        engiGetAttributeTraits(attribute, &name, &definingEntity, &inverse, &attrType, &domainEntity, &aggrDescr, &optional, &unique);
+
         ASSERT(!strcmp(name, rAttr[i]));
+        
+        auto nm = engiGetEntityName(definingEntity, sdaiSTRING);
+        ASSERT(!strcmp(nm, rDefiningEntity[i]));
+
+        auto nm2 = engiGetEntityName(domainEntity, sdaiSTRING);
+        ASSERT(!strcmp(nm2, rDomainEntity[i]));
+
+        ASSERT(inverse == rInverse[i] && optional == rOptional[i] && unique == rUnique[i]);
+        ASSERT((aggrDescr != 0) == (i==2 || i==3 || i >= 5));
 
         int_t type = 0;
         engiGetEntityArgumentType(entity, i, &type);
         ASSERT(type == rTypes[i]);
+
+        //not crashing with nulls
+        engiGetAttributeTraits(attribute, &name, 0, 0, 0, 0, 0, 0, 0);
     }
     
     //wrapper test
