@@ -318,7 +318,7 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
 
 static IssueInfo rExpectedIssuesIFC4[] =
 {
-    {2,     "IfcSite",                  "Decomposes",           -1,     1,r0,           enum_validation_type::__AGGREGATION_UNIQUE},
+    {2,     "IfcSite",                  "Decomposes",           -1,     1,r1,           enum_validation_type::__AGGREGATION_UNIQUE},
     {2,     "IfcSite",                  "Decomposes",           -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {2,     "IfcSite",                  NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {8,     "IfcWall",                  NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
@@ -328,7 +328,7 @@ static IssueInfo rExpectedIssuesIFC4[] =
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      1,r2,           enum_validation_type::__AGGREGATION_SIZE},
     {29,    "IfcIndexedPolyCurve",      NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {7,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r2,           enum_validation_type::__REFERENCE_EXISTS},
-    {3,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r1,           enum_validation_type::__AGGREGATION_UNIQUE},
+    {3,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r2,           enum_validation_type::__AGGREGATION_UNIQUE},
     {19,    "IfcSpatialStructureElement",NULL,                  -1,     0,NULL,         enum_validation_type::__ABSTRACT_ENTITY},
     {19,    "IfcSpatialStructureElement",NULL,                  -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {1,     "IfcRoot",                   "GlobalId",            0,      0,NULL,         enum_validation_type::__UNIQUE_RULE},
@@ -345,13 +345,13 @@ static IssueInfo rExpectedIssuesIFC4[] =
 
 static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
 {
-    {2,     "IfcSite",                  "Decomposes",           -1,     1,r0,           enum_validation_type::__AGGREGATION_UNIQUE},
+    {2,     "IfcSite",                  "Decomposes",           -1,     1,r1,           enum_validation_type::__AGGREGATION_UNIQUE},
     {2,     "IfcSite",                  "Decomposes",           -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {14,    "IfcShapeRepresentation",   "ContextOfItems",       0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      2,r32,          enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {29,    "IfcIndexedPolyCurve",      "Segments",             1,      1,r2,           enum_validation_type::__AGGREGATION_SIZE},
     {7,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r2,           enum_validation_type::__REFERENCE_EXISTS},
-    {3,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r1,           enum_validation_type::__AGGREGATION_UNIQUE},
+    {3,     "IfcRelAggregates",         "RelatedObjects",       5,      1,r2,           enum_validation_type::__AGGREGATION_UNIQUE},
     {19,    "IfcSpatialStructureElement",NULL,                  -1,     0,NULL,         enum_validation_type::__ABSTRACT_ENTITY},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r7,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {21,    "IfcPropertyListValue",      "ListValues",          2,      1,r9,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},

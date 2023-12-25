@@ -11,9 +11,9 @@ extern int main()
 
         auto startingHeap = HeapUsed();
 
-        ReadWriteSchemaTest();
         ModelCheckerTests();
-        
+        ReadWriteSchemaTest();
+
         auto finalHeap = HeapUsed();
 
         auto lostMem = finalHeap - startingHeap;
