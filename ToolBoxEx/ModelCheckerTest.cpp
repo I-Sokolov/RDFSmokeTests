@@ -474,6 +474,7 @@ static const std::string& GetSchemaPath(const char* schemaName)
         map["IFC4"] = "";
         map["IFC4X3_RC4"] = R"(..\TestData\schemas\IFC4x3_RC4.exp)";
         map["IFC4X3_ADD1"] = R"(..\TestData\schemas\IFC4x3_ADD1.exp)";
+        map["IFC4X3_ADD2"] = "";
     }
     
     auto it = map.find(schemaName);
@@ -571,7 +572,8 @@ static void PassOrFailTests()
 
     PassOrFailTests("IfcOpenShell\\validate");
     PassOrFailTests("IfcOpenShell\\rules");    
-    
+    PassOrFailTests("IFC4x3");
+
     printf(" <PassOrFailTests>\n");
 }
 
