@@ -788,6 +788,29 @@ static void GetAllInstancesTest(SdaiModel ifcModel, int_t expectedNum)
     }
 }
 
+static void PrecisionTest(SdaiModel ifcModel)
+{
+    ENTER_TEST;
+
+    auto window = IfcWindow::Create(ifcModel);
+
+    window.put_OverallWidth(1. / 3);
+
+    const char* str = nullptr;
+    sdaiGetAttrBN(window, "OverallWidth", sdaiSTRING, &str);
+    ASSERT(!strcmp(str, "0.333333"));
+
+    setPrecisionDoubleExport(ifcModel, 15, 10, true);
+
+    sdaiGetAttrBN(window, "OverallWidth", sdaiSTRING, &str);
+    ASSERT(!strcmp(str, "0.333333333333333"));
+
+    setPrecisionDoubleExport(ifcModel, 15, 15, true);
+
+    sdaiGetAttrBN(window, "OverallWidth", sdaiSTRING, &str);
+    ASSERT(!strcmp(str, "0.333333333333333"));
+}
+
 extern void EngineTests(void)
 {
     ENTER_TEST
@@ -804,6 +827,8 @@ extern void EngineTests(void)
     TestGetAttrType(ifcModel);
 
     GetAllInstancesTest(ifcModel, 7);
+
+    PrecisionTest(ifcModel);
 
     sdaiSaveModelBN(ifcModel, FILE_NAME);
     sdaiCloseModel(ifcModel);
