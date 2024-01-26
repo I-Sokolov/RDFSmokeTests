@@ -9,6 +9,9 @@ extern int main()
     try {
         printf("--------- Starting ToolBoxEx tests\n");
 
+#ifdef VLD_ON
+        VLDEnable();
+#endif
         auto startingHeap = HeapUsed();
 
         ReadWriteSchemaTest();
@@ -19,6 +22,9 @@ extern int main()
         auto lostMem = finalHeap - startingHeap;
        // ASSERT(lostMem <= ); 
 
+#ifdef VLD_ON
+        VLDReportLeaks();
+#endif
         printf("---------- Finished ToolBoxEx enginde C++ tests. Lost memory %dKB\n", lostMem / 1024);
 
         return 0;

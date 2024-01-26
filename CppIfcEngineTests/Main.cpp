@@ -29,7 +29,9 @@ extern int main()
     try {
         printf("--------- Starting IFC engine C++ tests\n");
         
-
+#ifdef VLD_ON
+        VLDEnable();
+#endif
         auto startingHeap = HeapUsed();
         
         bool stop = true;
@@ -55,6 +57,10 @@ extern int main()
         
         auto lostMem = finalHeap - startingHeap;
         ASSERT(lostMem <= 232);
+
+#ifdef VLD_ON
+        VLDReportLeaks();
+#endif
 
         printf("---------- Finished IFC enginde C++ tests. Lost memory %dKB\n", lostMem / 1024);
         return 0;

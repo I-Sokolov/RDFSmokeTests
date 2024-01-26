@@ -11,10 +11,18 @@ extern int main()
     try {
         printf("--------- Starting Geometry engine C++ tests\n");
 
+#ifdef VLD_ON
+        VLDEnable();
+#endif
+
         InstancePropertiesTests();
         EarlyBindingTests();
         MetaPropertiesTest();
         ExtAppMemTest();
+
+#ifdef VLD_ON
+        VLDReportLeaks();
+#endif
 
         printf("--------- Finished Geometry enginde C++ tests\n");
         return 0;

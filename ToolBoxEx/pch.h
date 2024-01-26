@@ -1,5 +1,14 @@
 #pragma once
 
+#ifdef _DEBUG
+//#define VLD_ON
+#endif
+
+#ifdef VLD_ON
+#pragma message ("---- Enable Visual Leak Detector -----")
+#include "vld.h"
+#endif
+
 #include <Windows.h>
 
 #include <stdio.h>
