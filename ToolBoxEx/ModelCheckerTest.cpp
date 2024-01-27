@@ -135,7 +135,8 @@ static ValidationIssueLevel CheckModel(const char* filePath, const char* express
         }
         ASSERT(validateGetStatus(checks) == status);
         validateFreeResults(checks);
-        //sdaiCloseModel(model);
+        sdaiCloseModel(model);
+        model = NULL;
     }
     else {
         printf("\t\t<Failure call='sdaiOpenModelBN'>%s</Failure>\n", filePath);
@@ -465,9 +466,9 @@ static void CompositeTests()
 }
 
 
-static const std::string& GetSchemaPath(const char* schemaName)
+static std::string GetSchemaPath(const char* schemaName)
 {
-    static std::map<std::string, std::string> map;
+    std::map<std::string, std::string> map;
 
     if (map.empty()) {
         map["IFC2X3"] = "";
@@ -505,7 +506,7 @@ static void PassOrFailCheck(const char* filePath)
     GetSPFFHeaderItem(model, 9, 0, sdaiSTRING, &schemaName);
     ASSERT(schemaName);
     
-    auto& schemaPath = GetSchemaPath(schemaName);
+    std::string schemaPath = GetSchemaPath(schemaName);
 
     printf("\t\t<Schema name='%s' path='%s'/>\n", schemaName, schemaPath.c_str());
     
