@@ -119,6 +119,9 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
 
     ok = engiSaveSchemaBN(model, writeEmbedded.c_str());
 
+    sdaiCloseModel(model);
+    model = 0;
+
     //
     //
     fileEquals = FileEquals(writeFile, writeEmbedded);
