@@ -20,7 +20,7 @@ extern int main()
         auto finalHeap = HeapUsed();
 
         auto lostMem = finalHeap - startingHeap;
-       // ASSERT(lostMem <= ); 
+        ASSERT(lostMem <= 232); 
 
 #ifdef VLD_ON
         VLDReportLeaks();
