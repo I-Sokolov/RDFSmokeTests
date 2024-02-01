@@ -56,13 +56,14 @@ extern int main()
         auto finalHeap = HeapUsed();
         
         auto lostMem = finalHeap - startingHeap;
+        printf("Lost memory %d bytes.\n", lostMem);
         ASSERT(lostMem <= 232);
 
 #ifdef VLD_ON
         VLDReportLeaks();
 #endif
 
-        printf("---------- Finished IFC enginde C++ tests. Lost memory %dKB\n", lostMem / 1024);
+        printf("---------- Finished IFC enginde C++ tests.\n");
         return 0;
     }
     catch (int& code) {

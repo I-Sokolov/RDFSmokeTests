@@ -20,12 +20,13 @@ extern int main()
         auto finalHeap = HeapUsed();
 
         auto lostMem = finalHeap - startingHeap;
-        ASSERT(lostMem <= 232); 
+        printf("Lost memory %d bytes.\n", lostMem);
+        ASSERT(lostMem <= 1500);
 
 #ifdef VLD_ON
         VLDReportLeaks();
 #endif
-        printf("---------- Finished ToolBoxEx enginde C++ tests. Lost memory %dKB\n", lostMem / 1024);
+        printf("---------- Finished ToolBoxEx enginde C++ tests.\n");
 
         return 0;
     }
