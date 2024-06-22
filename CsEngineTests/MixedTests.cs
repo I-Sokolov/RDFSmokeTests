@@ -35,10 +35,32 @@ namespace CsEngineTests
             collection.set_objects(items);
 
             var cnt = InstanceCount(model);
+            ASSERT(cnt == 4);
+
             ASSERT(engine.RemoveInstance(collection)==0);
             cnt = InstanceCount(model);
+            ASSERT(cnt == 3);
+
+            //double delete
+            ASSERT(engine.RemoveInstance(collection) == 0);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 3);
+
             ASSERT(engine.RemoveInstance(box)==0);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 2);
+
             ASSERT(engine.RemoveInstance(material)!=0);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 2);
+
+            ASSERT(engine.RemoveInstance(box2) == 0);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 1);
+
+            ASSERT(engine.RemoveInstance(material) == 0);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 0);
 
             engine.CloseModel(model);
             }
