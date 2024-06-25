@@ -15,6 +15,8 @@ namespace CsEngineTests
             {
             RemoveInstance();
             RemoveInstanceRecursively();
+            UpwardDelete();
+
             GetNameOfClassAndProperty();
             }
 
@@ -101,6 +103,38 @@ namespace CsEngineTests
             ASSERT(engine.RemoveInstance(items[0]) == 0);
             ASSERT(engine.RemoveInstanceRecursively(items[1]) == 0);
             ASSERT(engine.RemoveInstance(material) == 0);
+
+            engine.CloseModel(model);
+            }
+
+        static private void UpwardDelete()
+            {
+            ENTER_TEST();
+
+            long model = 0;
+            Collection collection = null;
+            CreateCollection(out model, out collection);
+
+            var items = collection.get_objects();
+            var material = items[0].get_material();
+
+            var cnt = InstanceCount(model);
+            ASSERT(cnt == 4);
+
+            ASSERT(engine.RemoveInstance(items[0]) != 0);
+            ASSERT(engine.RemoveInstanceRecursively(items[1]) == 0);
+
+            ASSERT(engine.RemoveInstance(collection) == 0);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 3);
+
+            ASSERT(engine.RemoveInstance(items[0]) == 0);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 2);
+
+            ASSERT(engine.RemoveInstanceRecursively(items[1]) == 2);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 0);
 
             engine.CloseModel(model);
             }
