@@ -14,25 +14,37 @@ namespace CsEngineTests
         public static void Run()
             {
             RemoveInstance();
+            RemoveInstanceRecursively();
             GetNameOfClassAndProperty();
+            }
+
+        private static void CreateCollection (out long model, out Collection collection) 
+            {
+            model = engine.OpenModel(null as byte[]);
+
+            var material = Material.Create(model);
+
+            var lst = new List<GeometricItem>();
+            for (int i = 0; i < 2; i++)
+                {
+                var box = Box.Create(model);
+                box.set_material(material);
+                lst.Add(box);
+                }
+
+            collection = Collection.Create(model);
+            collection.set_objects (lst.ToArray());
             }
 
         private static void RemoveInstance() { 
             ENTER_TEST();
-            var model = engine.OpenModel(null as byte[]);
 
-            var material = Material.Create(model);
+            long model = 0;
+            Collection collection = null;
+            CreateCollection(out model, out collection);
 
-            var box = Box.Create(model);
-            box.set_material (material);
-
-            var box2 = Box.Create(model);
-            box2.set_material (material);
-
-            var items = new GeometricItem[] { box };
-
-            var collection = Collection.Create(model);
-            collection.set_objects(items);
+            var items = collection.get_objects();
+            var material = items[0].get_material();
 
             var cnt = InstanceCount(model);
             ASSERT(cnt == 4);
@@ -46,21 +58,49 @@ namespace CsEngineTests
             cnt = InstanceCount(model);
             ASSERT(cnt == 3);
 
-            ASSERT(engine.RemoveInstance(box)==0);
+            ASSERT(engine.RemoveInstance(items[0])==0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 2);
 
-            ASSERT(engine.RemoveInstance(material)!=0);
+            ASSERT(engine.RemoveInstance(material) != 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 2);
 
-            ASSERT(engine.RemoveInstance(box2) == 0);
+            ASSERT(engine.RemoveInstance(items[1]) == 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 1);
 
             ASSERT(engine.RemoveInstance(material) == 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 0);
+
+            engine.CloseModel(model);
+            }
+
+        private static void RemoveInstanceRecursively()
+            {
+            ENTER_TEST();
+
+            long model = 0;
+            Collection collection = null;
+            CreateCollection(out model, out collection);
+
+            var items = collection.get_objects();
+            var material = items[0].get_material();
+
+            var cnt = InstanceCount(model);
+            ASSERT(cnt == 4);
+
+            ASSERT(engine.RemoveInstanceRecursively(collection) == 4);
+            cnt = InstanceCount(model);
+            ASSERT(cnt == 0);
+
+            //double delete
+            ASSERT(engine.RemoveInstanceRecursively(collection) == 0);
+
+            ASSERT(engine.RemoveInstance(items[0]) == 0);
+            ASSERT(engine.RemoveInstanceRecursively(items[1]) == 0);
+            ASSERT(engine.RemoveInstance(material) == 0);
 
             engine.CloseModel(model);
             }
