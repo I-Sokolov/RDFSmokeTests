@@ -703,9 +703,8 @@ static void TestAttrIndex(SdaiModel ifcModel)
     SdaiEntity domainEntity = 0;
     SchemaAggr aggrDescr = 0;
     bool optional = false;
-    bool unique = false;
-    engiGetAttributeTraits(attr, &attrName, &definingEntity, &inverse, &attrType, &domainEntity, &aggrDescr, &optional, &unique);
-    ASSERT(!inverse && !strcmp(attrName, "PredefinedType") && optional && !unique);
+    engiGetAttributeTraits(attr, &attrName, &definingEntity, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
+    ASSERT(!inverse && !strcmp(attrName, "PredefinedType") && optional);
     ASSERT(attrType == enum_express_attr_type::__NONE);
     auto sz = engiGetEntityName(definingEntity, sdaiSTRING);
     ASSERT(!strcmp(sz, "IfcWall"));

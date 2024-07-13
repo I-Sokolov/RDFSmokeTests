@@ -243,8 +243,6 @@ static void test_multi_parent()
         { false, false, false, false, false, false, false };
     bool rOptional[] = 
         { false, false, false, false, false, false, false };
-    bool rUnique[] =
-        { false, false, false, false, false, false, false };
 
     for (int i = 0; i < 7; i++) {
 
@@ -256,8 +254,7 @@ static void test_multi_parent()
         SdaiEntity domainEntity = 0;
         SchemaAggr aggrDescr = 0;
         bool optional = false;
-        bool unique = false;
-        engiGetAttributeTraits(attribute, &name, &definingEntity, &inverse, &attrType, &domainEntity, &aggrDescr, &optional, &unique);
+        engiGetAttributeTraits(attribute, &name, &definingEntity, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
 
         ASSERT(!strcmp(name, rAttr[i]));
         
@@ -267,7 +264,7 @@ static void test_multi_parent()
         auto nm2 = engiGetEntityName(domainEntity, sdaiSTRING);
         ASSERT(!strcmp(nm2, rDomainEntity[i]));
 
-        ASSERT(inverse == rInverse[i] && optional == rOptional[i] && unique == rUnique[i]);
+        ASSERT(inverse == rInverse[i] && optional == rOptional[i]);
         ASSERT((aggrDescr != 0) == (i==2 || i==3 || i >= 5));
 
         int_t type = 0;
@@ -275,7 +272,7 @@ static void test_multi_parent()
         ASSERT(type == rTypes[i]);
 
         //not crashing with nulls
-        engiGetAttributeTraits(attribute, &name, 0, 0, 0, 0, 0, 0, 0);
+        engiGetAttributeTraits(attribute, &name, 0, 0, 0, 0, 0, 0);
     }
     
     //wrapper test
