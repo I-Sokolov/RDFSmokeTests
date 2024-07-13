@@ -23,9 +23,9 @@ namespace CsIfcEngineTests
             //
             var logicalVoxelData = IFC4x4.IfcLogicalVoxelData.Create(ifcModel);
             IFC4x4.LOGICAL_VALUE[] arrSet = { IFC4x4.LOGICAL_VALUE.False, IFC4x4.LOGICAL_VALUE.Unknown, IFC4x4.LOGICAL_VALUE.True };
-            logicalVoxelData.put_Values(arrSet);
+            logicalVoxelData.put_ValueData(arrSet);
 
-            IFC4x4.ArrayOfIfcLogical lstGet = logicalVoxelData.get_Values();
+            IFC4x4.ListOfIfcLogical lstGet = logicalVoxelData.get_ValueData();
             ASSERT_EQ(lstGet, arrSet);
 
             //
@@ -53,7 +53,7 @@ namespace CsIfcEngineTests
                 Int64 inst = 0;
                 ifcengine.sdaiGetAggrByIndex(extent, i, ifcengine.sdaiINSTANCE, out inst);
 
-                lstGet = ((IFC4x4.IfcLogicalVoxelData)(inst)).get_Values();
+                lstGet = ((IFC4x4.IfcLogicalVoxelData)(inst)).get_ValueData();
                 ASSERT_EQ(lstGet, arrSet);
             }
 

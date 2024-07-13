@@ -14,10 +14,10 @@ extern void EarlyBound_IFC4x4_test()
     //
     auto logicalVoxelData = IFC4x4::IfcLogicalVoxelData::Create(ifcModel);
     IFC4x4::LOGICAL_VALUE arrSet[] = { IFC4x4::LOGICAL_VALUE::False, IFC4x4::LOGICAL_VALUE::Unknown, IFC4x4::LOGICAL_VALUE::True };
-    logicalVoxelData.put_Values(arrSet, 3);
+    logicalVoxelData.put_ValueData(arrSet, 3);
 
-    IFC4x4::ArrayOfIfcLogical lstGet;
-    logicalVoxelData.get_Values(lstGet);
+    IFC4x4::ListOfIfcLogical lstGet;
+    logicalVoxelData.get_ValueData(lstGet);
     ASSERT(lstGet.size() == 3 && lstGet.front()==arrSet[0] && lstGet.back()==arrSet[2]);
 
     //
@@ -46,7 +46,7 @@ extern void EarlyBound_IFC4x4_test()
         sdaiGetAggrByIndex(extent, i, sdaiINSTANCE, &inst);
 
         lstGet.clear();
-        IFC4x4::IfcLogicalVoxelData(inst).get_Values(lstGet);
+        IFC4x4::IfcLogicalVoxelData(inst).get_ValueData(lstGet);
         ASSERT(lstGet.size() == 3 && lstGet.front() == arrSet[0] && lstGet.back() == arrSet[2]);
     }
 
