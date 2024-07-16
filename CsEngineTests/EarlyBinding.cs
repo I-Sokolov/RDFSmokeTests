@@ -36,16 +36,16 @@ namespace CsEngineTests
 			//
 
 			ColorComponent colorComponent = ColorComponent.Create(model);
-			colorComponent.set_R(0.9);
-			colorComponent.set_G(0);
-			colorComponent.set_B(0);
+			colorComponent.R = 0.9;
+			colorComponent.G = 0;
+			colorComponent.B = 0;
 
 			//you can use instance and property handlers API
 			Int64 propW = engine.GetPropertyByName(model, "W");
 			double w = 0.5;
 			engine.SetDatatypeProperty(colorComponent, propW, ref w, 1);
 			//the code above is equivalent to
-			colorComponent.set_W(0.5);
+			colorComponent.W = 0.5;
 
 			//or you easy use existing instance handlers with classes
 			Int64 colorClass = engine.GetClassByName(model, "Color");
@@ -53,18 +53,18 @@ namespace CsEngineTests
 
 			//get wrapper object from instance handler
 			Color color = new Color(colorInstance);
-			color.set_ambient(colorComponent);
+			color.ambient = colorComponent;
 
 			Material material = Material.Create(model);
-			material.set_color(color);
+			material.color = color;
 
 			//
 			Box box = Box.Create(model);
 
-			box.set_height(3);
-			box.set_width(2);
-			box.set_length(4);
-			box.set_material(material);  //set_material is inherited from GeometricItem
+			box.height = 3;
+			box.width = 2;
+			box.length = 4;
+			box.material = material;  //material is inherited from GeometricItem
 
 			return box;
 		}
@@ -90,19 +90,18 @@ namespace CsEngineTests
 			ASSERT ((GeometricItem)texture_id == 0); 
 
 			//double
-			double? lseg = curve.get_segmentationLength();
+			double? lseg = curve.segmentationLength;
 			ASSERT(lseg == null);
-			var ok = curve.set_segmentationLength(0.5);
-			ASSERT(ok);
-			lseg = curve.get_segmentationLength();
+			curve.segmentationLength = 0.5;
+			lseg = curve.segmentationLength;
 			ASSERT(lseg == 0.5);
 
 			//double []
-			double[] org = texture.get_origin();
+			double[] org = texture.origin;
 			ASSERT(org == null);
 			org = new double[] { 1, 2, 3 };
-			texture.set_origin(org);
-			double[] ret_org = texture.get_origin();
+			texture.origin = org;
+			double[] ret_org = texture.origin;
 			ASSERT_ARR_EQ(org, ret_org);
 
 			//there is ability to identity property by name
@@ -113,7 +112,15 @@ namespace CsEngineTests
 
 			//false b/c cardinality restriction violation
 			var tooLong = new double[] { 1, 2, 3, 4 };
-			ok = texture.set_origin(tooLong);
+			bool ok = true;
+			try
+				{
+				texture.origin = tooLong;
+				}
+			catch (SetPropertyException)
+				{
+				ok = false;
+				}
 			ASSERT(!ok);
 
 			//false b/c wrong property name
@@ -123,54 +130,54 @@ namespace CsEngineTests
 			ASSERT(ret_org == null);
 
 			//long
-			long? setting = curve.get_setting();
+			long? setting = curve.setting;
 			ASSERT(setting == null);
-			curve.set_setting(13);
-			setting = curve.get_setting();
+			curve.setting=13;
+			setting = curve.setting;
 			ASSERT(setting == 13);
 
 			//long[]
-			long[] km = curve.get_knotMultiplicities();
+			long[] km = curve.knotMultiplicities;
 			ASSERT(km == null);
 			long[] km_ = new long[] { 3, 5, 6 };
-			curve.set_knotMultiplicities(km_);
-			km = curve.get_knotMultiplicities();
+			curve.knotMultiplicities = km_;
+			km = curve.knotMultiplicities;
 			ASSERT_ARR_EQ(km, km_);
 
 			//string 
-			string tname = texture.get_name();
+			string tname = texture.name;
 			ASSERT(tname == null);
-			texture.set_name("test");
-			tname = texture.get_name();
+			texture.name = "test";
+			tname = texture.name;
 			ASSERT(tname == "test");
 
 			//string[]
 			//No example in Geometry Kernel
 
 			//bool
-			bool? closed = curve.get_closed();
+			bool? closed = curve.closed;
 			ASSERT(closed == null);
-			curve.set_closed(true);
-			closed = curve.get_closed();
+			curve.closed = true;
+			closed = curve.closed;
 			ASSERT(closed.Value);
 
 			//bool[]
 			//No example in Geometry Kernel
 
 			//object
-			Material material = curve.get_material();
+			Material material = curve.material;
 			ASSERT(material == null);
 			Int64 mat = Material.Create(model);
-			curve.set_material(new Material(mat));
-			material = curve.get_material();
+			curve.material = new Material(mat);
+			material = curve.material;
 			ASSERT(material == mat);
-			var m2 = curve.get_material();
+			var m2 = curve.material;
 			ASSERT(m2 == material);
 
 			//object []
-			Point3D[] ptg = curve.get_controlPoints();
+			Point3D[] ptg = curve.controlPoints;
 			ASSERT(ptg == null);
-			Int64[] ptg64 = curve.get_controlPoints_Int64();
+			Int64[] ptg64 = curve.controlPoints_h;
 			ASSERT(ptg64 == null);
 
 			Point3D[] pts = new Point3D[2];
@@ -178,14 +185,14 @@ namespace CsEngineTests
 			pts[1] = Point3D.Create(model);
 			ASSERT(pts[0] != pts[1]);
 
-			curve.set_controlPoints(pts);
+			curve.Set_controlPoints(pts);
 
-			ptg = curve.get_controlPoints();
+			ptg = curve.controlPoints;
 			ASSERT(ptg.Length == pts.Length);
 			for (int i = 0; i < pts.Length; i++) ASSERT(pts[i] == ptg[i]);
 			ASSERT_ARR_EQ(ptg, pts);
 
-			ptg64 = curve.get_controlPoints_Int64();
+			ptg64 = curve.controlPoints_h;
 			ASSERT(ptg64.Length == pts.Length);
 			for (int i = 0; i < pts.Length; i++) ASSERT(pts[i] == ptg64[i]);
 

@@ -30,12 +30,12 @@ namespace CsEngineTests
             for (int i = 0; i < 2; i++)
                 {
                 var box = Box.Create(model);
-                box.set_material(material);
+                box.material = material;
                 lst.Add(box);
                 }
 
             collection = Collection.Create(model);
-            collection.set_objects (lst.ToArray());
+            collection.objects = lst.ToArray();
             }
 
         private static void RemoveInstance() { 
@@ -45,8 +45,8 @@ namespace CsEngineTests
             Collection collection = null;
             CreateCollection(out model, out collection);
 
-            var items = collection.get_objects();
-            var material = items[0].get_material();
+            var items = collection.objects;
+            var material = items[0].material;
 
             var cnt = InstanceCount(model);
             ASSERT(cnt == 4);
@@ -87,8 +87,8 @@ namespace CsEngineTests
             Collection collection = null;
             CreateCollection(out model, out collection);
 
-            var items = collection.get_objects();
-            var material = items[0].get_material();
+            var items = collection.objects;
+            var material = items[0].material;
 
             var cnt = InstanceCount(model);
             ASSERT(cnt == 4);
@@ -115,8 +115,8 @@ namespace CsEngineTests
             Collection collection = null;
             CreateCollection(out model, out collection);
 
-            var items = collection.get_objects();
-            var material = items[0].get_material();
+            var items = collection.objects;
+            var material = items[0].material;
 
             var cnt = InstanceCount(model);
             ASSERT(cnt == 4);
