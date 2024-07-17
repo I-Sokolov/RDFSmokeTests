@@ -28,7 +28,7 @@ namespace CsIfcEngineTests
                 //RDF.ifcengine.setStringUnicode(1);`
 
                 ExpressParser.Run();
-                PutGetAttr.Test();
+                PutGetAttr.Run();
                 MultiThreading.Test();
                 EarlyBinding_IFC4.Test();
                 EarlyBinding_IFC4x4.Test();

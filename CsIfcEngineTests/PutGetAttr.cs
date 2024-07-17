@@ -10,6 +10,10 @@ namespace CsIfcEngineTests
 {
     internal class PutGetAttr : CsTests.TestBase
     {
+        const string REGIONAL_CHARS_TXT = "ABC ÜüÖöÄäẞß ЩяЪ 好";
+        const string REGIONAL_CHARS_EXPR = 
+            "ABC \\X\\DC\\X\\FC\\X\\D6\\X\\F6\\X\\C4\\X\\E4\\X2\\1E9E\\X0\\\\X\\DF \\X2\\0429\\X0\\\\X2\\044F\\X0\\\\X2\\042A\\X0\\ \\X2\\597D\\X0\\";
+
         class PrimitiveValues
         {
             public Int64? intVal;
@@ -28,7 +32,7 @@ namespace CsIfcEngineTests
         };
 
 
-        public static void Test ()
+        public static void Run ()
         {
             TestPrimitiveValue();
             TestADBPrimitive();
@@ -52,11 +56,14 @@ namespace CsIfcEngineTests
 
             CheckValues(wall, "Name", null);
 
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiSTRING, "1234");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234" });
+            var text = "ANSI text";
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiSTRING, text);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = text, expressStringVal = text });
 
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiSTRING, "T");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T" });
+            text = REGIONAL_CHARS_TXT;
+            var bytes = Encoding.Unicode.GetBytes(text);
+            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiUNICODE, bytes);
+            CheckValues(wall, "Name", new PrimitiveValues { stringVal = text, expressStringVal = REGIONAL_CHARS_EXPR });
 
             Int64 i = 1234;
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiINTEGER, ref i);
@@ -664,30 +671,26 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && strVal == null);
             }
 
-            IntPtr ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiUNICODE, out ptrVal);
+            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiUNICODE, out strVal);
             if (expected != null && expected.stringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringUni(ptrVal);
-                ASSERT(str.Equals(expected.stringVal));
+                ASSERT(strVal.Equals(expected.stringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiEXPRESSSTRING, out ptrVal);
+            res = ifcengine.sdaiGetAttr(inst, attr, ifcengine.sdaiEXPRESSSTRING, out strVal);
             if (expected != null && expected.expressStringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.expressStringVal));
+                ASSERT(strVal.Equals(expected.expressStringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
         }
 
@@ -722,17 +725,17 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && aggrVal == 0);
             }
 
-            IntPtr ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiBINARY, out ptrVal);
+            string strVal;
+            //IntPtr ptrVal = IntPtr.MaxValue;
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiBINARY, out strVal);
             if (expected != null && expected.binVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.binVal));
+                ASSERT(strVal.Equals(expected.binVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
             Int64 intVal = 1;
@@ -747,17 +750,15 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && intVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiENUM, out ptrVal);
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiENUM, out strVal);
             if (expected != null && expected.enumVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.enumVal));
+                ASSERT(strVal.Equals(expected.enumVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null); ;
             }
 
             intVal = 1;
@@ -784,17 +785,15 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && intVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiLOGICAL, out ptrVal);
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiLOGICAL, out strVal);
             if (expected != null && expected.logicalVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.logicalVal));
+                ASSERT(strVal.Equals(expected.logicalVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
             double realVal = 1.1;
@@ -809,43 +808,37 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && realVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiSTRING, out ptrVal);
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiSTRING, out strVal);
             if (expected != null && expected.stringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.stringVal));
+                ASSERT(strVal.Equals(expected.stringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiUNICODE, out ptrVal);
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiUNICODE, out strVal);
             if (expected != null && expected.stringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringUni(ptrVal);
-                ASSERT(str.Equals(expected.stringVal));
+                ASSERT(strVal.Equals(expected.stringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiEXPRESSSTRING, out ptrVal);
+            res = ifcengine.sdaiGetADBValue(adb, ifcengine.sdaiEXPRESSSTRING, out strVal);
             if (expected != null && expected.expressStringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.expressStringVal));
+                ASSERT(strVal.Equals(expected.expressStringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
         }
 
@@ -894,17 +887,16 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && aggrVal == 0);
             }
 
-            IntPtr ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiBINARY, out ptrVal);
+            string strVal;
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiBINARY, out strVal);
             if (expected != null && expected.binVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.binVal));
+                ASSERT(strVal.Equals(expected.binVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
             Int64 intVal = 1;
@@ -919,17 +911,15 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && intVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiENUM, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiENUM, out strVal);
             if (expected != null && expected.enumVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.enumVal));
+                ASSERT(strVal.Equals(expected.enumVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
             intVal = 1;
@@ -956,17 +946,15 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && intVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiLOGICAL, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiLOGICAL, out strVal);
             if (expected != null && expected.logicalVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.logicalVal));
+                ASSERT(strVal.Equals(expected.logicalVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
             double realVal = 1.1;
@@ -981,43 +969,37 @@ namespace CsIfcEngineTests
                 ASSERT(res == 0 && realVal == 0);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiSTRING, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiSTRING, out strVal);
             if (expected != null && expected.stringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.stringVal));
+                ASSERT(strVal.Equals(expected.stringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiUNICODE, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiUNICODE, out strVal);
             if (expected != null && expected.stringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringUni(ptrVal);
-                ASSERT(str.Equals(expected.stringVal));
+                ASSERT(strVal.Equals(expected.stringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
 
-            ptrVal = IntPtr.MaxValue;
-            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiEXPRESSSTRING, out ptrVal);
+            res = ifcengine.sdaiGetAggrByIndex(aggr, 0, ifcengine.sdaiEXPRESSSTRING, out strVal);
             if (expected != null && expected.expressStringVal != null)
             {
                 ASSERT(res != 0);
-                string str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptrVal);
-                ASSERT(str.Equals(expected.expressStringVal));
+                ASSERT(strVal.Equals(expected.expressStringVal));
             }
             else
             {
-                ASSERT(res == 0 && ptrVal == IntPtr.Zero);
+                ASSERT(res == 0 && strVal == null);
             }
         }
 
