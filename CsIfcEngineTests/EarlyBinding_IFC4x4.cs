@@ -25,7 +25,7 @@ namespace CsIfcEngineTests
             IFC4x4.LOGICAL_VALUE[] arrSet = { IFC4x4.LOGICAL_VALUE.False, IFC4x4.LOGICAL_VALUE.Unknown, IFC4x4.LOGICAL_VALUE.True };
             logicalVoxelData.put_ValueData(arrSet);
 
-            IFC4x4.ListOfIfcLogical lstGet = logicalVoxelData.get_ValueData();
+            IFC4x4.ListOfIfcLogical lstGet = logicalVoxelData.ValueData;
             ASSERT_EQ(lstGet, arrSet);
 
             //
@@ -33,7 +33,7 @@ namespace CsIfcEngineTests
             bool[] arrSetB = { false, false, true };
             voxelGrid.put_Voxels(arrSetB);
 
-            var lstGetB = voxelGrid.get_Voxels();
+            var lstGetB = voxelGrid.Voxels;
             ASSERT_EQ(lstGetB, arrSetB);
 
             /// 
@@ -53,7 +53,7 @@ namespace CsIfcEngineTests
                 Int64 inst = 0;
                 ifcengine.sdaiGetAggrByIndex(extent, i, ifcengine.sdaiINSTANCE, out inst);
 
-                lstGet = ((IFC4x4.IfcLogicalVoxelData)(inst)).get_ValueData();
+                lstGet = ((IFC4x4.IfcLogicalVoxelData)(inst)).ValueData;
                 ASSERT_EQ(lstGet, arrSet);
             }
 
@@ -68,7 +68,7 @@ namespace CsIfcEngineTests
                 Int64 inst = 0;
                 ifcengine.sdaiGetAggrByIndex(extent, i, ifcengine.sdaiINSTANCE, out inst);
 
-                lstGetB = ((IFC4x4.IfcVoxelGrid)(inst)).get_Voxels();
+                lstGetB = ((IFC4x4.IfcVoxelGrid)(inst)).Voxels;
                 ASSERT_EQ(lstGetB, arrSetB);
             }
 

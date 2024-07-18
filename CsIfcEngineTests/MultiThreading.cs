@@ -75,15 +75,15 @@ namespace CsIfcEngineTests
                 IFC4x3.IfcUnitAssignment unitsAssmt = RDF.ifcengine.internalGetInstanceFromP21Line(model, 9);
                 ASSERT(unitsAssmt != 0);
 
-                var units = unitsAssmt.get_Units();
+                var units = unitsAssmt.Units;
                 ASSERT(units.Count == 6);
                 int cntNamed = 0;
                 foreach (var unit in units)
                 {
-                    var named = unit.get_IfcNamedUnit();
+                    var named = unit.IfcNamedUnit;
                     if (named != 0)
                     {
-                        named.get_UnitType();
+                        var a = named.UnitType; 
                         cntNamed++;
                     }
                 }
@@ -96,9 +96,9 @@ namespace CsIfcEngineTests
                 IFC4x3.IfcPropertySet pset = RDF.ifcengine.internalGetInstanceFromP21Line(model, 84);
                 ASSERT(pset != 0);
 
-                pset.put_Name("NewName");
+                pset.Name = ("NewName");
 
-                var props = pset.get_HasProperties();
+                var props = pset.HasProperties;
                 ASSERT(props.Count == 7 - i);
                 props.RemoveAt(0);
                 pset.put_HasProperties(props);

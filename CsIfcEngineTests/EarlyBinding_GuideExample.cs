@@ -50,31 +50,31 @@ namespace CsIfcEngineTests
             // Hint: in Visual Studio pay attention to inetlli-sense for possible methods help tool-tips for possible arguments
             // 
 
-            wall.put_Name("MyWall");
-            ASSERT(wall.get_Name() == "MyWall");
+            wall.Name = "MyWall";
+            ASSERT(wall.Name == "MyWall");
 
             //
             // nullable values
             //
 
             // get_* method will return domain type if attribute domain includes null value
-            string text = wall.get_Description();
+            string text = wall.Description;
             ASSERT(text == null); //not set
 
             // but if null value outside of domain type, get_* method will return nullable<> type extension
             // use nullable.Isnull and nullable.Value
 
-            double? width = door.get_OverallWidth();
+            double? width = door.OverallWidth;
             ASSERT(width==null); //not set
 
-            door.put_OverallWidth(900);
+            door.OverallWidth = 900;
 
-            width = door.get_OverallWidth();
+            width = door.OverallWidth;
             ASSERT(width!=null && width! == 900);
 
             // Hint: use var to simplify code
 
-            var height = door.get_OverallHeight();
+            var height = door.OverallHeight;
             ASSERT(height==null); //not set
 
             //
@@ -82,14 +82,14 @@ namespace CsIfcEngineTests
             // enum class defined for each EXPRESS enumeration
             //
 
-            wall.put_PredefinedType(IFC4.IfcWallTypeEnum.MOVABLE);
+            wall.PredefinedType = IFC4.IfcWallTypeEnum.MOVABLE;
 
             // get_* methods will return nullable extension
-            IFC4.IfcWallTypeEnum? wallPredefinedType = wall.get_PredefinedType();
+            IFC4.IfcWallTypeEnum? wallPredefinedType = wall.PredefinedType;
             ASSERT(wallPredefinedType! == IFC4.IfcWallTypeEnum.MOVABLE);
 
             //Hint: simplify with var
-            var doorPredefinedType = door.get_PredefinedType();
+            var doorPredefinedType = door.PredefinedType;
             ASSERT(doorPredefinedType==null);
 
             //
@@ -98,10 +98,10 @@ namespace CsIfcEngineTests
             //
 
             /*IFC4.IfcPositiveLengthMeasure*/ double measureHeight = 2000;
-            door.put_OverallHeight(measureHeight);
+            door.OverallHeight = measureHeight;
 
             //and to get
-            /*IFC4.IfcPositiveLengthMeasure>*/ double? getMeasure = door.get_OverallHeight();
+            /*IFC4.IfcPositiveLengthMeasure>*/ double? getMeasure = door.OverallHeight;
             ASSERT(getMeasure! == 2000);
 
             //
@@ -114,27 +114,27 @@ namespace CsIfcEngineTests
             //when you put a value to SELECT you shold specify type of the value
             //to do this, attribute put_* methods return a put-selector with method for each possible type
 
-            actor.put_TheActor().put_IfcPerson(person);
+            actor.TheActor.IfcPerson = person;
 
             //or this form
-            IFC4.IfcActorSelect_put putSelector = actor.put_TheActor();
-            putSelector.put_IfcPerson(person);
+            IFC4.IfcActorSelect putSelector = actor.TheActor;
+            putSelector.IfcPerson = person;
 
             //similary, attribute get_* methods return a get-selector and you can inquire content
-            IFC4.IfcActorSelect_get getSelector = actor.get_TheActor();
+            IFC4.IfcActorSelect getSelector = actor.TheActor;
 
-            ASSERT(getSelector.is_IfcPerson());
-            ASSERT(!getSelector.is_IfcOrganization());
+            ASSERT(getSelector.is_IfcPerson);
+            ASSERT(!getSelector.is_IfcOrganization);
 
-            IFC4.IfcPerson gotPerson = getSelector.get_IfcPerson();
+            IFC4.IfcPerson gotPerson = getSelector.IfcPerson;
             ASSERT(gotPerson == person);
 
-            IFC4.IfcOrganization gotOrganization = getSelector.get_IfcOrganization();
+            IFC4.IfcOrganization gotOrganization = getSelector.IfcOrganization;
             ASSERT(gotOrganization == 0);
 
             //get-selector may provide a method to get as base C++ type without specifing IFC type
 
-            SdaiInstance inst = getSelector.as_instance();
+            SdaiInstance inst = getSelector.as_instance;
 
             //check instance class
             ASSERT((IFC4.IfcPerson)(inst)!=0);
@@ -146,31 +146,31 @@ namespace CsIfcEngineTests
             var measure = IFC4.IfcMeasureWithUnit.Create(model);
 
             //when put you have to specify type path
-            measure.put_ValueComponent().put_IfcSimpleValue().put_IfcInteger(75);
+            measure.ValueComponent.IfcSimpleValue.IfcInteger = 75;
 
             //you can get with type path
-            ASSERT(measure.get_ValueComponent().get_IfcSimpleValue().is_IfcInteger());
-            ASSERT(!measure.get_ValueComponent().get_IfcMeasureValue().is_IfcAreaMeasure());
+            ASSERT(measure.ValueComponent.IfcSimpleValue.is_IfcInteger);
+            ASSERT(!measure.ValueComponent.IfcMeasureValue.is_IfcAreaMeasure);
 
-            var valueSelector = measure.get_ValueComponent(); //you can save selector in a variable
+            var valueSelector = measure.ValueComponent; //you can save selector in a variable
 
-            var gotInt = valueSelector.get_IfcSimpleValue().get_IfcInteger();
+            var gotInt = valueSelector.IfcSimpleValue.IfcInteger;
             ASSERT(gotInt != null && gotInt! == 75);
 
-            var gotArea = measure.get_ValueComponent().get_IfcMeasureValue().get_IfcAreaMeasure();
+            var gotArea = measure.ValueComponent.IfcMeasureValue.IfcAreaMeasure;
             ASSERT(gotArea==null);
 
             //if you are not interested in type, you can get as C++ base type
-            gotInt = valueSelector.as_int();
+            gotInt = valueSelector.as_int;
             ASSERT(gotInt != null && gotInt! == 75);
 
-            var gotDouble = valueSelector.as_double();
+            var gotDouble = valueSelector.as_double;
             ASSERT(gotDouble != null && gotDouble! == 75);
 
-            var gotText = measure.get_ValueComponent().as_text();
+            var gotText = measure.ValueComponent.as_text;
             ASSERT(gotText != null && gotText == "75");
 
-            var gotBool = valueSelector.as_bool();
+            var gotBool = valueSelector.as_bool;
             ASSERT(gotBool==null); //IfcInteger is not convertable to bool
 
             //
@@ -192,7 +192,7 @@ namespace CsIfcEngineTests
 
             site.put_RefLatitude(planeAngle);
 
-            IFC4.IfcCompoundPlaneAngleMeasure gotPlaneAngle = site.get_RefLatitude();
+            IFC4.IfcCompoundPlaneAngleMeasure gotPlaneAngle = site.RefLatitude;
             ASSERT(gotPlaneAngle.Count == 3 && gotPlaneAngle.First() == 44 && gotPlaneAngle[1]==34 && gotPlaneAngle[2]==3);
 
             //to put you can use any IEnumerable of base type
@@ -204,10 +204,10 @@ namespace CsIfcEngineTests
             site.put_RefLongitude(arrInt);
 
             //get_* method will return a subclass of List<> of base type
-            List<long> gotLongitued = site.get_RefLongitude();
+            List<long> gotLongitued = site.RefLongitude;
             ASSERT(gotLongitued.Count == 4 && gotLongitued[2] == 3);
 
-            IFC4.IfcCompoundPlaneAngleMeasure gotLatitude = site.get_RefLatitude();
+            IFC4.IfcCompoundPlaneAngleMeasure gotLatitude = site.RefLatitude;
             ASSERT(gotLatitude.Count == 1 && gotLatitude.First() == 56);
 
             //
@@ -218,7 +218,7 @@ namespace CsIfcEngineTests
             IFC4.IfcObjectDefinition[] gropObjects = { wall, site };
             group.put_RelatedObjects(gropObjects);
 
-            IFC4.SetOfIfcObjectDefinition gotGroup = group.get_RelatedObjects();
+            IFC4.SetOfIfcObjectDefinition gotGroup = group.RelatedObjects;
             ASSERT(gotGroup.Count == 2 && gotGroup.First() == wall && gotGroup.Last() == site);
 
             //
@@ -232,22 +232,22 @@ namespace CsIfcEngineTests
             var lstValue = new IFC4.ListOfIfcValue();
 
             var value = new IFC4.IfcValue (propEnumValue);
-            value._IfcSimpleValue().put_IfcLabel("MyLabel");
+            value.IfcSimpleValue.IfcLabel = "MyLabel";
             lstValue.Add(value);
 
             value = new IFC4.IfcValue(propEnumValue);
-            value._IfcMeasureValue().put_IfcCountMeasure(4);
+            value.IfcMeasureValue.IfcCountMeasure = 4;
             lstValue.Add(value);
 
             propEnumValue.put_EnumerationValues(lstValue);
 
-            IFC4.ListOfIfcValue gotValues = propEnumValue.get_EnumerationValues();
+            IFC4.ListOfIfcValue gotValues = propEnumValue.EnumerationValues;
             ASSERT(gotValues.Count == 2);
 
-            string v1 = gotValues.First()._IfcSimpleValue().get_IfcLabel();
+            string v1 = gotValues.First().IfcSimpleValue.IfcLabel;
             ASSERT(v1 != null && v1== "MyLabel");
             
-            double? v2 = gotValues.Last()._IfcMeasureValue().get_IfcCountMeasure();
+            double? v2 = gotValues.Last().IfcMeasureValue.IfcCountMeasure;
             ASSERT(v2 != null && v2! == 4);
 
             //
@@ -271,7 +271,7 @@ namespace CsIfcEngineTests
 
             pointList.put_CoordList(coordList);
 
-            IFC4.ListOfListOfIfcLengthMeasure coordListCheck = pointList.get_CoordList();
+            IFC4.ListOfListOfIfcLengthMeasure coordListCheck = pointList.CoordList;
             assert_equal(coordList, coordListCheck);
 
             //
@@ -280,9 +280,9 @@ namespace CsIfcEngineTests
             var prop = IFC4.IfcPropertySingleValue.Create(model);
 
             double[] cplx = { 2.1, 1.5 };
-            prop.put_NominalValue().put_IfcMeasureValue().put_IfcComplexNumber(cplx);
+            prop.NominalValue.IfcMeasureValue.put_IfcComplexNumber (cplx);
 
-            IFC4.IfcComplexNumber cplxNum = prop.get_NominalValue().get_IfcMeasureValue().get_IfcComplexNumber();
+            IFC4.IfcComplexNumber cplxNum = prop.NominalValue.IfcMeasureValue.IfcComplexNumber;
             ASSERT(cplxNum.Count == 2 && cplxNum.First() == 2.1 && cplxNum.Last() == 1.5);
         }
 

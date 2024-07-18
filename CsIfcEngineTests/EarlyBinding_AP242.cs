@@ -34,7 +34,7 @@ namespace CsIfcEngineTests
 
             var bspline_volume = rational_b_spline_volume.Create(model);
 
-            list_of_list_of_list_of_double weights = bspline_volume.get_weights_data();
+            list_of_list_of_list_of_double weights = bspline_volume.weights_data;
             ASSERT(weights.Count == 0);
 
             for (int i = 0; i < 2; i++)
@@ -61,60 +61,60 @@ namespace CsIfcEngineTests
             //bag
             var segment = composite_curve_segment.Create(model);
 
-            bag_of_composite_curve bag = segment.get_using_curves();
+            bag_of_composite_curve bag = segment.using_curves;
             ASSERT(bag.Count==0);
 
             //defined types on selects
             var equiv = equivalence_notable_instance.Create(model);
 
-            list_of_equivalence_detected_difference_select lstCompared = equiv.get_compared_elements();
+            list_of_equivalence_detected_difference_select lstCompared = equiv.compared_elements;
             ASSERT(lstCompared.Count == 0);
 
             var vertexPoint = vertex_point.Create(model);
-            vertexPoint.put_name("Test vertex point");
+            vertexPoint.name = "Test vertex point";
             var valCompared1 = new equivalence_detected_difference_select(equiv);
-            valCompared1._a3ms_inspected_equivalence_element_select().put_vertex_point(vertexPoint);
+            valCompared1.a3ms_inspected_equivalence_element_select.vertex_point = vertexPoint;
             lstCompared.Add(valCompared1);
             equiv.put_compared_elements(lstCompared);
 
-            lstCompared = equiv.get_compared_elements();
+            lstCompared = equiv.compared_elements;
             ASSERT(lstCompared.Count!=0);
-            var test = lstCompared.First()._a3ms_inspected_equivalence_element_select().get_vertex_point().get_name();
+            var test = lstCompared.First().a3ms_inspected_equivalence_element_select.vertex_point.name;
             ASSERT(!strcmp(test, "Test vertex point"));
 
             //
             var prodDefOccur = product_definition_occurrence.Create(model);
-            ASSERT(prodDefOccur.get_definition().get_product_definition() == 0);
+            ASSERT(prodDefOccur.definition.product_definition == 0);
 
             var prodDef = product_definition.Create(model);
-            prodDefOccur.put_definition().put_product_definition(prodDef);
-            ASSERT(prodDefOccur.get_definition().get_product_definition() == prodDef);
+            prodDefOccur.definition.product_definition = prodDef;
+            ASSERT(prodDefOccur.definition.product_definition == prodDef);
 
             //            
             var appliedUsageRights = applied_usage_right.Create(model);
-            set_of_ir_usage_item lstUsageItems = appliedUsageRights.get_items();
+            set_of_ir_usage_item lstUsageItems = appliedUsageRights.items;
             ASSERT(lstUsageItems.Count == 0);
 
 
             var usageItem = applied_classification_assignment.Create(model);
             var role = classification_role.Create(model);
-            role.put_name("Test role");
-            usageItem.put_role(role);
+            role.name = "Test role";
+            usageItem.role = role;
 
             lstUsageItems.Add(new ir_usage_item(appliedUsageRights));
-            lstUsageItems.Last().put_applied_classification_assignment(usageItem);
+            lstUsageItems.Last().applied_classification_assignment = usageItem;
 
             appliedUsageRights.put_items(lstUsageItems);
 
-            lstUsageItems = appliedUsageRights.get_items();
+            lstUsageItems = appliedUsageRights.items;
             ASSERT(lstUsageItems.Count == 1);
-            ASSERT(lstUsageItems.Last().get_action() == 0);
-            test = lstUsageItems.Last().get_applied_classification_assignment().get_role().get_name();
+            ASSERT(lstUsageItems.Last().action == 0);
+            test = lstUsageItems.Last().applied_classification_assignment.role.name;
             ASSERT(!strcmp(test, "Test role"));
 
             //            
             var listedLogical = listed_logical_data.Create(model);
-            ListOfLOGICAL_VALUE lstLogical = listedLogical.get_values();
+            ListOfLOGICAL_VALUE lstLogical = listedLogical.values;
             ASSERT(lstLogical.Count == 0);
 
             lstLogical.Add(LOGICAL_VALUE.True);
@@ -123,7 +123,7 @@ namespace CsIfcEngineTests
 
             listedLogical.put_values(lstLogical);
 
-            lstLogical = listedLogical.get_values();
+            lstLogical = listedLogical.values;
             ASSERT(lstLogical.Count == 3 && lstLogical.First() == LOGICAL_VALUE.True && lstLogical.Last() == LOGICAL_VALUE.Unknown);
 
             //
@@ -131,16 +131,16 @@ namespace CsIfcEngineTests
 
             var dir = direction.Create(model);
 
-            set_of_location_of_extreme_value_select setLocations = extreme.get_locations_of_extreme_value();
+            set_of_location_of_extreme_value_select setLocations = extreme.locations_of_extreme_value;
             ASSERT(setLocations.Count == 0);
 
             setLocations.Add(new location_of_extreme_value_select(extreme));
-            setLocations.Last()._inspected_shape_element_select().put_direction(dir);
+            setLocations.Last().inspected_shape_element_select.direction = dir;
 
             extreme.put_locations_of_extreme_value(setLocations);
 
-            List<location_of_extreme_value_select> getLocations = extreme.get_locations_of_extreme_value();
-            ASSERT(getLocations.Count == 1 && getLocations[0]._inspected_shape_element_select().get_direction() == dir);
+            List<location_of_extreme_value_select> getLocations = extreme.locations_of_extreme_value;
+            ASSERT(getLocations.Count == 1 && getLocations[0].inspected_shape_element_select.direction == dir);
 
             //
             RDF.ifcengine.sdaiSaveModelBN(model, "Test.ap");
@@ -163,7 +163,7 @@ namespace CsIfcEngineTests
                 long volume = 0;
                 RDF.ifcengine.sdaiGetAggrByIndex(volumes, i, RDF.ifcengine.sdaiINSTANCE, out volume);
 
-                list_of_list_of_list_of_double weights2 = ((rational_b_spline_volume)volume).get_weights_data();
+                list_of_list_of_list_of_double weights2 = ((rational_b_spline_volume)volume).weights_data;
 
                 ASSERT_EQ_LST(weights, weights2);
             }
@@ -182,14 +182,14 @@ namespace CsIfcEngineTests
             //wrapper test
             var inst = a3m_equivalence_criterion_with_specified_elements.Create(model);
             string NAME = "sey Name";
-            inst.put_name(NAME);
+            inst.name = NAME;
 
             list_of_oriented_edge edge= new list_of_oriented_edge();
             edge.Add (oriented_edge.Create(model));
             edge.Add (oriented_edge.Create(model));
 
             var eloop = edge_loop.Create(model);
-            eloop.put_name(NAME);
+            eloop.name = NAME;
             eloop.put_edge_list(edge);
 
             RDF.ifcengine.sdaiSaveModelBN(model, "Test.ap");
@@ -210,7 +210,7 @@ namespace CsIfcEngineTests
                 long item = 0;
                 RDF.ifcengine.sdaiGetAggrByIndex(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
 
-                var name = ((a3m_equivalence_criterion)item).get_name();
+                var name = ((a3m_equivalence_criterion)item).name;
                 ASSERT(!strcmp(name, NAME));
             }
 
@@ -226,10 +226,10 @@ namespace CsIfcEngineTests
                 RDF.ifcengine.sdaiGetAggrByIndex(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
 
                 eloop = (edge_loop)item;
-                var name = eloop.get_name();
+                var name = eloop.name;
                 ASSERT(name == NAME);
 
-                var lst = eloop.get_edge_list();
+                var lst = eloop.edge_list;
                 ASSERT(lst.Count == 2);
             }
 

@@ -24,24 +24,24 @@ namespace CsIfcEngineTests
 
             var wall = IfcWall.Create(ifcModel);
 
-            var guid = wall.get_GlobalId();
-            var name = wall.get_Name();
-            var descr = wall.get_Description();
-            IfcOwnerHistory oh = wall.get_OwnerHistory();
-            var predType = wall.get_PredefinedType();
+            var guid = wall.GlobalId;
+            var name = wall.Name;
+            var descr = wall.Description;
+            IfcOwnerHistory oh = wall.OwnerHistory;
+            var predType = wall.PredefinedType;
             ASSERT(descr==null && name==null && guid==null && oh==0 && predType==null);
 
-            wall.put_GlobalId("7-7-7");
-            wall.put_Name("Wall name");
-            wall.put_Description("My wall description");
-            wall.put_OwnerHistory(ownerHistory);
-            wall.put_PredefinedType(IfcWallTypeEnum.POLYGONAL);
+            wall.GlobalId = "7-7-7";
+            wall.Name = "Wall name";
+            wall.Description = "My wall description";
+            wall.OwnerHistory = ownerHistory;
+            wall.PredefinedType = IfcWallTypeEnum.POLYGONAL;
 
-            guid = wall.get_GlobalId();
-            name = wall.get_Name();
-            descr = wall.get_Description();
-            oh = wall.get_OwnerHistory();
-            predType = wall.get_PredefinedType();
+            guid = wall.GlobalId;
+            name = wall.Name;
+            descr = wall.Description;
+            oh = wall.OwnerHistory;
+            predType = wall.PredefinedType;
             ASSERT(descr == "My wall description"
                    && name == "Wall name"
                    && guid == "7-7-7"
@@ -50,32 +50,32 @@ namespace CsIfcEngineTests
             );
 
             var profile = IfcRectangleProfileDef.Create(ifcModel);
-            var xdim = profile.get_XDim();
-            var ydim = profile.get_YDim();
+            var xdim = profile.XDim;
+            var ydim = profile.YDim;
             ASSERT(xdim == null && ydim == null);
-            profile.put_XDim(10000);
-            profile.put_YDim(80);
-            xdim = profile.get_XDim();
-            ydim = profile.get_YDim();
+            profile.XDim = 10000;
+            profile.YDim = 80;
+            xdim = profile.XDim;
+            ydim = profile.YDim;
             ASSERT(xdim.Value == 10000 && ydim.Value == 80);
 
 
             IfcTriangulatedFaceSet triangFaceSet = IfcTriangulatedFaceSet.Create(ifcModel);
-            var closed = triangFaceSet.get_Closed();
+            var closed = triangFaceSet.Closed;
             ASSERT(closed==null);
-            triangFaceSet.put_Closed(false);
-            closed = triangFaceSet.get_Closed();
+            triangFaceSet.Closed = (false);
+            closed = triangFaceSet.Closed;
             ASSERT(!closed.Value);
 
             IfcBSplineCurve curve = IfcBSplineCurveWithKnots.Create(ifcModel);
-            ASSERT(!curve.get_Degree().HasValue);
-            curve.put_Degree(5);
-            ASSERT(curve.get_Degree().Value == 5);
+            ASSERT(!curve.Degree.HasValue);
+            curve.Degree = (5);
+            ASSERT(curve.Degree.Value == 5);
 
             //type casting check
             var product = new IfcProduct (wall);
             ASSERT(product != 0);
-            name = product.get_Name();
+            name = product.Name;
             ASSERT(name == "Wall name");
 
             IfcBuilding building = new IfcBuilding(wall);
@@ -91,132 +91,132 @@ namespace CsIfcEngineTests
             IfcMeasureWithUnit measureWithUnit = IfcMeasureWithUnit.Create(ifcModel);
 
             //numeric value (sequence notation)
-            double? dval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcRatioMeasure();
+            double? dval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcRatioMeasure;
             //Nullable<double> works also good
             ASSERT(!dval.HasValue);
 
             //shortcuts methods
-            var as_double = measureWithUnit.get_ValueComponent().as_double();
-            var as_text = measureWithUnit.get_ValueComponent().as_text();
-            var as_int = measureWithUnit.get_ValueComponent().as_int();
-            var as_bool = measureWithUnit.get_ValueComponent().as_bool();
+            var as_double = measureWithUnit.ValueComponent.as_double;
+            var as_text = measureWithUnit.ValueComponent.as_text;
+            var as_int = measureWithUnit.ValueComponent.as_int;
+            var as_bool = measureWithUnit.ValueComponent.as_bool;
             ASSERT(!as_double.HasValue && as_text == null && as_int == null && as_bool == null);
 
             //numeric value (alteranative notation)
             var getMeasureValue = new IfcMeasureValue_get(measureWithUnit, "ValueComponent");
-            dval = getMeasureValue.get_IfcRatioMeasure();
+            dval = getMeasureValue.IfcRatioMeasure;
             ASSERT(dval == null);
 
             // see below detached select test
             var measureValue_detachedSelect = new IfcMeasureValue(measureWithUnit, "ValueComponent");
-            dval = measureValue_detachedSelect.get_IfcRatioMeasure();
+            dval = measureValue_detachedSelect.IfcRatioMeasure;
             ASSERT(!dval.HasValue);
 
             //text based value
-            string sval = getMeasureValue.get_IfcDescriptiveMeasure();
+            string sval = getMeasureValue.IfcDescriptiveMeasure;
             ASSERT(sval == null);
 
-            string txt = measureWithUnit.get_ValueComponent().get_IfcSimpleValue().get_IfcText();
+            string txt = measureWithUnit.ValueComponent.IfcSimpleValue.IfcText;
             ASSERT(txt == null);
 
             //set to numeric
-            measureWithUnit.put_ValueComponent().put_IfcMeasureValue().put_IfcRatioMeasure(0.5);
+            measureWithUnit.ValueComponent.IfcMeasureValue.IfcRatioMeasure = (0.5);
 
-            dval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcRatioMeasure();
+            dval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcRatioMeasure;
             ASSERT(dval.Value == 0.5);
 
-            sval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcDescriptiveMeasure();
+            sval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcDescriptiveMeasure;
             ASSERT(sval == null);
 
-            txt = measureWithUnit.get_ValueComponent().get_IfcSimpleValue().get_IfcText();
+            txt = measureWithUnit.ValueComponent.IfcSimpleValue.IfcText;
             ASSERT(txt == null);
 
             //check type methodt
-            if (measureWithUnit.get_ValueComponent().get_IfcMeasureValue().is_IfcAreaMeasure())
+            if (measureWithUnit.ValueComponent.IfcMeasureValue.is_IfcAreaMeasure)
             {
                 ASSERT(false);
             }
-            else if (!measureWithUnit.get_ValueComponent().get_IfcMeasureValue().is_IfcRatioMeasure())
+            else if (!measureWithUnit.ValueComponent.IfcMeasureValue.is_IfcRatioMeasure)
             {
                 ASSERT(false);
             }
-            else if (measureWithUnit.get_ValueComponent().get_IfcSimpleValue().is_IfcText())
+            else if (measureWithUnit.ValueComponent.IfcSimpleValue.is_IfcText)
             {
                 ASSERT(false);
             }
-            else if (measureWithUnit.get_ValueComponent().get_IfcMeasureValue().is_IfcComplexNumber())
+            else if (measureWithUnit.ValueComponent.IfcMeasureValue.is_IfcComplexNumber)
             {
                 ASSERT(false);
             }
 
             //shortcuts methods
-            as_double = measureWithUnit.get_ValueComponent().as_double();
-            as_text = measureWithUnit.get_ValueComponent().as_text();
-            as_int = measureWithUnit.get_ValueComponent().as_int();
-            as_bool = measureWithUnit.get_ValueComponent().as_bool();
+            as_double = measureWithUnit.ValueComponent.as_double;
+            as_text = measureWithUnit.ValueComponent.as_text;
+            as_int = measureWithUnit.ValueComponent.as_int;
+            as_bool = measureWithUnit.ValueComponent.as_bool;
             ASSERT(as_double.Value == 0.5 && as_text == "0.500000" && as_int.Value == 0 && !as_bool.HasValue);
 
             //detached select behaviour
             //detached select is also changed when instance changed
-            dval = measureValue_detachedSelect.get_IfcRatioMeasure();
+            dval = measureValue_detachedSelect.IfcRatioMeasure;
             ASSERT(dval! == 0.5);
             //but changing the detached select will change host instance
-            measureValue_detachedSelect.put_IfcAreaMeasure(2.7);
-            dval = measureValue_detachedSelect.get_IfcAreaMeasure();
+            measureValue_detachedSelect.IfcAreaMeasure = (2.7);
+            dval = measureValue_detachedSelect.IfcAreaMeasure;
             ASSERT(dval.Value == 2.7);
             //instance was changed
-            dval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcRatioMeasure();
+            dval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcRatioMeasure;
             ASSERT(dval == null);
-            dval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcAreaMeasure();
+            dval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcAreaMeasure;
             ASSERT(dval! == 2.7);
 
             //set DescriptiveMeasure
-            measureWithUnit.put_ValueComponent().put_IfcMeasureValue().put_IfcDescriptiveMeasure("my descreptive measure");
+            measureWithUnit.ValueComponent.IfcMeasureValue.IfcDescriptiveMeasure = ("my descreptive measure");
 
-            dval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcRatioMeasure();
+            dval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcRatioMeasure;
             ASSERT(dval==null);
 
-            sval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcDescriptiveMeasure();
+            sval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcDescriptiveMeasure;
             ASSERT(sval == "my descreptive measure");
 
-            txt = measureWithUnit.get_ValueComponent().get_IfcSimpleValue().get_IfcText();
+            txt = measureWithUnit.ValueComponent.IfcSimpleValue.IfcText;
             ASSERT(txt == null);
 
-            as_double = measureWithUnit.get_ValueComponent().as_double();
-            as_text = measureWithUnit.get_ValueComponent().as_text();
-            as_int = measureWithUnit.get_ValueComponent().as_int();
-            as_bool = measureWithUnit.get_ValueComponent().as_bool();
+            as_double = measureWithUnit.ValueComponent.as_double;
+            as_text = measureWithUnit.ValueComponent.as_text;
+            as_int = measureWithUnit.ValueComponent.as_int;
+            as_bool = measureWithUnit.ValueComponent.as_bool;
             ASSERT(as_double == null && (as_text == "my descreptive measure") && as_int == null && as_bool==null) ;
 
             //set text
-            measureWithUnit.put_ValueComponent().put_IfcSimpleValue().put_IfcText("my text");
+            measureWithUnit.ValueComponent.IfcSimpleValue.IfcText = ("my text");
 
-            ASSERT(measureWithUnit.get_ValueComponent().get_IfcSimpleValue().is_IfcText());
+            ASSERT(measureWithUnit.ValueComponent.IfcSimpleValue.is_IfcText);
 
-            dval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcRatioMeasure();
+            dval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcRatioMeasure;
             ASSERT(dval==null);
 
-            sval = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcDescriptiveMeasure();
+            sval = measureWithUnit.ValueComponent.IfcMeasureValue.IfcDescriptiveMeasure;
             ASSERT(sval == null);
 
-            txt = measureWithUnit.get_ValueComponent().get_IfcSimpleValue().get_IfcText();
+            txt = measureWithUnit.ValueComponent.IfcSimpleValue.IfcText;
             ASSERT(txt== "my text");
 
-            IfcComplexNumber complexVal = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcComplexNumber();
+            IfcComplexNumber complexVal = measureWithUnit.ValueComponent.IfcMeasureValue.IfcComplexNumber;
             ASSERT(complexVal.Count==0);
 
-            as_double = measureWithUnit.get_ValueComponent().as_double();
-            as_text = measureWithUnit.get_ValueComponent().as_text();
-            as_int = measureWithUnit.get_ValueComponent().as_int();
-            as_bool = measureWithUnit.get_ValueComponent().as_bool();
+            as_double = measureWithUnit.ValueComponent.as_double;
+            as_text = measureWithUnit.ValueComponent.as_text;
+            as_int = measureWithUnit.ValueComponent.as_int;
+            as_bool = measureWithUnit.ValueComponent.as_bool;
             ASSERT(as_double==null && (as_text == "my text") && as_int==null && as_bool==null);
 
             //
             // simple aggrgations in select
             //
             double[] arrDouble = { 2, 5 };
-            measureWithUnit.put_ValueComponent().put_IfcMeasureValue().put_IfcComplexNumber(arrDouble);
-            complexVal = measureWithUnit.get_ValueComponent().get_IfcMeasureValue().get_IfcComplexNumber();
+            measureWithUnit.ValueComponent.IfcMeasureValue.put_IfcComplexNumber (arrDouble);
+            complexVal = measureWithUnit.ValueComponent.IfcMeasureValue.IfcComplexNumber;
             ASSERT(complexVal.Count==2 && complexVal[0]==2 && complexVal[1]==5);
 
             //
@@ -224,49 +224,49 @@ namespace CsIfcEngineTests
             //
             var actor = IfcActor.Create(ifcModel);
 
-            var person = actor.get_TheActor().get_IfcPerson();
-            var organization = actor.get_TheActor().get_IfcOrganization();
+            var person = actor.TheActor.IfcPerson;
+            var organization = actor.TheActor.IfcOrganization;
             ASSERT(person == 0 && organization == 0);
 
-            Int64 instance = actor.get_TheActor().as_instance();
+            Int64 instance = actor.TheActor.as_instance;
             ASSERT(instance == 0);
 
             var setPerson = IfcPerson.Create(ifcModel);
-            setPerson.put_Identification("justApeson");
+            setPerson.Identification = ("justApeson");
 
-            actor.put_TheActor().put_IfcPerson(setPerson);
-            person = actor.get_TheActor().get_IfcPerson();
+            actor.TheActor.IfcPerson = (setPerson);
+            person = actor.TheActor.IfcPerson;
             ASSERT(setPerson == person);
 
-            organization = actor.get_TheActor().get_IfcOrganization();
+            organization = actor.TheActor.IfcOrganization;
             ASSERT(organization == 0);
 
-            instance = actor.get_TheActor().as_instance();
+            instance = actor.TheActor.as_instance;
             ASSERT(instance == person);
 
-            ASSERT(person.get_Identification() == "justApeson");
+            ASSERT(person.Identification == "justApeson");
 
-            ASSERT(actor.get_TheActor().is_IfcPerson());
-            ASSERT(!actor.get_TheActor().is_IfcOrganization());
+            ASSERT(actor.TheActor.is_IfcPerson);
+            ASSERT(!actor.TheActor.is_IfcOrganization);
 
             //
             // LOGICAL VALUES
             //
-            ASSERT(curve.get_ClosedCurve()==null);
-            curve.put_ClosedCurve(LOGICAL_VALUE.Unknown);
-            ASSERT(curve.get_ClosedCurve().Value == LOGICAL_VALUE.Unknown);
+            ASSERT(curve.ClosedCurve==null);
+            curve.ClosedCurve = (LOGICAL_VALUE.Unknown);
+            ASSERT(curve.ClosedCurve.Value == LOGICAL_VALUE.Unknown);
 
-            var ifcLogical = measureWithUnit.get_ValueComponent().get_IfcSimpleValue().get_IfcLogical();
+            var ifcLogical = measureWithUnit.ValueComponent.IfcSimpleValue.IfcLogical;
             ASSERT(ifcLogical==null);
-            measureWithUnit.put_ValueComponent().put_IfcSimpleValue().put_IfcLogical(LOGICAL_VALUE.True);
-            ifcLogical = measureWithUnit.get_ValueComponent().get_IfcSimpleValue().get_IfcLogical();
+            measureWithUnit.ValueComponent.IfcSimpleValue.IfcLogical = (LOGICAL_VALUE.True);
+            ifcLogical = measureWithUnit.ValueComponent.IfcSimpleValue.IfcLogical;
             ASSERT(ifcLogical.Value == LOGICAL_VALUE.True);
 
             var relIntersect = IfcRelInterferesElements.Create(ifcModel);
-            ifcLogical = relIntersect.get_ImpliedOrder();
+            ifcLogical = relIntersect.ImpliedOrder;
             ASSERT(ifcLogical==null);
-            relIntersect.put_ImpliedOrder(LOGICAL_VALUE.False);
-            ifcLogical = relIntersect.get_ImpliedOrder();
+            relIntersect.ImpliedOrder = (LOGICAL_VALUE.False);
+            ifcLogical = relIntersect.ImpliedOrder;
             ASSERT(ifcLogical.Value == LOGICAL_VALUE.False);
 
             //
@@ -277,33 +277,33 @@ namespace CsIfcEngineTests
             var site = IfcSite.Create(ifcModel);
 
             IfcCompoundPlaneAngleMeasure longitude;
-            longitude = site.get_RefLongitude();
+            longitude = site.RefLongitude;
             ASSERT(longitude.Count == 0);
 
             longitude = new IfcCompoundPlaneAngleMeasure();
             longitude.Add(54);
             site.put_RefLongitude(longitude);
 
-            longitude = site.get_RefLongitude();
+            longitude = site.RefLongitude;
             ASSERT(longitude.Count == 1 && longitude[0] == 54);
 
 
             Int64[] rint = { 3, 4 };
             site.put_RefLongitude(rint);
 
-            longitude = site.get_RefLongitude();
+            longitude = site.RefLongitude;
             ASSERT(longitude.Count == 2 && longitude[0] == 3 && longitude[1] == 4);
 
             //double unnamed
             var point = IfcCartesianPoint.Create(ifcModel);
 
-            ListOfIfcLengthMeasure coords = point.get_Coordinates();
+            ListOfIfcLengthMeasure coords = point.Coordinates;
             ASSERT(coords.Count==0);
 
             double[] my2DPoint = { 1.0, 2.0 }; //can use array to set
             point.put_Coordinates(my2DPoint);
 
-            coords = point.get_Coordinates();
+            coords = point.Coordinates;
             ASSERT(coords.Count == 2 && coords[0] == 1 && coords[1] == 2);
 
             coords.Add(3);
@@ -311,13 +311,13 @@ namespace CsIfcEngineTests
             ASSERT(coords.Count == 3 && coords[0] == 1 && coords[2] == 3);
 
             //string
-            ListOfIfcLabel middleNames = person.get_MiddleNames();
+            ListOfIfcLabel middleNames = person.MiddleNames;
             ASSERT(middleNames.Count==0);
 
             string[] DaliMiddleNames = { "Domingo", "Felipe", "Jacinto" };
             person.put_MiddleNames(DaliMiddleNames);
 
-            middleNames = person.get_MiddleNames();
+            middleNames = person.MiddleNames;
             ASSERT(middleNames.Count == 3);
             int i = 0;
             foreach (var m in middleNames)
@@ -330,7 +330,7 @@ namespace CsIfcEngineTests
             //
             var pointList = IfcCartesianPointList3D.Create(ifcModel);
 
-            ListOfListOfIfcLengthMeasure coordList = pointList.get_CoordList();
+            ListOfListOfIfcLengthMeasure coordList = pointList.CoordList;
             ASSERT(coordList.Count==0);
 
             //point (1,0.1)
@@ -347,7 +347,7 @@ namespace CsIfcEngineTests
 
             pointList.put_CoordList(coordList);
 
-            ListOfListOfIfcLengthMeasure coordListCheck = pointList.get_CoordList();
+            ListOfListOfIfcLengthMeasure coordListCheck = pointList.CoordList;
             ASSERT_EQ(coordList, coordListCheck);
 
             //
@@ -355,13 +355,13 @@ namespace CsIfcEngineTests
             // 
             var prop = IfcPropertySingleValue.Create(ifcModel);
 
-            IfcComplexNumber cplxNum = prop.get_NominalValue().get_IfcMeasureValue().get_IfcComplexNumber();
+            IfcComplexNumber cplxNum = prop.NominalValue.IfcMeasureValue.IfcComplexNumber;
             ASSERT(cplxNum.Count == 0);
 
             double[] cplx = { 2.1, 1.5 };
-            prop.put_NominalValue().put_IfcMeasureValue().put_IfcComplexNumber(cplx);
+            prop.NominalValue.IfcMeasureValue.put_IfcComplexNumber(cplx);
 
-            cplxNum=prop.get_NominalValue().get_IfcMeasureValue().get_IfcComplexNumber();
+            cplxNum=prop.NominalValue.IfcMeasureValue.IfcComplexNumber;
             ASSERT(cplxNum.Count == 2 && cplxNum[0] == 2.1 && cplxNum[1] == 1.5);
 
             //
@@ -369,9 +369,9 @@ namespace CsIfcEngineTests
             //
             var poly = IfcIndexedPolyCurve.Create(ifcModel);
 
-            ASSERT(poly.get_Points() == 0);
+            ASSERT(poly.Points == 0);
 
-            ListOfIfcSegmentIndexSelect gotSegments = poly.get_Segments();
+            ListOfIfcSegmentIndexSelect gotSegments = poly.Segments;
             ASSERT(gotSegments.Count==0);
 
             //2D points
@@ -411,34 +411,34 @@ namespace CsIfcEngineTests
             //
             //
             poly.put_Segments(putSegments);
-            poly.put_Points(points);
-            poly.put_SelfIntersect(false);
+            poly.Points = (points);
+            poly.SelfIntersect = (false);
 
             //
             // get and check
             //
             points = 0;
 
-            var pts = poly.get_Points();
+            var pts = poly.Points;
             points = new IfcCartesianPointList2D(pts); 
             ASSERT(points != 0);
 
             building = new IfcBuilding(pts);
             ASSERT(building == 0);
 
-            coordList = points.get_CoordList();
+            coordList = points.CoordList;
             ASSERT_EQ(coordList, lstCoords);
 
-            gotSegments = poly.get_Segments();
+            gotSegments = poly.Segments;
             ASSERT(gotSegments.Count == 2);
 
-            IfcArcIndex arcInd = gotSegments[0].get_IfcArcIndex();
-            IfcLineIndex lineInd = gotSegments[0].get_IfcLineIndex();
+            IfcArcIndex arcInd = gotSegments[0].IfcArcIndex;
+            IfcLineIndex lineInd = gotSegments[0].IfcLineIndex;
             ASSERT(arcInd.Count == 0);
             ASSERT_EQ(lineInd, line);
 
-            arcInd = gotSegments[1].get_IfcArcIndex();
-            lineInd = gotSegments[1].get_IfcLineIndex();
+            arcInd = gotSegments[1].IfcArcIndex;
+            lineInd = gotSegments[1].IfcLineIndex;
             ASSERT_EQ(arcInd, arc);
             ASSERT(lineInd.Count==0);
 
@@ -455,21 +455,21 @@ namespace CsIfcEngineTests
             poly.put_Segments(putLstSegments);
 
             //check now
-            gotSegments = poly.get_Segments();
+            gotSegments = poly.Segments;
             ASSERT(gotSegments.Count == 3);
 
-            arcInd = gotSegments[0].get_IfcArcIndex();
-            lineInd = gotSegments[0].get_IfcLineIndex();
+            arcInd = gotSegments[0].IfcArcIndex;
+            lineInd = gotSegments[0].IfcLineIndex;
             ASSERT(arcInd.Count == 0);
             ASSERT_EQ(lineInd, line);
 
-            arcInd = gotSegments[1].get_IfcArcIndex();
-            lineInd = gotSegments[1].get_IfcLineIndex();
+            arcInd = gotSegments[1].IfcArcIndex;
+            lineInd = gotSegments[1].IfcLineIndex;
             ASSERT_EQ(arcInd, arc);
             ASSERT(lineInd.Count == 0);
 
-            arcInd = gotSegments[2].get_IfcArcIndex();
-            lineInd = gotSegments[2].get_IfcLineIndex();
+            arcInd = gotSegments[2].IfcArcIndex;
+            lineInd = gotSegments[2].IfcLineIndex;
             ASSERT(arcInd.Count==0);
             ASSERT_EQ(lineInd, line2);
 
@@ -477,24 +477,24 @@ namespace CsIfcEngineTests
             ///
             /// Aggregation of instances
             /// 
-            var prodRepr = wall.get_Representation();
+            var prodRepr = wall.Representation;
             ASSERT(prodRepr == 0);
 
             prodRepr = IfcProductDefinitionShape.Create(ifcModel);
-            wall.put_Representation(prodRepr);
-            ASSERT(wall.get_Representation() == prodRepr);
+            wall.Representation = (prodRepr);
+            ASSERT(wall.Representation == prodRepr);
 
-            ListOfIfcRepresentation lstRep = prodRepr.get_Representations();
+            ListOfIfcRepresentation lstRep = prodRepr.Representations;
             ASSERT(lstRep.Count==0);
 
             var repr = IfcShapeRepresentation.Create(ifcModel);
             lstRep.Add(repr);
             prodRepr.put_Representations(lstRep);
 
-            lstRep = prodRepr.get_Representations();
+            lstRep = prodRepr.Representations;
             ASSERT(lstRep.Count == 1 && lstRep.First() == repr);
 
-            SetOfIfcRepresentationItem lstItems = repr.get_Items();
+            SetOfIfcRepresentationItem lstItems = repr.Items;
             ASSERT(lstItems.Count == 0);
 
             lstItems.Add(poly);
@@ -503,40 +503,40 @@ namespace CsIfcEngineTests
 
             repr.put_Items(lstItems);
 
-            var lstGotItems = repr.get_Items();
+            var lstGotItems = repr.Items;
             ASSERT_EQ(lstGotItems, lstItems);
 
             ///
             /// Defined type aggregation of instance
             var relProps = IfcRelDefinesByProperties.Create(ifcModel);
 
-            SetOfIfcObjectDefinition relObj = relProps.get_RelatedObjects();
+            SetOfIfcObjectDefinition relObj = relProps.RelatedObjects;
             ASSERT(relObj.Count==0);
 
             relObj.Add(wall);
             relProps.put_RelatedObjects(relObj);
 
-            var relObjGot = relProps.get_RelatedObjects();
+            var relObjGot = relProps.RelatedObjects;
             ASSERT_EQ(relObj, relObjGot);
 
-            IfcPropertySetDefinitionSet psSet = relProps.get_RelatingPropertyDefinition().get_IfcPropertySetDefinitionSet();
+            IfcPropertySetDefinitionSet psSet = relProps.RelatingPropertyDefinition.IfcPropertySetDefinitionSet;
             ASSERT(psSet.Count == 0);
-            ASSERT(relProps.get_RelatingPropertyDefinition().get_IfcPropertySetDefinition() == 0);
+            ASSERT(relProps.RelatingPropertyDefinition.IfcPropertySetDefinition == 0);
 
             var emptyPset = IfcPropertySet.Create(ifcModel);
-            emptyPset.put_Name("Empty property set");
+            emptyPset.Name = ("Empty property set");
 
-            relProps.put_RelatingPropertyDefinition().put_IfcPropertySetDefinition(emptyPset);
-            ASSERT(relProps.get_RelatingPropertyDefinition().get_IfcPropertySetDefinition() == emptyPset);
+            relProps.RelatingPropertyDefinition.IfcPropertySetDefinition = (emptyPset);
+            ASSERT(relProps.RelatingPropertyDefinition.IfcPropertySetDefinition == emptyPset);
 
-            psSet = relProps.get_RelatingPropertyDefinition().get_IfcPropertySetDefinitionSet();
+            psSet = relProps.RelatingPropertyDefinition.IfcPropertySetDefinitionSet;
             ASSERT(psSet.Count == 0);
 
             psSet.Add(emptyPset);
-            relProps.put_RelatingPropertyDefinition().put_IfcPropertySetDefinitionSet(psSet);
-            ASSERT(relProps.get_RelatingPropertyDefinition().get_IfcPropertySetDefinition() == 0);
+            relProps.RelatingPropertyDefinition.put_IfcPropertySetDefinitionSet (psSet);
+            ASSERT(relProps.RelatingPropertyDefinition.IfcPropertySetDefinition == 0);
             
-            var psSetGot = relProps.get_RelatingPropertyDefinition().get_IfcPropertySetDefinitionSet();
+            var psSetGot = relProps.RelatingPropertyDefinition.IfcPropertySetDefinitionSet;
             ASSERT_EQ(psSet, psSetGot);
 
             /// 
@@ -558,11 +558,11 @@ namespace CsIfcEngineTests
                 Int64 rel = 0;
                 ifcengine.sdaiGetAggrByIndex(rels, i, ifcengine.sdaiINSTANCE, out rel);
 
-                var get = ((IfcRelDefinesByProperties)(rel)).get_RelatingPropertyDefinition();
-                ASSERT(get.get_IfcPropertySetDefinition() == 0);
-                psSet = get.get_IfcPropertySetDefinitionSet();
+                var get = ((IfcRelDefinesByProperties)(rel)).RelatingPropertyDefinition;
+                ASSERT(get.IfcPropertySetDefinition == 0);
+                psSet = get.IfcPropertySetDefinitionSet;
                 ASSERT(psSet.Count == 1);
-                name = psSet[0].get_Name();
+                name = psSet[0].Name;
                 ASSERT(name == "Empty property set");
             }
 
