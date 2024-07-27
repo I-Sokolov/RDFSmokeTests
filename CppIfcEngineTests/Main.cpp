@@ -7,6 +7,7 @@ extern void EarlyBound_IFC4x4_test();
 extern void EarlyBound_AP242_test();
 extern void EarlyBound_GuideExamples();
 extern void ADBcreate();
+extern void PutGetRegionalChars();
 
 static long HeapUsed()
 {
@@ -38,6 +39,7 @@ extern int main()
         int i = 0;
         do
             {
+            PutGetRegionalChars();
             ADBcreate();
             EngineTests();
             EarlyBound_IFC4_test();

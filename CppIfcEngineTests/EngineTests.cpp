@@ -3,9 +3,6 @@
 
 using namespace IFC4;
 
-
-#define FILE_NAME "EngineTests.ifc"
-
 static void TestADBBoolean(SdaiInstance inst, const char* attr)
 {
     //get $
@@ -124,8 +121,8 @@ static void TestADBLogical(SdaiInstance inst, const char* attr)
 
 static void TestBinaries(SdaiModel ifcModel)
 {
-    ENTER_TEST
-#define NC 4
+    ENTER_TEST;
+    const int NC = 4;
     char rasterCode[NC * 1024 * 4 + 2];
     rasterCode[0] = '1';
     rasterCode[NC * 1024 * 4] = '8';
@@ -191,6 +188,7 @@ static void TestBinaries(SdaiModel ifcModel)
 
     //
     //save and read
+    const char* FILE_NAME = "TestBinaries.ifc";
 
     sdaiSaveModelBN(ifcModel, FILE_NAME);
 
@@ -829,6 +827,8 @@ extern void EngineTests(void)
 
     PrecisionTest(ifcModel);
 
+    const char* FILE_NAME = "EngineTests.ifc";
+
     sdaiSaveModelBN(ifcModel, FILE_NAME);
     sdaiCloseModel(ifcModel);
 
@@ -841,4 +841,103 @@ extern void EngineTests(void)
     TestGetADBValue(ifcModel);
 
     sdaiCloseModel(ifcModel);
+}
+
+extern void PutGetRegionalChars(void)
+{
+    ENTER_TEST;
+
+    SdaiModel  ifcModel = sdaiCreateModelBN(0, NULL, "IFC4");
+    ASSERT(ifcModel);
+    SetSPFFHeaderItem(ifcModel, 9, 0, sdaiSTRING, "IFC4");
+    SetSPFFHeaderItem(ifcModel, 9, 1, sdaiSTRING, (char*)0);
+
+    setFilter(ifcModel, 131072, 131072);
+
+    const char* ANSI_STRING = "English'\\ Русский"; 
+    const wchar_t* WCHAR_STRING = L"English'\\ Русский";
+    const char* X_CODE = R"(English'\\ \X\D0\X\F3\X\F1\X\F1\X\EA\X\E8\X\E9)";
+    const char* X2_CODE = R"(English\X2\0027\X0\\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\)";
+    const char* X2_ANSI = "English'\\  CAA:89";
+
+    //++-setEncoding(for InternalToUnicode)
+    //++-setDefaultEncoding and use it when sessios is not known
+    //++ put UNICODE get STRING returns crazy results
+    //удалить флаги из session
+    //компактный X2(UnicodeToInternal)
+    //обратное кодирование X2 в ANSI (InternalToAnsi for X2,4)
+    // put sdaiEXPRESSSTRING must check?
+    //автоматичкскоe заполнение header
+    //setStringUnicode
+    //sdaiCreateModelBN has fileName parameter but ignored internally
+    // S, X1, X4, X2-skipAddCharacter example for reading
+
+    auto wall = IFC4::IfcWall::Create(ifcModel);
+
+    //
+    sdaiPutAttrBN(wall, "Name", sdaiSTRING, ANSI_STRING);
+
+    char* getStr = NULL;
+    wchar_t* getWStr = NULL;
+
+    auto ret = sdaiGetAttrBN(wall, "Name", sdaiSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, ANSI_STRING));
+
+    ret = sdaiGetAttrBN(wall, "Name", sdaiUNICODE, &getWStr);
+    ASSERT(ret && !wcscmp(getWStr, WCHAR_STRING));
+
+    ret = sdaiGetAttrBN(wall, "Name", sdaiEXPRESSSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, X_CODE));
+
+    //
+    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_STRING);
+
+    ret = sdaiGetAttrBN(wall, "Description", sdaiUNICODE, &getWStr);
+    ASSERT(ret && !wcscmp(getWStr, WCHAR_STRING));
+
+    ret = sdaiGetAttrBN(wall, "Description", sdaiSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, X2_ANSI));
+
+    ret = sdaiGetAttrBN(wall, "Description", sdaiEXPRESSSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, X2_CODE));
+
+    //
+    const char* FILE_NAME = "PutGetRegionalChars.ifc";
+    sdaiSaveModelBN(ifcModel, FILE_NAME);
+
+    auto stepId = internalGetP21Line(wall);
+
+    sdaiCloseModel(ifcModel);
+
+    //
+    //------------------------------------------------------
+    //
+    ifcModel = sdaiOpenModelBN(0, FILE_NAME, "IFC4");
+    setFilter(ifcModel, 131072, 131072);
+
+    wall = internalGetInstanceFromP21Line(ifcModel, stepId);
+
+    //
+    ret = sdaiGetAttrBN(wall, "Name", sdaiSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, ANSI_STRING));
+
+    ret = sdaiGetAttrBN(wall, "Name", sdaiUNICODE, &getWStr);
+    ASSERT(ret && !wcscmp(getWStr, WCHAR_STRING));
+
+    ret = sdaiGetAttrBN(wall, "Name", sdaiEXPRESSSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, X_CODE));
+
+    //
+    ret = sdaiGetAttrBN(wall, "Description", sdaiUNICODE, &getWStr);
+    ASSERT(ret && !wcscmp(getWStr, WCHAR_STRING));
+
+    ret = sdaiGetAttrBN(wall, "Description", sdaiSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, X2_ANSI));
+
+    ret = sdaiGetAttrBN(wall, "Description", sdaiEXPRESSSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, X2_CODE));
+
+    //
+    sdaiCloseModel(ifcModel);
+
 }
