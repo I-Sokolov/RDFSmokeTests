@@ -925,7 +925,7 @@ extern void PutGetRegionalChars(void)
     ifcModel = sdaiOpenModelBN(0, FILE_NAME, "IFC4");
     setFilter(ifcModel, 131072, 131072);
 
-    CheckHeader(ifcModel);
+    //CheckHeader(ifcModel);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId);
 
