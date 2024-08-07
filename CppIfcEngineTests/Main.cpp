@@ -8,6 +8,8 @@ extern void EarlyBound_AP242_test();
 extern void EarlyBound_GuideExamples();
 extern void ADBcreate();
 extern void Encodings();
+extern void AggregationTests();
+
 
 static long HeapUsed()
 {
@@ -40,6 +42,7 @@ extern int main()
         do
             {
             Encodings();
+            AggregationTests();
             ADBcreate();
             EngineTests();
             EarlyBound_IFC4_test();
