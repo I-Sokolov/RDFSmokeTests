@@ -1,10 +1,11 @@
 
 #include "pch.h"
 
+#define TEST_FILE "..\\TestData\\Walls.ifc"
 
 static void DeleteWalls(bool subtypes)
 {
-    SdaiModel   model = sdaiOpenModelBN(0, "Walls.ifc", "");
+    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE, "");
 
     int cnt = 0;
 
@@ -36,7 +37,7 @@ static void DeleteWalls(bool subtypes)
 
 static void DeleteWallsByIndex(bool subtypes)
 {
-    SdaiModel   model = sdaiOpenModelBN(0, "Walls.ifc", "");
+    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE, "");
 
     int cnt = 0;
 
@@ -80,7 +81,7 @@ static void CheckAggrElem(SdaiInstance inst, const char* attr, SdaiInteger index
 
 static void DeleteAttrAggrByIndex()
 {
-    SdaiModel   model = sdaiOpenModelBN(0, "Walls.ifc", "");
+    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE, "");
 
     auto unitAssmt = internalGetInstanceFromP21Line(model, 975);
 
