@@ -196,16 +196,25 @@ static void CheckRegionalChars(const char* stepFile, SdaiInteger stepId)
 {
     engiSetAnsiStringEncoding(NULL, enum_code_page::WINDOWS_1251);
 
-    auto ifcModel = sdaiOpenModelBN(0, stepFile, "");
+    auto ifcModel = sdaiOpenModelBN(0, stepFile, "IFC4");
     CheckRegionalChars(ifcModel, stepId);
     sdaiCloseModel(ifcModel);
 
     fopen_s(&myFileRead, stepFile, "rb");
-    ifcModel = engiOpenModelByStream(0, &ReadCallBackFunction, "");
+    ifcModel = engiOpenModelByStream(0, &ReadCallBackFunction, "IFC4");
     fclose(myFileRead);
     CheckRegionalChars(ifcModel, stepId);
     sdaiCloseModel(ifcModel);
 
+    unsigned char content[10240];
+    int_t size = _countof(content);
+    fopen_s(&myFileRead, stepFile, "rb");
+    size = fread(content, 1, size, myFileRead);
+    fclose(myFileRead);
+
+    ifcModel = engiOpenModelByArray(0, content, size, "IFC4");
+    CheckRegionalChars(ifcModel, stepId);
+    sdaiCloseModel(ifcModel);
 }
 
 //
@@ -261,10 +270,32 @@ static void PutGetRegionalChars(void)
 
     CheckRegionalChars("engiSaveModelByStream_" REG_CHARS_FILE_NAME, stepId);
 
-    //TODO save and xml
-    //TODO read/write binary 
+    //
+    unsigned char content[10240];
+    int_t size = _countof(content);
+    engiSaveModelByArray(ifcModel, content, &size);
+
+    fopen_s(&myFileWrite, "engiSaveModelByArray_" REG_CHARS_FILE_NAME, "wb");
+    fwrite(content, 1, size, myFileWrite);
+    fclose(myFileWrite);
+
+    CheckRegionalChars("engiSaveModelByArray_" REG_CHARS_FILE_NAME, stepId);
+
+    //
+    sdaiSaveModelAsXmlBN(ifcModel, "sdaiSaveModelAsXmlBN.xml");
+    //TODO - XML issues
+    // CheckRegionalChars("sdaiSaveModelAsXmlBN.xml", stepId);
+
+    sdaiSaveModelAsSimpleXmlBN(ifcModel, "sdaiSaveModelAsSimpleXmlBN.xml");
+    //TODO - XML issues
+    //CheckRegionalChars("sdaiSaveModelAsSimpleXmlBN.xml", stepId);
 
     sdaiCloseModel(ifcModel);
+
+
+
+    //TODO read/write binary 
+
 }
 
 extern void Encodings(void)
