@@ -2,11 +2,16 @@
 #include "pch.h"
 
 
-static const char* ANSI_STRING = "English'\\ Русский";
-static const wchar_t* WCHAR_STRING = L"English'\\ Русский";
-static const char* X_CODE = R"(English'\\ \X\D0\X\F3\X\F1\X\F1\X\EA\X\E8\X\E9)";
-static const char* X2_CODE = R"(English\X2\0027\X0\\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\)";
-static const char* X2_ANSI = "English'\\  CAA:89";
+static const char* ANSI_STRING = "'English'\\ Русский'";
+static const wchar_t* WCHAR_STRING = L"'English'\\ Русский'";
+static const char* ANSI_STEP = R"(''English''\\ \X\D0\X\F3\X\F1\X\F1\X\EA\X\E8\X\E9'')";
+static const char* UNICODE_STEP = R"(\X2\0027\X0\English\X2\0027\X0\\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\\X2\0027\X0\)";
+static const char* WCHAR_2_ANSI = "'English'\\  CAA:89'"; //temporary, replace to ANSI_STRING
+
+static const char* ANSI_SLASH = "\\";
+static const wchar_t* WCHAR_SLASH = L"\\";
+static const char* STEP_SLASH = "\\\\";
+
 
 static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, const wchar_t* unicode, const char* step)
 {
@@ -41,8 +46,10 @@ static void CheckHeader(SdaiModel ifcModel, int_t subitem, const char* ansi, con
 
 static void CheckHeader(SdaiModel ifcModel)
 {
-    CheckHeader(ifcModel, 0, ANSI_STRING, WCHAR_STRING, X_CODE);
-    CheckHeader(ifcModel, 1, X2_ANSI, WCHAR_STRING, X2_CODE);
+    CheckHeader(ifcModel, 0, ANSI_STRING, WCHAR_STRING, ANSI_STEP);
+    CheckHeader(ifcModel, 1, WCHAR_2_ANSI, WCHAR_STRING, UNICODE_STEP);
+    CheckHeader(ifcModel, 2, ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+    CheckHeader(ifcModel, 3, ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
 }
 
 
@@ -166,6 +173,8 @@ static void PutGetRegionalChars(void)
 
     SetSPFFHeaderItem(ifcModel, 0, 0, sdaiSTRING, ANSI_STRING);
     SetSPFFHeaderItem(ifcModel, 0, 1, sdaiUNICODE, WCHAR_STRING);
+    SetSPFFHeaderItem(ifcModel, 0, 2, sdaiSTRING, ANSI_SLASH);
+    SetSPFFHeaderItem(ifcModel, 0, 3, sdaiUNICODE, WCHAR_SLASH);
 
     CheckHeader(ifcModel);
 
@@ -174,16 +183,23 @@ static void PutGetRegionalChars(void)
 
     //
     sdaiPutAttrBN(wall, "Name", sdaiSTRING, ANSI_STRING);
-    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, X_CODE);
+    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
 
     //
     sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_STRING);
-    CheckAttr(wall, "Description", X2_ANSI, WCHAR_STRING, X2_CODE);
+    CheckAttr(wall, "Description", WCHAR_2_ANSI, WCHAR_STRING, UNICODE_STEP);
+
+    sdaiPutAttrBN(wall, "ObjectType", sdaiSTRING, ANSI_SLASH);
+    CheckAttr(wall, "ObjectType", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+
+    sdaiPutAttrBN(wall, "GlobalId", sdaiUNICODE, WCHAR_SLASH);
+    CheckAttr(wall, "GlobalId", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
 
     //
     const char* FILE_NAME = "PutGetRegionalChars.ifc";
     sdaiSaveModelBN(ifcModel, FILE_NAME);
-
+    //TODO save stream and xml
+    //TODO read/write binary 
     auto stepId = internalGetP21Line(wall);
 
     sdaiCloseModel(ifcModel);
@@ -191,15 +207,18 @@ static void PutGetRegionalChars(void)
     //
     //------------------------------------------------------
     //
-    ifcModel = sdaiOpenModelBN(0, FILE_NAME, "IFC4");
-    setFilter(ifcModel, 131072, ((int64_t)0b111111) << 14);
+    engiSetAnsiStringEncoding(NULL, enum_code_page::WINDOWS_1251);
 
-    //TODO CheckHeader(ifcModel);
+    ifcModel = sdaiOpenModelBN(0, FILE_NAME, "IFC4");
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId);
 
-    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, X_CODE);
-    CheckAttr(wall, "Description", X2_ANSI, WCHAR_STRING, X2_CODE);
+    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
+    CheckAttr(wall, "Description", WCHAR_2_ANSI, WCHAR_STRING, UNICODE_STEP);
+    CheckAttr(wall, "ObjectType", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+    CheckAttr(wall, "GlobalId", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+
+    CheckHeader(ifcModel);
 
     //
     sdaiCloseModel(ifcModel);
