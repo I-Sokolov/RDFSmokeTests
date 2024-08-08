@@ -1,6 +1,8 @@
 
 #include "pch.h"
 
+#define REG_CHARS_FILE_NAME "PutGetRegionalChars.ifc"
+
 
 static const char* ANSI_STRING = "'English'\\ Русский'";
 static const wchar_t* WCHAR_STRING = L"'English'\\ Русский'";
@@ -164,6 +166,57 @@ static void EncodingAndFilter()
     EncodingAndFilter(NULL);
 }
 
+static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
+{
+    CheckHeader(ifcModel);
+
+    auto wall = internalGetInstanceFromP21Line(ifcModel, stepId);
+
+    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
+    CheckAttr(wall, "Description", WCHAR_2_ANSI, WCHAR_STRING, UNICODE_STEP);
+    CheckAttr(wall, "ObjectType", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+    CheckAttr(wall, "GlobalId", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+}
+
+//
+const int_t BLOCK_LENGTH_READ = 20000;  //  MAX: 65535
+FILE* myFileRead = nullptr;
+static int_t   __stdcall   ReadCallBackFunction(unsigned char* content)
+{
+    if (myFileRead == nullptr || feof(myFileRead)) {
+        return  -1;
+    }
+
+    int_t   size = fread(content, 1, BLOCK_LENGTH_READ, myFileRead);
+
+    return  size;
+}
+
+static void CheckRegionalChars(const char* stepFile, SdaiInteger stepId)
+{
+    engiSetAnsiStringEncoding(NULL, enum_code_page::WINDOWS_1251);
+
+    auto ifcModel = sdaiOpenModelBN(0, stepFile, "");
+    CheckRegionalChars(ifcModel, stepId);
+    sdaiCloseModel(ifcModel);
+
+    fopen_s(&myFileRead, stepFile, "rb");
+    ifcModel = engiOpenModelByStream(0, &ReadCallBackFunction, "");
+    fclose(myFileRead);
+    CheckRegionalChars(ifcModel, stepId);
+    sdaiCloseModel(ifcModel);
+
+}
+
+//
+const int_t BLOCK_LENGTH_WRITE = 20000; //  no maximum limit
+FILE* myFileWrite = nullptr;
+static void    __stdcall   WriteCallBackFunction(unsigned char* content, int64_t size)
+{
+    fwrite(content, (size_t)size, 1, myFileWrite);
+}
+
+
 static void PutGetRegionalChars(void)
 {
     SdaiModel  ifcModel = sdaiCreateModelBNUnicode(L"IFC4");
@@ -195,34 +248,23 @@ static void PutGetRegionalChars(void)
     sdaiPutAttrBN(wall, "GlobalId", sdaiUNICODE, WCHAR_SLASH);
     CheckAttr(wall, "GlobalId", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
 
-    //
-    const char* FILE_NAME = "PutGetRegionalChars.ifc";
-    sdaiSaveModelBN(ifcModel, FILE_NAME);
-    //TODO save stream and xml
-    //TODO read/write binary 
     auto stepId = internalGetP21Line(wall);
 
+    //
+    sdaiSaveModelBN(ifcModel, "sdaiSaveModelBN_" REG_CHARS_FILE_NAME);
+    CheckRegionalChars("sdaiSaveModelBN_" REG_CHARS_FILE_NAME, stepId);
+
+    //
+    fopen_s(&myFileWrite, "engiSaveModelByStream_" REG_CHARS_FILE_NAME, "wb");
+    engiSaveModelByStream(ifcModel, WriteCallBackFunction, BLOCK_LENGTH_WRITE);
+    fclose(myFileWrite);
+
+    CheckRegionalChars("engiSaveModelByStream_" REG_CHARS_FILE_NAME, stepId);
+
+    //TODO save and xml
+    //TODO read/write binary 
+
     sdaiCloseModel(ifcModel);
-
-    //
-    //------------------------------------------------------
-    //
-    engiSetAnsiStringEncoding(NULL, enum_code_page::WINDOWS_1251);
-
-    ifcModel = sdaiOpenModelBN(0, FILE_NAME, "IFC4");
-
-    wall = internalGetInstanceFromP21Line(ifcModel, stepId);
-
-    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
-    CheckAttr(wall, "Description", WCHAR_2_ANSI, WCHAR_STRING, UNICODE_STEP);
-    CheckAttr(wall, "ObjectType", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
-    CheckAttr(wall, "GlobalId", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
-
-    CheckHeader(ifcModel);
-
-    //
-    sdaiCloseModel(ifcModel);
-
 }
 
 extern void Encodings(void)
