@@ -8,7 +8,6 @@ static const char* ANSI_STRING = "'English'\\ Русский'";
 static const wchar_t* WCHAR_STRING = L"'English'\\ Русский'";
 static const char* ANSI_STEP = R"(''English''\\ \X\D0\X\F3\X\F1\X\F1\X\EA\X\E8\X\E9'')";
 static const char* UNICODE_STEP = R"(\X2\0027\X0\English\X2\0027\X0\\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\\X2\0027\X0\)";
-static const char* WCHAR_2_ANSI = "'English'\\  CAA:89'"; //temporary, replace to ANSI_STRING
 
 static const char* ANSI_SLASH = "\\";
 static const wchar_t* WCHAR_SLASH = L"\\";
@@ -49,7 +48,7 @@ static void CheckHeader(SdaiModel ifcModel, int_t subitem, const char* ansi, con
 static void CheckHeader(SdaiModel ifcModel)
 {
     CheckHeader(ifcModel, 0, ANSI_STRING, WCHAR_STRING, ANSI_STEP);
-    CheckHeader(ifcModel, 1, WCHAR_2_ANSI, WCHAR_STRING, UNICODE_STEP);
+    CheckHeader(ifcModel, 1, ANSI_STRING, WCHAR_STRING, UNICODE_STEP);
     CheckHeader(ifcModel, 2, ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
     CheckHeader(ifcModel, 3, ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
 }
@@ -173,7 +172,7 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     auto wall = internalGetInstanceFromP21Line(ifcModel, stepId);
 
     CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
-    CheckAttr(wall, "Description", WCHAR_2_ANSI, WCHAR_STRING, UNICODE_STEP);
+    CheckAttr(wall, "Description", ANSI_STRING, WCHAR_STRING, UNICODE_STEP);
     CheckAttr(wall, "ObjectType", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
     CheckAttr(wall, "GlobalId", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
 }
@@ -249,7 +248,7 @@ static void PutGetRegionalChars(void)
 
     //
     sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_STRING);
-    CheckAttr(wall, "Description", WCHAR_2_ANSI, WCHAR_STRING, UNICODE_STEP);
+    CheckAttr(wall, "Description", ANSI_STRING, WCHAR_STRING, UNICODE_STEP);
 
     sdaiPutAttrBN(wall, "ObjectType", sdaiSTRING, ANSI_SLASH);
     CheckAttr(wall, "ObjectType", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
@@ -291,10 +290,6 @@ static void PutGetRegionalChars(void)
     //CheckRegionalChars("sdaiSaveModelAsSimpleXmlBN.xml", stepId);
 
     sdaiCloseModel(ifcModel);
-
-
-
-    //TODO read/write binary 
 
 }
 
