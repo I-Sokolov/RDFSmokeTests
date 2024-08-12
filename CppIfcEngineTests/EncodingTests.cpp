@@ -18,6 +18,7 @@ static const wchar_t* WCHAR_SLASH = L"\\";
 static const char* STEP_SLASH = "\\\\";
 
 static const char* GREEK_ANSI = "'???\\";
+static const char* GREEK_ANSI_ISO8859_7 = "'бвг\\";
 static const wchar_t* GREEK_WCHAR = L"'αβγ\\";
 static const char* GREEK_STEP = R"(''\X2\03B103B203B3\X0\\\)";
 
@@ -236,6 +237,9 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 2);
     CheckAttr(wall, "Name", CHINESE_ANSI, CHINESE_WCHAR, CHINESE_STEP);
     CheckAttr(wall, "Description", GREEK_ANSI, GREEK_WCHAR, GREEK_STEP);
+    engiSetAnsiStringEncoding(ifcModel, enum_code_page::ISO8859_7);
+    CheckAttr(wall, "Description", GREEK_ANSI_ISO8859_7, GREEK_WCHAR, GREEK_STEP);
+    engiSetAnsiStringEncoding(ifcModel, enum_code_page::WINDOWS_1251);
 }
 
 
