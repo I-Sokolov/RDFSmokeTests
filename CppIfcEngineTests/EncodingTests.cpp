@@ -1,18 +1,27 @@
-
+Ôªø
 #include "pch.h"
 
 #define REG_CHARS_FILE_NAME "PutGetRegionalChars.ifc"
 
 
-static const char* ANSI_STRING = "'English'\\ –ÛÒÒÍËÈ'";
-static const wchar_t* WCHAR_STRING = L"'English'\\ –ÛÒÒÍËÈ'";
+static const char* ANSI_STRING = "'English'\\ –†—É—Å—Å–∫–∏–π'";
+static const wchar_t* WCHAR_STRING = L"'English'\\ –†—É—Å—Å–∫–∏–π'";
 static const char* ANSI_STEP = R"(''English''\\ \X\D0\X\F3\X\F1\X\F1\X\EA\X\E8\X\E9'')";
 static const char* UNICODE_STEP = R"(\X2\0027\X0\English\X2\0027\X0\\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\\X2\0027\X0\)";
+
+static const wchar_t* CHINESE_WCHAR = L"Chinese: ‰∏≠ÂõΩ‰∫∫";
+static const char* CHINESE_ANSI = "Chinese: ???";
+static const char* CHINESE_STEP = R"(Chinese: \X2\4E2D\X0\\X2\56FD\X0\\X2\4EBA\X0\)";
 
 static const char* ANSI_SLASH = "\\";
 static const wchar_t* WCHAR_SLASH = L"\\";
 static const char* STEP_SLASH = "\\\\";
 
+static const char* GREEK_ANSI = "'???\\";
+static const wchar_t* GREEK_WCHAR = L"'Œ±Œ≤Œ≥\\";
+static const char* GREEK_STEP = R"(''\X2\03B103B203B3\X0\\\)";
+
+static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId);
 
 static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, const wchar_t* unicode, const char* step)
 {
@@ -165,18 +174,6 @@ static void EncodingAndFilter()
     EncodingAndFilter(NULL);
 }
 
-static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
-{
-    CheckHeader(ifcModel);
-
-    auto wall = internalGetInstanceFromP21Line(ifcModel, stepId);
-
-    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
-    CheckAttr(wall, "Description", ANSI_STRING, WCHAR_STRING, UNICODE_STEP);
-    CheckAttr(wall, "ObjectType", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
-    CheckAttr(wall, "GlobalId", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
-}
-
 //
 const int_t BLOCK_LENGTH_READ = 20000;  //  MAX: 65535
 FILE* myFileRead = nullptr;
@@ -224,6 +221,23 @@ static void    __stdcall   WriteCallBackFunction(unsigned char* content, int64_t
     fwrite(content, (size_t)size, 1, myFileWrite);
 }
 
+static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
+{
+    CheckHeader(ifcModel);
+
+    auto wall = internalGetInstanceFromP21Line(ifcModel, stepId);
+    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
+    CheckAttr(wall, "Description", ANSI_STRING, WCHAR_STRING, UNICODE_STEP);
+
+    wall = internalGetInstanceFromP21Line(ifcModel, stepId + 1);
+    CheckAttr(wall, "Name", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+    CheckAttr(wall, "Description", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+
+    wall = internalGetInstanceFromP21Line(ifcModel, stepId + 2);
+    CheckAttr(wall, "Name", CHINESE_ANSI, CHINESE_WCHAR, CHINESE_STEP);
+    CheckAttr(wall, "Description", GREEK_ANSI, GREEK_WCHAR, GREEK_STEP);
+}
+
 
 static void PutGetRegionalChars(void)
 {
@@ -237,27 +251,28 @@ static void PutGetRegionalChars(void)
     SetSPFFHeaderItem(ifcModel, 0, 2, sdaiSTRING, ANSI_SLASH);
     SetSPFFHeaderItem(ifcModel, 0, 3, sdaiUNICODE, WCHAR_SLASH);
 
-    CheckHeader(ifcModel);
-
     //
     auto wall = IFC4::IfcWall::Create(ifcModel);
-
-    //
-    sdaiPutAttrBN(wall, "Name", sdaiSTRING, ANSI_STRING);
-    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
-
-    //
-    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_STRING);
-    CheckAttr(wall, "Description", ANSI_STRING, WCHAR_STRING, UNICODE_STEP);
-
-    sdaiPutAttrBN(wall, "ObjectType", sdaiSTRING, ANSI_SLASH);
-    CheckAttr(wall, "ObjectType", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
-
-    sdaiPutAttrBN(wall, "GlobalId", sdaiUNICODE, WCHAR_SLASH);
-    CheckAttr(wall, "GlobalId", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
-
     auto stepId = internalGetP21Line(wall);
+    sdaiPutAttrBN(wall, "Name", sdaiSTRING, ANSI_STRING);
+    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_STRING);
 
+    //
+    wall = IFC4::IfcWall::Create(ifcModel);
+    sdaiPutAttrBN(wall, "Name", sdaiSTRING, ANSI_SLASH);
+    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_SLASH);
+
+
+    //wall 
+    wall = IFC4::IfcWall::Create(ifcModel);
+    sdaiPutAttrBN(wall, "Name", sdaiUNICODE, CHINESE_WCHAR);
+    sdaiPutAttrBN(wall, "Description", sdaiEXPRESSSTRING, GREEK_STEP);
+
+    //TODO change encoding tests
+
+    /////////////////
+    CheckRegionalChars(ifcModel, stepId);
+    
     //
     sdaiSaveModelBN(ifcModel, "sdaiSaveModelBN_" REG_CHARS_FILE_NAME);
     CheckRegionalChars("sdaiSaveModelBN_" REG_CHARS_FILE_NAME, stepId);
