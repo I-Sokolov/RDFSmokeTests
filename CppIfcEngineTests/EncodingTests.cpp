@@ -22,6 +22,10 @@ static const char* GREEK_ANSI_ISO8859_7 = "'бвг\\";
 static const wchar_t* GREEK_WCHAR = L"'αβγ\\";
 static const char* GREEK_STEP = R"(''\X2\03B103B203B3\X0\\\)";
 
+static const char* AGER_ANSI = "\xC4rger"; //this is to support old behaviour
+static const wchar_t* AGER_WCHAR = L"Ärger";
+static const char* AGER_STEP = R"(\S\Drger)";
+
 static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId);
 
 static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, const wchar_t* unicode, const char* step)
@@ -240,6 +244,9 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     engiSetAnsiStringEncoding(ifcModel, enum_code_page::ISO8859_7);
     CheckAttr(wall, "Description", GREEK_ANSI_ISO8859_7, GREEK_WCHAR, GREEK_STEP);
     engiSetAnsiStringEncoding(ifcModel, enum_code_page::WINDOWS_1251);
+
+    wall = internalGetInstanceFromP21Line(ifcModel, stepId + 3);
+    CheckAttr(wall, "Name", AGER_ANSI, AGER_WCHAR, AGER_STEP);
 }
 
 
@@ -267,10 +274,14 @@ static void PutGetRegionalChars(void)
     sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_SLASH);
 
 
-    //wall 
+    //
     wall = IFC4::IfcWall::Create(ifcModel);
     sdaiPutAttrBN(wall, "Name", sdaiUNICODE, CHINESE_WCHAR);
     sdaiPutAttrBN(wall, "Description", sdaiEXPRESSSTRING, GREEK_STEP);
+
+    //
+    wall = IFC4::IfcWall::Create(ifcModel);
+    sdaiPutAttrBN(wall, "Name", sdaiEXPRESSSTRING, AGER_STEP);
 
     //TODO change encoding tests
 
