@@ -4,31 +4,30 @@
 #define REG_CHARS_FILE_NAME "PutGetRegionalChars.ifc"
 
 
-static const char* TEST_ANSI_WIN1251 = "'English'\\ \xD0\xF3сский'";
-static const wchar_t* TEST_WCHAR = L"'English'\\ Русский'";
-static const char* ANSI_STEP    = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
-static const char* UNICODE_STEP = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
+static const wchar_t*   TEST_WCHAR      = L"'English'\\ Русский'";
+static const char*      TEST_WIN1251    = "'English'\\ \xD0\xF3\xF1\xF1\xEA\xE8\xE9'";
+static const char*      TEST_STEP       = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
 
 static const wchar_t* CHINESE_WCHAR = L"Chinese: 中国人";
-static const char* CHINESE_ANSI = "Chinese: ???";
+static const char* CHINESE_WIN1251 = "Chinese: ???";
 static const char* CHINESE_STEP = R"(Chinese: \X2\4E2D\X0\\X2\56FD\X0\\X2\4EBA\X0\)";
 
-static const char* ANSI_SLASH = "\\";
-static const wchar_t* WCHAR_SLASH = L"\\";
-static const char* STEP_SLASH = "\\\\";
+static const char* SLASH_ANSI = "\\";
+static const wchar_t* SLASH_WCHAR = L"\\";
+static const char* SLASH_STEP = "\\\\";
 
-static const char* GREEK_ANSI = "'???\\";
-static const char* GREEK_ANSI_ISO8859_7 = "'бвг\\";
 static const wchar_t* GREEK_WCHAR = L"'αβγ\\";
+static const char* GREEK_WIN1251 = "'???\\";
+static const char* GREEK_ISO8859_7 = "'\xE1\xE2\xE3\\";
 static const char* GREEK_STEP = R"(''\X2\03B103B203B3\X0\\\)";
 
-static const char* AGER_STEP = R"(\S\Drger)";
 static const wchar_t* AGER_WCHAR = L"Ärger";
-static const char* AGER_ANSI = "\xC4rger"; //this is to support old behaviour
+static const char* AGER_STEP = R"(\S\Drger)";
+static const char* AGER_WIN1251 = "\xC4rger"; //this is to support old behaviour
 
 static const char* PS_STEP = R"(\PE\\S\*\S\U\S\b)";
 static const wchar_t* PS_WCHAR = L"Њет";
-static const char* PS_ANSI = "Њет";
+static const char* PS_ANSI = "\x8C\xE5\xF2";
 
 static const char* CAT_STEP = R"(\X4\0001F6380001F5960000044F\X0\)";
 static wchar_t CAT_WCHAR[] = L"\xde38\xdd96я";
@@ -36,7 +35,7 @@ static const char* CAT_ANSI = "??\xFF";
 
 static const wchar_t* MIX_WCHAR = L"潦o㼿ÿ";
 static const char* MIX_STEP = R"(\X2\6F66\X0\o\X2\3F3F\X0\\X\FF)";
-static const char* MIX_ANSI = "?o?я";
+static const char* MIX_ANSI = "?o?я";  //this is to support old \X\ behaviour
 
 static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId);
 
@@ -73,10 +72,10 @@ static void CheckHeader(SdaiModel ifcModel, int_t subitem, const char* ansi, con
 
 static void CheckHeader(SdaiModel ifcModel)
 {
-    CheckHeader(ifcModel, 0, TEST_ANSI_WIN1251, TEST_WCHAR, ANSI_STEP);
-    CheckHeader(ifcModel, 1, TEST_ANSI_WIN1251, TEST_WCHAR, UNICODE_STEP);
-    CheckHeader(ifcModel, 2, ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
-    CheckHeader(ifcModel, 3, ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+    CheckHeader(ifcModel, 0, TEST_WIN1251, TEST_WCHAR, TEST_STEP);
+    CheckHeader(ifcModel, 1, TEST_WIN1251, TEST_WCHAR, TEST_STEP);
+    CheckHeader(ifcModel, 2, SLASH_ANSI, SLASH_WCHAR, SLASH_STEP);
+    CheckHeader(ifcModel, 3, SLASH_ANSI, SLASH_WCHAR, SLASH_STEP);
 }
 
 
@@ -243,22 +242,22 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     CheckHeader(ifcModel);
 
     auto wall = internalGetInstanceFromP21Line(ifcModel, stepId);
-    CheckAttr(wall, "Name", TEST_ANSI_WIN1251, TEST_WCHAR, ANSI_STEP);
-    CheckAttr(wall, "Description", TEST_ANSI_WIN1251, TEST_WCHAR, UNICODE_STEP);
+    CheckAttr(wall, "Name", TEST_WIN1251, TEST_WCHAR, TEST_STEP);
+    CheckAttr(wall, "Description", TEST_WIN1251, TEST_WCHAR, TEST_STEP);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 1);
-    CheckAttr(wall, "Name", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
-    CheckAttr(wall, "Description", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
+    CheckAttr(wall, "Name", SLASH_ANSI, SLASH_WCHAR, SLASH_STEP);
+    CheckAttr(wall, "Description", SLASH_ANSI, SLASH_WCHAR, SLASH_STEP);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 2);
-    CheckAttr(wall, "Name", CHINESE_ANSI, CHINESE_WCHAR, CHINESE_STEP);
-    CheckAttr(wall, "Description", GREEK_ANSI, GREEK_WCHAR, GREEK_STEP);
+    CheckAttr(wall, "Name", CHINESE_WIN1251, CHINESE_WCHAR, CHINESE_STEP);
+    CheckAttr(wall, "Description", GREEK_WIN1251, GREEK_WCHAR, GREEK_STEP);
     engiSetAnsiStringEncoding(ifcModel, enum_code_page::ISO8859_7);
-    CheckAttr(wall, "Description", GREEK_ANSI_ISO8859_7, GREEK_WCHAR, GREEK_STEP);
+    CheckAttr(wall, "Description", GREEK_ISO8859_7, GREEK_WCHAR, GREEK_STEP);
     engiSetAnsiStringEncoding(ifcModel, enum_code_page::WINDOWS_1251);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 3);
-    CheckAttr(wall, "Name", AGER_ANSI, AGER_WCHAR, AGER_STEP);
+    CheckAttr(wall, "Name", AGER_WIN1251, AGER_WCHAR, AGER_STEP);
     CheckAttr(wall, "Description", PS_ANSI, PS_WCHAR, PS_STEP);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 4);
@@ -274,21 +273,21 @@ static void PutGetRegionalChars(void)
 
     setFilter(ifcModel, 131072, ((int64_t)0b111111)<<14);
 
-    SetSPFFHeaderItem(ifcModel, 0, 0, sdaiSTRING, TEST_ANSI_WIN1251);
+    SetSPFFHeaderItem(ifcModel, 0, 0, sdaiSTRING, TEST_WIN1251);
     SetSPFFHeaderItem(ifcModel, 0, 1, sdaiUNICODE, TEST_WCHAR);
-    SetSPFFHeaderItem(ifcModel, 0, 2, sdaiSTRING, ANSI_SLASH);
-    SetSPFFHeaderItem(ifcModel, 0, 3, sdaiUNICODE, WCHAR_SLASH);
+    SetSPFFHeaderItem(ifcModel, 0, 2, sdaiSTRING, SLASH_ANSI);
+    SetSPFFHeaderItem(ifcModel, 0, 3, sdaiUNICODE, SLASH_WCHAR);
 
     //
     auto wall = IFC4::IfcWall::Create(ifcModel);
     auto stepId = internalGetP21Line(wall);
-    sdaiPutAttrBN(wall, "Name", sdaiSTRING, TEST_ANSI_WIN1251);
+    sdaiPutAttrBN(wall, "Name", sdaiSTRING, TEST_WIN1251);
     sdaiPutAttrBN(wall, "Description", sdaiUNICODE, TEST_WCHAR);
 
     //
     wall = IFC4::IfcWall::Create(ifcModel);
-    sdaiPutAttrBN(wall, "Name", sdaiSTRING, ANSI_SLASH);
-    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_SLASH);
+    sdaiPutAttrBN(wall, "Name", sdaiSTRING, SLASH_ANSI);
+    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, SLASH_WCHAR);
 
 
     //
