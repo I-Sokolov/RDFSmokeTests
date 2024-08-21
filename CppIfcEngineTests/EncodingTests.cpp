@@ -29,7 +29,11 @@ static const char* AGER_ANSI = "\xC4rger"; //this is to support old behaviour
 static const char* PS_STEP = R"(\PE\\S\*\S\U\S\b)";
 static const wchar_t* PS_WCHAR = L"Њет";
 static const char* PS_ANSI = "Њет";
- 
+
+static const char* CAT_STEP = R"(\X4\0001F6380001F596\X0\)";
+static wchar_t CAT_WCHAR[] = L"\xde38\xdd96";
+static const char* CAT_ANSI = "??";
+
 static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId);
 
 static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, const wchar_t* unicode, const char* step)
@@ -252,6 +256,9 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 3);
     CheckAttr(wall, "Name", AGER_ANSI, AGER_WCHAR, AGER_STEP);
     CheckAttr(wall, "Description", PS_ANSI, PS_WCHAR, PS_STEP);
+
+    wall = internalGetInstanceFromP21Line(ifcModel, stepId + 4);
+    CheckAttr(wall, "Name", CAT_ANSI, CAT_WCHAR, CAT_STEP);
 }
 
 
@@ -288,6 +295,9 @@ static void PutGetRegionalChars(void)
     wall = IFC4::IfcWall::Create(ifcModel);
     sdaiPutAttrBN(wall, "Name", sdaiEXPRESSSTRING, AGER_STEP);
     sdaiPutAttrBN(wall, "Description", sdaiEXPRESSSTRING, PS_STEP);
+
+    wall = IFC4::IfcWall::Create(ifcModel);
+    sdaiPutAttrBN(wall, "Name", sdaiEXPRESSSTRING, CAT_STEP);
 
     //TODO change encoding tests
 
@@ -332,6 +342,11 @@ static void PutGetRegionalChars(void)
 extern void Encodings(void)
 {
     ENTER_TEST;
+
+    if (sizeof(wchar_t) == 4) {
+        CAT_WCHAR[0] = (wchar_t)0x0001f638;
+        CAT_WCHAR[1] = (wchar_t)0x0001f596;
+    }
 
     EncodingAndFilter();
     PutGetRegionalChars();
