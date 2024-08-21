@@ -4,9 +4,9 @@
 #define REG_CHARS_FILE_NAME "PutGetRegionalChars.ifc"
 
 
-static const char* ANSI_STRING = "'English'\\ Русский'";
-static const wchar_t* WCHAR_STRING = L"'English'\\ Русский'";
-static const char* ANSI_STEP = R"(''English''\\ \X\D0\X\F3\X\F1\X\F1\X\EA\X\E8\X\E9'')";
+static const char* TEST_ANSI_WIN1251 = "'English'\\ \xD0усский'";
+static const wchar_t* TEST_WCHAR = L"'English'\\ Русский'";
+static const char* ANSI_STEP = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
 static const char* UNICODE_STEP = R"(\X2\0027\X0\English\X2\0027\X0\\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\\X2\0027\X0\)";
 
 static const wchar_t* CHINESE_WCHAR = L"Chinese: 中国人";
@@ -30,9 +30,13 @@ static const char* PS_STEP = R"(\PE\\S\*\S\U\S\b)";
 static const wchar_t* PS_WCHAR = L"Њет";
 static const char* PS_ANSI = "Њет";
 
-static const char* CAT_STEP = R"(\X4\0001F6380001F596\X0\)";
-static wchar_t CAT_WCHAR[] = L"\xde38\xdd96";
-static const char* CAT_ANSI = "??";
+static const char* CAT_STEP = R"(\X4\0001F6380001F5960000044F\X0\)";
+static wchar_t CAT_WCHAR[] = L"\xde38\xdd96я";
+static const char* CAT_ANSI = "??\xFF";
+
+static const wchar_t* MIX_WCHAR = L"潦o㼿ÿ";
+static const char* MIX_STEP = R"(\X2\6F66\X0\o\X2\3F3F\X0\\X\FF)";
+static const char* MIX_ANSI = "?o?я";
 
 static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId);
 
@@ -69,8 +73,8 @@ static void CheckHeader(SdaiModel ifcModel, int_t subitem, const char* ansi, con
 
 static void CheckHeader(SdaiModel ifcModel)
 {
-    CheckHeader(ifcModel, 0, ANSI_STRING, WCHAR_STRING, ANSI_STEP);
-    CheckHeader(ifcModel, 1, ANSI_STRING, WCHAR_STRING, UNICODE_STEP);
+    CheckHeader(ifcModel, 0, TEST_ANSI_WIN1251, TEST_WCHAR, ANSI_STEP);
+    CheckHeader(ifcModel, 1, TEST_ANSI_WIN1251, TEST_WCHAR, UNICODE_STEP);
     CheckHeader(ifcModel, 2, ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
     CheckHeader(ifcModel, 3, ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
 }
@@ -239,8 +243,8 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     CheckHeader(ifcModel);
 
     auto wall = internalGetInstanceFromP21Line(ifcModel, stepId);
-    CheckAttr(wall, "Name", ANSI_STRING, WCHAR_STRING, ANSI_STEP);
-    CheckAttr(wall, "Description", ANSI_STRING, WCHAR_STRING, UNICODE_STEP);
+    CheckAttr(wall, "Name", TEST_ANSI_WIN1251, TEST_WCHAR, ANSI_STEP);
+    CheckAttr(wall, "Description", TEST_ANSI_WIN1251, TEST_WCHAR, UNICODE_STEP);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 1);
     CheckAttr(wall, "Name", ANSI_SLASH, WCHAR_SLASH, STEP_SLASH);
@@ -259,6 +263,7 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 4);
     CheckAttr(wall, "Name", CAT_ANSI, CAT_WCHAR, CAT_STEP);
+    CheckAttr(wall, "Description", MIX_ANSI, MIX_WCHAR, MIX_STEP);
 }
 
 
@@ -269,16 +274,16 @@ static void PutGetRegionalChars(void)
 
     setFilter(ifcModel, 131072, ((int64_t)0b111111)<<14);
 
-    SetSPFFHeaderItem(ifcModel, 0, 0, sdaiSTRING, ANSI_STRING);
-    SetSPFFHeaderItem(ifcModel, 0, 1, sdaiUNICODE, WCHAR_STRING);
+    SetSPFFHeaderItem(ifcModel, 0, 0, sdaiSTRING, TEST_ANSI_WIN1251);
+    SetSPFFHeaderItem(ifcModel, 0, 1, sdaiUNICODE, TEST_WCHAR);
     SetSPFFHeaderItem(ifcModel, 0, 2, sdaiSTRING, ANSI_SLASH);
     SetSPFFHeaderItem(ifcModel, 0, 3, sdaiUNICODE, WCHAR_SLASH);
 
     //
     auto wall = IFC4::IfcWall::Create(ifcModel);
     auto stepId = internalGetP21Line(wall);
-    sdaiPutAttrBN(wall, "Name", sdaiSTRING, ANSI_STRING);
-    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, WCHAR_STRING);
+    sdaiPutAttrBN(wall, "Name", sdaiSTRING, TEST_ANSI_WIN1251);
+    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, TEST_WCHAR);
 
     //
     wall = IFC4::IfcWall::Create(ifcModel);
@@ -298,6 +303,7 @@ static void PutGetRegionalChars(void)
 
     wall = IFC4::IfcWall::Create(ifcModel);
     sdaiPutAttrBN(wall, "Name", sdaiEXPRESSSTRING, CAT_STEP);
+    sdaiPutAttrBN(wall, "Description", sdaiUNICODE, MIX_WCHAR);
 
     //TODO change encoding tests
 

@@ -12,7 +12,7 @@ extern void ADBcreate()
         void* value = sdaiCreateADB(sdaiSTRING, (void*)"bar");
         sdaiPutADBTypePath(value, 1, "IFCTEXT");
         int_t prop = sdaiCreateInstanceBN(model, "IFCPROPERTYSINGLEVALUE");
-        sdaiPutAttrBN(prop, "Name", sdaiUNICODE, (void*)"foo");
+        sdaiPutAttrBN(prop, "Name", sdaiUNICODE, (void*)L"foo");
         sdaiPutAttrBN(prop, "NominalValue", sdaiADB, value);
     }
 
