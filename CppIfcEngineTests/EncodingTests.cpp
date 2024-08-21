@@ -4,10 +4,10 @@
 #define REG_CHARS_FILE_NAME "PutGetRegionalChars.ifc"
 
 
-static const char* TEST_ANSI_WIN1251 = "'English'\\ \xD0усский'";
+static const char* TEST_ANSI_WIN1251 = "'English'\\ \xD0\xF3сский'";
 static const wchar_t* TEST_WCHAR = L"'English'\\ Русский'";
-static const char* ANSI_STEP = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
-static const char* UNICODE_STEP = R"(\X2\0027\X0\English\X2\0027\X0\\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\\X2\0027\X0\)";
+static const char* ANSI_STEP    = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
+static const char* UNICODE_STEP = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
 
 static const wchar_t* CHINESE_WCHAR = L"Chinese: 中国人";
 static const char* CHINESE_ANSI = "Chinese: ???";
