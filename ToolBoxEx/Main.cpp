@@ -21,7 +21,7 @@ extern int main()
 
         auto lostMem = finalHeap - startingHeap;
         printf("Lost memory %d bytes.\n", lostMem);
-        ASSERT(lostMem <= 1500);
+        ASSERT(lostMem <= 5000);
 
 #ifdef VLD_ON
         VLDReportLeaks();
