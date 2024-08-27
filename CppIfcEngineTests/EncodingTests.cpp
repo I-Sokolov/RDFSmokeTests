@@ -30,7 +30,7 @@ static const wchar_t* PS_WCHAR = L"Њет";
 static const char* PS_ANSI = "\x8C\xE5\xF2";
 
 static const char* CAT_STEP = R"(\X4\0001F6380001F5960000044F\X0\)";
-static wchar_t CAT_WCHAR[] = L"\xde38\xdd96я";
+static wchar_t CAT_WCHAR[] = L"😸🖖я";
 static const char* CAT_ANSI = "??\xFF";
 
 static const wchar_t* MIX_WCHAR = L"潦o㼿ÿ";
