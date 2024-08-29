@@ -1,5 +1,4 @@
-﻿
-#include "pch.h"
+﻿#include "pch.h"
 #include <codecvt>
 
 #define REG_CHARS_FILE_NAME "PutGetRegionalChars.ifc"
@@ -375,6 +374,34 @@ static void PutGetRegionalChars(void)
 
 }
 
+static void InvalidTextLiterals()
+{
+    auto ifcModel = sdaiOpenModelBN(0, "..\\TestData\\InvalidTextLiterals.ifc", "");
+    ASSERT(ifcModel);
+    
+    int nissues = 0;
+    auto valres = validateModel(ifcModel);
+    auto issue = validateGetFirstIssue(valres);
+    while (issue) {
+        nissues++;
+        ASSERT(validateGetIssueType(issue) == enum_validation_type::__INVALID_TEXT_LITERAL);
+        issue = validateGetNextIssue(issue);
+    }
+    validateFreeResults(valres);
+    ASSERT(nissues == 22);
+
+    for (int i = 2; i < 26; i++) {
+        auto inst = internalGetInstanceFromP21Line(ifcModel, i);
+        wchar_t* w = NULL;
+        sdaiGetAttrBN(inst, "Name", sdaiUNICODE, &w);
+        char* v = NULL;
+        sdaiGetAttrBN(inst, "Name", sdaiSTRING, &v);
+    }
+
+    sdaiCloseModel(ifcModel);
+}
+
+
 extern void Encodings(void)
 {
     ENTER_TEST;
@@ -386,5 +413,6 @@ extern void Encodings(void)
 
     EncodingAndFilter();
     PutGetRegionalChars();
+    InvalidTextLiterals();
 
 }
