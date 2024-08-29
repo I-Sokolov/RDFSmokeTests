@@ -378,7 +378,7 @@ static void InvalidTextLiterals()
 {
     auto ifcModel = sdaiOpenModelBN(0, "..\\TestData\\InvalidTextLiterals.ifc", "");
     ASSERT(ifcModel);
-    
+
     int nissues = 0;
     auto valres = validateModel(ifcModel);
     auto issue = validateGetFirstIssue(valres);
@@ -387,8 +387,8 @@ static void InvalidTextLiterals()
         ASSERT(validateGetIssueType(issue) == enum_validation_type::__INVALID_TEXT_LITERAL);
         issue = validateGetNextIssue(issue);
     }
-    validateFreeResults(valres);
     ASSERT(nissues == 22);
+    validateFreeResults(valres);
 
     for (int i = 2; i < 26; i++) {
         auto inst = internalGetInstanceFromP21Line(ifcModel, i);
