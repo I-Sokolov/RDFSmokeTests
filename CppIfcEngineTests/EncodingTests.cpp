@@ -85,39 +85,40 @@ static void EncodingAndFilter(SdaiModel model)
 {
     struct Codepage
     {
-        enum_code_page code;
-        int64_t        bitflag;
+        enum_string_encoding code;
+        int64_t              bitflag;
     };
 
     Codepage codepages[] = {
                                                                                         //		14, 15, 16, 17, 18, 19
-        {enum_code_page::IGNORE_DEFAULT			    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   0   0   0   0	
-        {enum_code_page::WINDOWS_1250				, (0 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   1   0   0   0	
-        {enum_code_page::WINDOWS_1251				, (0 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   0   1   0   0	
-        {enum_code_page::WINDOWS_1252				, (0 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   1   1   0   0	
-        {enum_code_page::WINDOWS_1253				, (0 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   0   0   1   0	
-        {enum_code_page::WINDOWS_1254				, (0 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   1   0   1   0	
-        {enum_code_page::WINDOWS_1255				, (0 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   0   1   1   0	
-        {enum_code_page::WINDOWS_1256				, (0 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   1   1   1   0	
-        {enum_code_page::WINDOWS_1257				, (0 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 0   0   0   0   0   1	
-        {enum_code_page::WINDOWS_1258				, (0 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 0   0   1   0   0   1	
-        {enum_code_page::ISO8859_1					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   0   0   0   0	
-        {enum_code_page::ISO8859_2					, (1 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   1   0   0   0	
-        {enum_code_page::ISO8859_3					, (1 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   0   1   0   0	
-        {enum_code_page::ISO8859_4					, (1 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   1   1   0   0	
-        {enum_code_page::ISO8859_5					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   0   0   1   0	
-        {enum_code_page::ISO8859_6					, (1 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   1   0   1   0	
-        {enum_code_page::ISO8859_7					, (1 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   0   1   1   0	
-        {enum_code_page::ISO8859_8					, (1 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   1   1   1   0	
-        {enum_code_page::ISO8859_9					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   0   0   0   1	
-        {enum_code_page::ISO8859_10				    , (1 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   1   0   0   1	
-        {enum_code_page::ISO8859_11				    , (1 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   0   1   0   1	
-        {enum_code_page::ISO8859_13				    , (1 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   0   0   1   1	
-        {enum_code_page::ISO8859_14				    , (1 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   1   0   1   1	
-        {enum_code_page::ISO8859_15				    , (1 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   0   1   1   1	
-        {enum_code_page::ISO8859_16				    , (1 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   1   1   1   1	
-        {enum_code_page::MACINTOSH_CENTRAL_EUROPEAN , (0 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   1   0   0   0   0	
-        {enum_code_page::SHIFT_JIS_X_213			, (1 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)}	//		 1   1   0   0   0   0	
+        {enum_string_encoding::IGNORE_DEFAULT			    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   0   0   0   0	
+        {enum_string_encoding::WINDOWS_1250				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   1   0   0   0	
+        {enum_string_encoding::WINDOWS_1251				    , (0 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   0   1   0   0	
+        {enum_string_encoding::WINDOWS_1252				    , (0 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   1   1   0   0	
+        {enum_string_encoding::WINDOWS_1253				    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   0   0   1   0	
+        {enum_string_encoding::WINDOWS_1254				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   1   0   1   0	
+        {enum_string_encoding::WINDOWS_1255				    , (0 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   0   1   1   0	
+        {enum_string_encoding::WINDOWS_1256				    , (0 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   1   1   1   0	
+        {enum_string_encoding::WINDOWS_1257				    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 0   0   0   0   0   1	
+        {enum_string_encoding::WINDOWS_1258				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 0   0   1   0   0   1	
+        {enum_string_encoding::ISO8859_1					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   0   0   0   0	
+        {enum_string_encoding::ISO8859_2					, (1 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   1   0   0   0	
+        {enum_string_encoding::ISO8859_3					, (1 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   0   1   0   0	
+        {enum_string_encoding::ISO8859_4					, (1 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   1   1   0   0	
+        {enum_string_encoding::ISO8859_5					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   0   0   1   0	
+        {enum_string_encoding::ISO8859_6					, (1 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   1   0   1   0	
+        {enum_string_encoding::ISO8859_7					, (1 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   0   1   1   0	
+        {enum_string_encoding::ISO8859_8					, (1 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   1   1   1   0	
+        {enum_string_encoding::ISO8859_9					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   0   0   0   1	
+        {enum_string_encoding::ISO8859_10				    , (1 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   1   0   0   1	
+        {enum_string_encoding::ISO8859_11				    , (1 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   0   1   0   1	
+        {enum_string_encoding::ISO8859_13				    , (1 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   0   0   1   1	
+        {enum_string_encoding::ISO8859_14				    , (1 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   1   0   1   1	
+        {enum_string_encoding::ISO8859_15				    , (1 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   0   1   1   1	
+        {enum_string_encoding::ISO8859_16				    , (1 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   1   1   1   1	
+        {enum_string_encoding::MACINTOSH_CENTRAL_EUROPEAN   , (0 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   1   0   0   0   0	
+        {enum_string_encoding::SHIFT_JIS_X_213			    , (1 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   1   0   0   0   0	
+        {enum_string_encoding::UTF8			                , (1 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)}	//		 1   1   0   0   0   1	
     };
    //not implemented  /*ISO8859_12				*/ (1 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 1 * 32),	//		 1   0   1   1   0   1	
 
@@ -142,7 +143,7 @@ static void EncodingAndFilter(SdaiModel model)
 
         auto code = codepages[i].code;
 
-        engiSetAnsiStringEncoding(model, code);
+        engiSetStringEncoding(model, code);
 
         auto getfilter = getFilter(model, encoding_mask);
         ASSERT((codepages[i].bitflag << 14) == getfilter);
@@ -208,7 +209,7 @@ static int_t   __stdcall   ReadCallBackFunction(unsigned char* content)
 
 static void CheckRegionalChars(const char* stepFile, SdaiInteger stepId)
 {
-    engiSetAnsiStringEncoding(NULL, enum_code_page::WINDOWS_1251);
+    engiSetStringEncoding(NULL, enum_string_encoding::WINDOWS_1251);
 
     auto ifcModel = sdaiOpenModelBN(0, stepFile, "IFC4");
     CheckRegionalChars(ifcModel, stepId);
@@ -260,9 +261,9 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 2);
     CheckAttr(wall, "Name", CHINESE_WIN1251, CHINESE_WCHAR, CHINESE_STEP);
     CheckAttr(wall, "Description", GREEK_WIN1251, GREEK_WCHAR, GREEK_STEP);
-    engiSetAnsiStringEncoding(ifcModel, enum_code_page::ISO8859_7);
+    engiSetStringEncoding(ifcModel, enum_string_encoding::ISO8859_7);
     CheckAttr(wall, "Description", GREEK_ISO8859_7, GREEK_WCHAR, GREEK_STEP);
-    engiSetAnsiStringEncoding(ifcModel, enum_code_page::WINDOWS_1251);
+    engiSetStringEncoding(ifcModel, enum_string_encoding::WINDOWS_1251);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 3);
     CheckAttr(wall, "Name", AGER_WIN1251, AGER_WCHAR, AGER_STEP);
