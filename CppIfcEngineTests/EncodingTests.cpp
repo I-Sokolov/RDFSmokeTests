@@ -50,9 +50,6 @@ static std::string utf16_to_utf8(const std::wstring& utf16_str)
 
 static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, const wchar_t* unicode, const char* step, const char* utf8 = NULL)
 {
-    auto model = sdaiGetInstanceModel(inst);
-    engiSetStringEncoding(model, enum_string_encoding::WINDOWS_1251);
-
     char* getStr = NULL;
     wchar_t* getWStr = NULL;
 
@@ -65,6 +62,7 @@ static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, con
     ret = sdaiGetAttrBN(inst, attr, sdaiEXPRESSSTRING, &getStr);
     ASSERT(ret && !strcmp(getStr, step));
 
+    auto model = sdaiGetInstanceModel(inst);
     engiSetStringEncoding(model, enum_string_encoding::UTF8);
 
     auto sutf8 = utf16_to_utf8(unicode);
@@ -74,6 +72,8 @@ static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, con
 
     ret = sdaiGetAttrBN(inst, attr, sdaiSTRING, &getStr);
     ASSERT(ret && !strcmp(getStr, sutf8.c_str()));
+
+    engiSetStringEncoding(model, enum_string_encoding::WINDOWS_1251);
 }
 
 static void CheckHeader(SdaiModel ifcModel, int_t subitem, const char* ansi, const wchar_t* unicode, const char* step)
@@ -284,7 +284,7 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     CheckAttr(wall, "Description", PS_WIN1251, PS_WCHAR, PS_STEP);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 4);
-    CheckAttr(wall, "Name", CAT_WIN1251, CAT_WCHAR, CAT_STEP);
+    CheckAttr(wall, "Name", CAT_WIN1251, CAT_WCHAR, CAT_STEP, CAT_UTF8);
     CheckAttr(wall, "Description", MIX_WIN1251, MIX_WCHAR, MIX_STEP);
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 5);
@@ -294,13 +294,14 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     CheckAttr(wall, "Description", CHINESE_WIN1251, CHINESE_WCHAR, chiness.c_str());
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 6);
-    CheckAttr(wall, "Name", CAT_WIN1251, CAT_WCHAR, CAT_UTF8);
+    CheckAttr(wall, "Name", CAT_WIN1251, CAT_WCHAR, CAT_UTF8, CAT_UTF8);
     auto mix = utf16_to_utf8(MIX_WCHAR);
     CheckAttr(wall, "Description", MIX_WIN1251, MIX_WCHAR, mix.c_str());
 
     wall = internalGetInstanceFromP21Line(ifcModel, stepId + 7);
-    CheckAttr(wall, "Name", TEST_WIN1251, TEST_WCHAR, TEST_STEP);
-    CheckAttr(wall, "Description", CAT_WIN1251, CAT_WCHAR, TEST_STEP);
+    auto step = utf16_to_utf8(TEST_WCHAR_FORUTF8);
+    CheckAttr(wall, "Name", TEST_WIN1251, TEST_WCHAR, step.c_str());
+    CheckAttr(wall, "Description", CAT_WIN1251, CAT_WCHAR, CAT_UTF8, CAT_UTF8);
 }
 
 
