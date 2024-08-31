@@ -22,9 +22,9 @@ static const char* GREEK_WIN1251 = "'???\\";
 static const char* GREEK_ISO8859_7 = "'\xE1\xE2\xE3\\";
 static const char* GREEK_STEP = R"(''\X2\03B103B203B3\X0\\\)";
 
-static const wchar_t* AGER_WCHAR = L"Ärger";
-static const char* AGER_STEP = R"(\S\Drger)";
-static const char* AGER_WIN1251 = "\xC4rger"; //this is to support old behaviour
+static const wchar_t* AGER_WCHAR = L"Ärge'r";
+static const char* AGER_STEP = R"(\S\Drge\'r)";
+static const char* AGER_WIN1251 = "\xC4rge'r"; //this is to support old behaviour
 
 static const char* PS_STEP = R"(\PE\\S\*\S\U\S\b)";
 static const wchar_t* PS_WCHAR = L"Њет";
