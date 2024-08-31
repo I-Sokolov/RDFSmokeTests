@@ -41,8 +41,18 @@ static const char* MIX_WIN1251 = "?o?я";  //this is to support old \X\ behaviou
 
 static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId);
 
-static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, const wchar_t* unicode, const char* step)
+static std::string utf16_to_utf8(const std::wstring& utf16_str)
 {
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    return converter.to_bytes(utf16_str);
+}
+
+
+static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, const wchar_t* unicode, const char* step, const char* utf8 = NULL)
+{
+    auto model = sdaiGetInstanceModel(inst);
+    engiSetStringEncoding(model, enum_string_encoding::WINDOWS_1251);
+
     char* getStr = NULL;
     wchar_t* getWStr = NULL;
 
@@ -54,6 +64,16 @@ static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, con
 
     ret = sdaiGetAttrBN(inst, attr, sdaiEXPRESSSTRING, &getStr);
     ASSERT(ret && !strcmp(getStr, step));
+
+    engiSetStringEncoding(model, enum_string_encoding::UTF8);
+
+    auto sutf8 = utf16_to_utf8(unicode);
+    if (utf8) {
+        sutf8 = utf8;
+    }
+
+    ret = sdaiGetAttrBN(inst, attr, sdaiSTRING, &getStr);
+    ASSERT(ret && !strcmp(getStr, sutf8.c_str()));
 }
 
 static void CheckHeader(SdaiModel ifcModel, int_t subitem, const char* ansi, const wchar_t* unicode, const char* step)
@@ -209,8 +229,6 @@ static int_t   __stdcall   ReadCallBackFunction(unsigned char* content)
 
 static void CheckRegionalChars(const char* stepFile, SdaiInteger stepId)
 {
-    engiSetStringEncoding(NULL, enum_string_encoding::WINDOWS_1251);
-
     auto ifcModel = sdaiOpenModelBN(0, stepFile, "IFC4");
     CheckRegionalChars(ifcModel, stepId);
     sdaiCloseModel(ifcModel);
@@ -240,14 +258,10 @@ static void    __stdcall   WriteCallBackFunction(unsigned char* content, int64_t
     fwrite(content, (size_t)size, 1, myFileWrite);
 }
 
-static std::string utf16_to_utf8(const std::wstring& utf16_str)
-{
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-    return converter.to_bytes(utf16_str);
-}
-
 static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
 {
+    engiSetStringEncoding(ifcModel, enum_string_encoding::WINDOWS_1251);
+
     CheckHeader(ifcModel);
 
     auto wall = internalGetInstanceFromP21Line(ifcModel, stepId);
@@ -283,6 +297,10 @@ static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId)
     CheckAttr(wall, "Name", CAT_WIN1251, CAT_WCHAR, CAT_UTF8);
     auto mix = utf16_to_utf8(MIX_WCHAR);
     CheckAttr(wall, "Description", MIX_WIN1251, MIX_WCHAR, mix.c_str());
+
+    wall = internalGetInstanceFromP21Line(ifcModel, stepId + 7);
+    CheckAttr(wall, "Name", TEST_WIN1251, TEST_WCHAR, TEST_STEP);
+    CheckAttr(wall, "Description", CAT_WIN1251, CAT_WCHAR, TEST_STEP);
 }
 
 
@@ -336,6 +354,12 @@ static void PutGetRegionalChars(void)
     sdaiPutAttrBN(wall, "Name", sdaiEXPRESSSTRING, CAT_UTF8);
     auto mix = utf16_to_utf8(MIX_WCHAR);
     sdaiPutAttrBN(wall, "Description", sdaiEXPRESSSTRING, mix.c_str());
+
+    wall = IFC4::IfcWall::Create(ifcModel);
+    engiSetStringEncoding(ifcModel, enum_string_encoding::UTF8);
+    test = utf16_to_utf8(TEST_WCHAR);
+    sdaiPutAttrBN(wall, "Name", sdaiSTRING, test.c_str());
+    sdaiPutAttrBN(wall, "Description", sdaiSTRING, CAT_UTF8);
 
     /////////////////
     CheckRegionalChars(ifcModel, stepId);
