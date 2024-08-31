@@ -70,6 +70,7 @@ static void CheckAttr(SdaiInstance inst, const char* attr, const char* ansi, con
         sutf8 = utf8;
     }
 
+    getStr = NULL;
     ret = sdaiGetAttrBN(inst, attr, sdaiSTRING, &getStr);
     ASSERT(ret && !strcmp(getStr, sutf8.c_str()));
 
