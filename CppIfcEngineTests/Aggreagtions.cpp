@@ -1,11 +1,12 @@
 
 #include "pch.h"
 
-#define TEST_FILE "..\\TestData\\Walls.ifc"
+#define TEST_FILE_DEL "..\\TestData\\Walls.ifc"
+#define TEST_FILE_AGGR "..\\TestData\\AggregationTest.ifc"
 
 static void DeleteWalls(bool subtypes)
 {
-    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE, "");
+    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_DEL, "");
 
     int cnt = 0;
 
@@ -37,7 +38,7 @@ static void DeleteWalls(bool subtypes)
 
 static void DeleteWallsByIndex(bool subtypes)
 {
-    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE, "");
+    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_DEL, "");
 
     int cnt = 0;
 
@@ -81,7 +82,7 @@ static void CheckAggrElem(SdaiInstance inst, const char* attr, SdaiInteger index
 
 static void DeleteAttrAggrByIndex()
 {
-    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE, "");
+    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_DEL, "");
 
     auto unitAssmt = internalGetInstanceFromP21Line(model, 975);
 
@@ -115,11 +116,8 @@ static void DeleteAttrAggrByIndex()
     sdaiCloseModel(model);
 }
 
-
-extern void AggregationTests()
+static void Delete()
 {
-    ENTER_TEST;
-
     DeleteWalls(true);
     DeleteWalls(false);
 
@@ -127,5 +125,119 @@ extern void AggregationTests()
     DeleteWallsByIndex(false);
 
     DeleteAttrAggrByIndex();
+}
 
+template <typename TIterator> static void TestAndNextExpected(SdaiIterator it, TIterator& expected)
+{
+    SdaiInstance inst = NULL;
+    auto ret = sdaiGetAggrByIterator(it, sdaiINSTANCE, &inst);
+    ASSERT(ret && inst == *expected);
+    expected++;
+}
+
+static void TestIteratorsForward(SdaiIterator it1, SdaiIterator it2, std::list<SdaiInstance>& expected)
+{
+    auto exp1 = expected.begin();
+    auto exp2 = expected.begin();
+
+    SdaiInstance inst = 0;
+    ASSERT(!sdaiGetAggrByIterator(it1, sdaiINSTANCE, &inst));
+
+    ASSERT(sdaiNext(it1));
+    TestAndNextExpected(it1, exp1);
+
+    while (sdaiNext(it1)) {
+
+        sdaiPrevious(it1);
+        exp1--;
+        TestAndNextExpected(it1, exp1);
+
+        sdaiNext(it1);
+        TestAndNextExpected(it1, exp1);
+
+        ASSERT(sdaiNext(it2));
+        TestAndNextExpected(it2, exp2);
+    }
+
+    ASSERT(!sdaiNext(it1));
+
+    ASSERT(sdaiNext(it2));
+    TestAndNextExpected(it2, exp2);
+
+    ASSERT(!sdaiNext(it2));
+}
+
+static void TestIteratorsReverse(SdaiIterator it1, SdaiIterator it2, std::list<SdaiInstance>& expected)
+{
+    auto exp1 = expected.begin();
+    auto exp2 = expected.rbegin();
+
+    SdaiInstance inst = 0;
+    ASSERT(!sdaiGetAggrByIterator(it1, sdaiINSTANCE, &inst));
+
+    ASSERT(sdaiNext(it1));
+    TestAndNextExpected(it1, exp1);
+
+    while (sdaiNext(it1)) {
+
+        TestAndNextExpected(it1, exp1);
+
+        ASSERT(sdaiPrevious(it2));
+        TestAndNextExpected(it2, exp2);
+    }
+
+    ASSERT(!sdaiNext(it1));
+
+    ASSERT(sdaiPrevious(it2));
+    TestAndNextExpected(it2, exp2);
+
+    ASSERT(!sdaiPrevious(it2));
+}
+
+static void TestIterators(SdaiAggr aggr, std::list<SdaiInstance>& expected)
+{
+    auto cnt = sdaiGetMemberCount(aggr);
+    ASSERT(cnt == expected.size());
+
+    auto it1 = sdaiCreateIterator(aggr);    
+    auto it2 = sdaiCreateIterator(aggr);
+    TestIteratorsForward(it1, it2, expected);
+
+    sdaiBeginning(it1);
+    sdaiBeginning(it2);
+    TestIteratorsForward(it1, it2, expected);
+
+    sdaiBeginning(it1);
+    sdaiEnd(it2);
+    TestIteratorsReverse(it1, it2, expected);
+
+    sdaiDeleteIterator(it1);
+    sdaiDeleteIterator(it2);
+}
+
+static void Iterators()
+{
+    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_AGGR, "");
+
+    //arguments
+    IFC4::IfcPropertySet pset = internalGetInstanceFromP21Line(model, 124);
+    std::list<SdaiInstance> lstProps;
+    pset.get_HasProperties(lstProps);
+    SdaiAggr aggrProps = 0;
+    sdaiGetAttrBN(pset, "HasProperties", sdaiAGGR, &aggrProps);
+    TestIterators(aggrProps, lstProps);
+
+    //inverse
+    //entity range
+    //entity range with subtypes
+
+    sdaiCloseModel(model);
+}
+
+extern void AggregationTests()
+{
+    ENTER_TEST;
+
+    Iterators();
+    Delete();
 }
