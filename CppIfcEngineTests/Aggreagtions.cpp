@@ -253,6 +253,15 @@ static void Iterators()
     TestIterators(aggr, lstInst);
 
     //all entities
+    aggr = xxxxGetAllInstances(model);
+    lstInst.clear();
+    for (int i = 10; i < 420; i++) {
+        auto inst = internalForceInstanceFromP21Line(model, i);
+        if (inst) {
+            lstInst.push_back(inst);
+        }
+    }
+    TestIterators(aggr, lstInst);
 
     sdaiCloseModel(model);
 }
