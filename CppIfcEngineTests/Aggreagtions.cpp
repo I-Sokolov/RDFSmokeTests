@@ -221,15 +221,29 @@ static void Iterators()
 
     //arguments
     IFC4::IfcPropertySet pset = internalGetInstanceFromP21Line(model, 124);
-    std::list<SdaiInstance> lstProps;
-    pset.get_HasProperties(lstProps);
-    SdaiAggr aggrProps = 0;
-    sdaiGetAttrBN(pset, "HasProperties", sdaiAGGR, &aggrProps);
-    TestIterators(aggrProps, lstProps);
+    std::list<SdaiInstance> lstInst;
+    pset.get_HasProperties(lstInst);
+    SdaiAggr aggr = 0;
+    sdaiGetAttrBN(pset, "HasProperties", sdaiAGGR, &aggr);
+    TestIterators(aggr, lstInst);
 
     //inverse
+    IFC4::IfcWall wall = internalGetInstanceFromP21Line(model, 68);
+    lstInst.clear();
+    aggr = NULL;
+    wall.get_HasAssociations(lstInst);
+    sdaiGetAttrBN(wall, "HasAssociations", sdaiAGGR, &aggr);
+    TestIterators(aggr, lstInst);
+
+    lstInst.clear();
+    aggr = NULL;
+    wall.get_IsDefinedBy(lstInst);
+    sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggr);
+    TestIterators(aggr, lstInst);
+
     //entity range
     //entity range with subtypes
+    //all entities
 
     sdaiCloseModel(model);
 }
