@@ -242,7 +242,16 @@ static void Iterators()
     TestIterators(aggr, lstInst);
 
     //entity range
+    aggr = sdaiGetEntityExtentBN(model, "IfcWall");
+    lstInst.clear();
+    lstInst.push_back(wall);
+    TestIterators(aggr, lstInst);
+
     //entity range with subtypes
+    aggr = xxxxGetEntityAndSubTypesExtentBN(model, "IfcElement");
+    lstInst.push_front(internalGetInstanceFromP21Line(model, 13));
+    TestIterators(aggr, lstInst);
+
     //all entities
 
     sdaiCloseModel(model);
