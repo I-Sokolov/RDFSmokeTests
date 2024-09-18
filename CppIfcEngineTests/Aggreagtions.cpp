@@ -215,6 +215,15 @@ static void TestIterators(SdaiAggr aggr, std::list<SdaiInstance>& expected)
     sdaiDeleteIterator(it2);
 }
 
+static void TestIsMember(SdaiAggr aggr, std::list<SdaiInstance>& members, SdaiInstance notMember)
+{
+    for (auto& m : members) {
+        ASSERT(sdaiIsMember(aggr, sdaiINSTANCE, m));
+    }
+
+    ASSERT(!sdaiIsMember(aggr, sdaiINSTANCE, notMember));
+}
+
 static void Iterators()
 {
     SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_AGGR, "");
@@ -226,6 +235,7 @@ static void Iterators()
     SdaiAggr aggr = 0;
     sdaiGetAttrBN(pset, "HasProperties", sdaiAGGR, &aggr);
     TestIterators(aggr, lstInst);
+    TestIsMember(aggr, lstInst, pset);
 
     //inverse
     IFC4::IfcWall wall = internalGetInstanceFromP21Line(model, 68);
@@ -234,23 +244,27 @@ static void Iterators()
     wall.get_HasAssociations(lstInst);
     sdaiGetAttrBN(wall, "HasAssociations", sdaiAGGR, &aggr);
     TestIterators(aggr, lstInst);
+    TestIsMember(aggr, lstInst, wall);
 
     lstInst.clear();
     aggr = NULL;
     wall.get_IsDefinedBy(lstInst);
     sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggr);
     TestIterators(aggr, lstInst);
+    TestIsMember(aggr, lstInst, wall);
 
     //entity range
     aggr = sdaiGetEntityExtentBN(model, "IfcWall");
     lstInst.clear();
     lstInst.push_back(wall);
     TestIterators(aggr, lstInst);
+    TestIsMember(aggr, lstInst, pset);
 
     //entity range with subtypes
     aggr = xxxxGetEntityAndSubTypesExtentBN(model, "IfcElement");
     lstInst.push_front(internalGetInstanceFromP21Line(model, 13));
     TestIterators(aggr, lstInst);
+    TestIsMember(aggr, lstInst, pset);
 
     //all entities
     aggr = xxxxGetAllInstances(model);
@@ -262,6 +276,7 @@ static void Iterators()
         }
     }
     TestIterators(aggr, lstInst);
+    TestIsMember(aggr, lstInst, 0);
 
     sdaiCloseModel(model);
 }
