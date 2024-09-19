@@ -281,10 +281,158 @@ static void Iterators()
     sdaiCloseModel(model);
 }
 
+template <typename T>
+static void TestIsMember(SdaiAggr aggr, SdaiPrimitiveType sdaiType, T* rMembers, int nMembers, T notMember)
+{
+    for (int i = 0; i < nMembers; i++) {
+        ASSERT(sdaiIsMember(aggr, sdaiType, rMembers[i]));
+    }
+
+    ASSERT(!sdaiIsMember(aggr, sdaiType, notMember));
+}
+
+static void IsMember()
+{
+    SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
+    SdaiModel   model4x4 = sdaiCreateModelBN(0, "test IFC4x4", "IFC4x4");
+    SdaiModel   model242 = sdaiCreateModelBN(0, "test AP242", "AP242");
+
+    //
+    double rd[] = { 1,2.5,5 };
+    auto pt = IFC4::IfcCartesianPoint::Create(model);
+    pt.put_Coordinates(rd, 3);
+    
+    SdaiAggr aggr = NULL;
+    sdaiGetAttrBN(pt, "Coordinates", sdaiAGGR, &aggr);
+    TestIsMember(aggr, sdaiREAL, rd, 3, 8 + 1e-11);
+
+    //
+    SdaiInteger lat [] = { 20,2,3,1 };
+    auto site = IFC4::IfcSite::Create(model);
+    site.put_RefLatitude(lat, 4);
+
+    aggr = 0;
+    sdaiGetAttrBN(site, "RefLatitude", sdaiAGGR, &aggr);
+    TestIsMember(aggr, sdaiINTEGER, lat, 4, lat[0]+1);
+    
+    //
+    SdaiBoolean voxels[] = { true };
+    auto voxelGrid = IFC4x4::IfcVoxelGrid::Create(model4x4);
+    voxelGrid.put_Voxels(voxels, 1);
+
+    aggr = 0;
+    sdaiGetAttrBN(voxelGrid, "Voxels", sdaiAGGR, &aggr);
+    TestIsMember(aggr, sdaiBOOLEAN, voxels, 1, sdaiFALSE);
+
+    //
+    IFC4x4::IfcLogical voxelDataValues[] = { IFC4x4::IfcLogical::False, IFC4x4::IfcLogical::Unknown };
+    SdaiString voxelDataValues_s[] = { "F", "U" };
+    auto voxelData = IFC4x4::IfcLogicalVoxelData::Create(model4x4);
+    voxelData.put_ValueData(voxelDataValues, 2);
+
+    aggr = 0;
+    sdaiGetAttrBN(voxelData, "ValueData", sdaiAGGR, &aggr);
+    TestIsMember(aggr, sdaiLOGICAL, voxelDataValues_s, 2, "T");
+
+    //
+    SdaiString rNames[] = { "Domingo", "Felipe", "Jacinto" };
+    auto person = IFC4::IfcPerson::Create(model);
+    person.put_MiddleNames(rNames, 3);
+
+    aggr = 0;
+    sdaiGetAttrBN(person, "MiddleNames", sdaiAGGR, &aggr);
+    TestIsMember(aggr, sdaiSTRING, rNames, 3, "Salvador");
+
+    //
+    SdaiString rBin[] = { "31", "23B", "092A" };
+    auto texture = IFC4::IfcPixelTexture::Create(model);
+    texture.put_Pixel(rBin, 3);
+
+    aggr = 0;
+    sdaiGetAttrBN(texture, "Pixel", sdaiAGGR, &aggr);
+    TestIsMember(aggr, sdaiBINARY, rBin, 3, "30");
+
+    //
+    AP242::a3m_element_type_name a3mtypes[] = { AP242::a3m_element_type_name::etna_shape_representation, AP242::a3m_element_type_name::etns_point_cloud_dataset };
+    SdaiString a3mtypes_s[] = { "etna_shape_representation", "etns_point_cloud_dataset"};
+
+    auto criterion = AP242::different_component_identification_via_multi_level_reference::Create(model242);
+    criterion.put_compared_element_types(a3mtypes, 2);
+
+    aggr = 0;
+    sdaiGetAttrBN(criterion, "compared_element_types", sdaiAGGR, &aggr);
+    TestIsMember(aggr, sdaiENUM, a3mtypes_s, 2, "eeee");
+
+    //
+    sdaiCloseModel(model);
+    sdaiCloseModel(model4x4);
+    sdaiCloseModel(model242);
+}
+
+static void IsMemberComplex()
+{
+    SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
+
+    //
+    //create IfcIndexedPolyCurve
+    //
+    auto poly = IFC4::IfcIndexedPolyCurve::Create(model);
+
+    //2D points
+    double rpt[] = {
+        0,0,
+        1,0,
+        1,1,
+        0,1
+    };
+
+    //indexes of line and arc;
+    IFC4::IfcPositiveInteger line[] = { 0,1 };
+    IFC4::IfcPositiveInteger arc[] = { 1,2,3 };
+
+    //create points list
+    //
+    auto points = IFC4::IfcCartesianPointList2D::Create(model);
+
+    IFC4::ListOfListOfIfcLengthMeasure lstCoords;
+    for (int i = 0; i < 4; i++) {
+        lstCoords.push_back(IFC4::ListOfIfcLengthMeasure());
+        for (int j = 0; j < 2; j++) {
+            lstCoords.back().push_back(rpt[2 * i + j]);
+        }
+    }
+
+    points.put_CoordList(lstCoords);
+
+    //create segments list
+    //
+    IFC4::ListOfIfcSegmentIndexSelect segments;
+
+    IFC4::IfcSegmentIndexSelect segment(poly);
+    segment.put_IfcLineIndex(line, 2);
+    segments.push_back(segment);
+
+    segment.put_IfcArcIndex(arc, 3);
+    segments.push_back(segment);
+
+    //
+    poly.put_Segments(segments);
+    poly.put_Points(points);
+    poly.put_SelfIntersect(false);
+
+
+    //
+    //
+
+    sdaiCloseModel(model);
+}
+
 extern void AggregationTests()
 {
     ENTER_TEST;
 
     Iterators();
+    IsMember();
+    IsMemberComplex();
     Delete();
 }
