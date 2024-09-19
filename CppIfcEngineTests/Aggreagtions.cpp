@@ -369,33 +369,12 @@ static void IsMember()
     sdaiCloseModel(model242);
 }
 
-static void IsMemberComplex()
+static IFC4::IfcCartesianPointList2D CreatePointList(SdaiModel model, double* rpt, int npt)
 {
-    SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
-
-    //
-    //create IfcIndexedPolyCurve
-    //
-    auto poly = IFC4::IfcIndexedPolyCurve::Create(model);
-
-    //2D points
-    double rpt[] = {
-        0,0,
-        1,0,
-        1,1,
-        0,1
-    };
-
-    //indexes of line and arc;
-    IFC4::IfcPositiveInteger line[] = { 0,1 };
-    IFC4::IfcPositiveInteger arc[] = { 1,2,3 };
-
-    //create points list
-    //
     auto points = IFC4::IfcCartesianPointList2D::Create(model);
 
     IFC4::ListOfListOfIfcLengthMeasure lstCoords;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < npt; i++) {
         lstCoords.push_back(IFC4::ListOfIfcLengthMeasure());
         for (int j = 0; j < 2; j++) {
             lstCoords.back().push_back(rpt[2 * i + j]);
@@ -403,6 +382,60 @@ static void IsMemberComplex()
     }
 
     points.put_CoordList(lstCoords);
+
+    return points;
+}
+
+static void IsMemberComplex()
+{
+    SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
+
+    //
+    // aggrgation of aggregations - points list
+    // 
+ 
+    double rpt[] = {
+        0,0,
+        1,0,
+        1,1,
+        0,1
+    };
+    
+    auto points = CreatePointList(model, rpt, 4);
+
+    double check[] = {
+        1,1,
+        0,0.5
+    };
+
+    auto checks = CreatePointList(model, check, 2);
+
+    SdaiAggr aggr = NULL;
+    sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &aggr);
+
+    SdaiAggr acheck = NULL;
+    sdaiGetAttrBN(checks, "CoordList", sdaiAGGR, &acheck);
+
+    SdaiAggr ch = NULL;
+    sdaiGetAggrByIndex(acheck, 0, sdaiAGGR, &ch);
+    ASSERT(sdaiIsMember(aggr, sdaiAGGR, ch));
+
+    ch = NULL;
+    sdaiGetAggrByIndex(acheck, 1, sdaiAGGR, &ch);
+    ASSERT( ! sdaiIsMember(aggr, sdaiAGGR, ch));
+
+    //
+    //create IfcIndexedPolyCurve
+    //
+    auto poly = IFC4::IfcIndexedPolyCurve::Create(model);
+
+
+    //indexes of line and arc;
+    IFC4::IfcPositiveInteger line[] = { 0,1 };
+    IFC4::IfcPositiveInteger arc[] = { 1,2,3 };
+
+    //create points list
+    //
 
     //create segments list
     //
@@ -420,9 +453,24 @@ static void IsMemberComplex()
     poly.put_Points(points);
     poly.put_SelfIntersect(false);
 
+    //
+    aggr = NULL;
+    sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &aggr);
 
-    //
-    //
+    //sdaiSaveModelBN(model, "testIsMebber.ifc");
+
+    //aggregation of ADB
+    aggr = NULL;
+    sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &aggr);
+
+    SdaiADB chADB = NULL;
+    sdaiGetAggrByIndex(aggr, 1, sdaiADB, &chADB);
+    chADB = sdaiCreateADB(sdaiADB, chADB);
+    
+    ASSERT(sdaiIsMember(aggr, sdaiADB, chADB));
+
+    sdaiPutADBTypePath(chADB, 0, "IfcLineIndex");
+    ASSERT( ! sdaiIsMember(aggr, sdaiADB, chADB));
 
     sdaiCloseModel(model);
 }
