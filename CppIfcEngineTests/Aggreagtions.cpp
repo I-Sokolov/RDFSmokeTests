@@ -386,6 +386,20 @@ static IFC4::IfcCartesianPointList2D CreatePointList(SdaiModel model, double* rp
     return points;
 }
 
+static void IsMemberADB(SdaiAggr aggr, SdaiADB notMember)
+{
+    SdaiADB chADB = NULL;
+    sdaiGetAggrByIndex(aggr, 1, sdaiADB, &chADB);
+    ASSERT(sdaiIsMember(aggr, sdaiADB, chADB));
+
+    ASSERT(!sdaiIsMember(aggr, sdaiADB, notMember));
+
+    notMember = sdaiCreateADB(sdaiSTRING, "not a member");
+    ASSERT(!sdaiIsMember(aggr, sdaiADB, notMember));
+
+    sdaiDeleteADB(notMember);
+}
+
 static void IsMemberComplex()
 {
     SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
@@ -404,7 +418,7 @@ static void IsMemberComplex()
     auto points = CreatePointList(model, rpt, 4);
 
     double check[] = {
-        1,1,
+        1 + 1e-11,1 - 1e-11,
         0,0.5
     };
 
@@ -454,24 +468,22 @@ static void IsMemberComplex()
     poly.put_SelfIntersect(false);
 
     //
-    aggr = NULL;
-    sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &aggr);
-
-    //sdaiSaveModelBN(model, "testIsMebber.ifc");
+    auto aTest = sdaiCreateAggr(poly, 0);
+    int_t iTest = 0;
+    sdaiAppend(aTest, sdaiINTEGER, &iTest);
+    auto notMember = sdaiCreateADB(sdaiAGGR, aTest);
+    sdaiPutADBTypePath(notMember, 1, "IFCLINEINDEX");
 
     //aggregation of ADB
     aggr = NULL;
+    sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &aggr);
+    IsMemberADB(aggr, notMember);
+
+    aggr = NULL;
     sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &aggr);
+    IsMemberADB(aggr, notMember);
 
-    SdaiADB chADB = NULL;
-    sdaiGetAggrByIndex(aggr, 1, sdaiADB, &chADB);
-    chADB = sdaiCreateADB(sdaiADB, chADB);
-    
-    ASSERT(sdaiIsMember(aggr, sdaiADB, chADB));
-
-    sdaiPutADBTypePath(chADB, 0, "IfcLineIndex");
-    ASSERT( ! sdaiIsMember(aggr, sdaiADB, chADB));
-
+    //sdaiSaveModelBN(model, "testIsMebber.ifc");
     sdaiCloseModel(model);
 }
 
