@@ -129,6 +129,8 @@ static void Delete()
 
 template <typename TIterator> static void TestAndNextExpected(SdaiIterator it, TIterator& expected)
 {
+    ASSERT(sdaiGetAggrElementBoundByItr(it) == -1);
+
     SdaiInstance inst = NULL;
     auto ret = sdaiGetAggrByIterator(it, sdaiINSTANCE, &inst);
     ASSERT(ret && inst == *expected);
@@ -291,7 +293,18 @@ static void TestIsMember(SdaiAggr aggr, SdaiPrimitiveType sdaiType, T* rMembers,
     ASSERT(!sdaiIsMember(aggr, sdaiType, notMember));
 }
 
-static void IsMember()
+static void TestAggregationFunctions(SdaiAggr aggr, SdaiInteger numElems, SdaiInteger elementBound)
+{
+    ASSERT(sdaiGetLowerBound(aggr) == 0);
+    ASSERT(sdaiGetUpperBound(aggr) == numElems-1);
+
+    SdaiIterator it = sdaiCreateIterator(aggr);
+    sdaiNext(it);
+    ASSERT(sdaiGetAggrElementBoundByItr(it) == elementBound);
+    sdaiDeleteIterator(it);
+}
+
+static void ExplicitAggregationsVariousTypes()
 {
     SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
     SdaiModel   model4x4 = sdaiCreateModelBN(0, "test IFC4x4", "IFC4x4");
@@ -305,6 +318,7 @@ static void IsMember()
     SdaiAggr aggr = NULL;
     sdaiGetAttrBN(pt, "Coordinates", sdaiAGGR, &aggr);
     TestIsMember(aggr, sdaiREAL, rd, 3, 8 + 1e-11);
+    TestAggregationFunctions(aggr, 3, 12);
 
     //
     SdaiInteger lat [] = { 20,2,3,1 };
@@ -314,7 +328,8 @@ static void IsMember()
     aggr = 0;
     sdaiGetAttrBN(site, "RefLatitude", sdaiAGGR, &aggr);
     TestIsMember(aggr, sdaiINTEGER, lat, 4, lat[0]+1);
-    
+    TestAggregationFunctions(aggr, 4, -1);
+
     //
     SdaiBoolean voxels[] = { true };
     auto voxelGrid = IFC4x4::IfcVoxelGrid::Create(model4x4);
@@ -323,6 +338,7 @@ static void IsMember()
     aggr = 0;
     sdaiGetAttrBN(voxelGrid, "Voxels", sdaiAGGR, &aggr);
     TestIsMember(aggr, sdaiBOOLEAN, voxels, 1, sdaiFALSE);
+    TestAggregationFunctions(aggr, 1, -1);
 
     //
     IFC4x4::IfcLogical voxelDataValues[] = { IFC4x4::IfcLogical::False, IFC4x4::IfcLogical::Unknown };
@@ -333,6 +349,7 @@ static void IsMember()
     aggr = 0;
     sdaiGetAttrBN(voxelData, "ValueData", sdaiAGGR, &aggr);
     TestIsMember(aggr, sdaiLOGICAL, voxelDataValues_s, 2, "T");
+    TestAggregationFunctions(aggr, 2, -1);
 
     //
     SdaiString rNames[] = { "Domingo", "Felipe", "Jacinto" };
@@ -342,6 +359,7 @@ static void IsMember()
     aggr = 0;
     sdaiGetAttrBN(person, "MiddleNames", sdaiAGGR, &aggr);
     TestIsMember(aggr, sdaiSTRING, rNames, 3, "Salvador");
+    TestAggregationFunctions(aggr, 3, strlen(rNames[0]));
 
     //
     SdaiString rBin[] = { "31", "23B", "092A" };
@@ -351,6 +369,7 @@ static void IsMember()
     aggr = 0;
     sdaiGetAttrBN(texture, "Pixel", sdaiAGGR, &aggr);
     TestIsMember(aggr, sdaiBINARY, rBin, 3, "30");
+    TestAggregationFunctions(aggr, 3, strlen(rBin[0]));
 
     //
     AP242::a3m_element_type_name a3mtypes[] = { AP242::a3m_element_type_name::etna_shape_representation, AP242::a3m_element_type_name::etns_point_cloud_dataset };
@@ -362,6 +381,7 @@ static void IsMember()
     aggr = 0;
     sdaiGetAttrBN(criterion, "compared_element_types", sdaiAGGR, &aggr);
     TestIsMember(aggr, sdaiENUM, a3mtypes_s, 2, "eeee");
+    TestAggregationFunctions(aggr, 2, -1);
 
     //
     sdaiCloseModel(model);
@@ -492,7 +512,7 @@ extern void AggregationTests()
     ENTER_TEST;
 
     Iterators();
-    IsMember();
+    ExplicitAggregationsVariousTypes();
     IsMemberComplex();
     Delete();
 }
