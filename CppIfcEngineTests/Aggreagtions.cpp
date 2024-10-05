@@ -13,9 +13,25 @@ static void DeleteWalls(bool subtypes)
     SdaiAggr entityAggr = 0;
     if (subtypes) {
         entityAggr = xxxxGetEntityAndSubTypesExtentBN(model, "IfcWall");
+
+        auto a3 = sdaiGetEntityExtentBN(model, "IfcWall");
+        ASSERT(a3 != entityAggr);
+
+        auto a2 = xxxxGetEntityAndSubTypesExtentBN(model, "IfcWall");
+        ASSERT(a2 == entityAggr);
+        auto a4 = sdaiGetEntityExtentBN(model, "IfcWall");
+        ASSERT(a4 == a3);
     }
     else {
         entityAggr = sdaiGetEntityExtentBN(model, "IfcWallStandardCase");
+
+        auto a2 = sdaiGetEntityExtentBN(model, "IfcWallStandardCase");
+        ASSERT(a2 == entityAggr);
+
+        auto a3 = xxxxGetEntityAndSubTypesExtentBN(model, "IfcWall");
+        ASSERT(a3 != a2);
+        auto a4 = xxxxGetEntityAndSubTypesExtentBN(model, "IfcWall");
+        ASSERT(a4 == a3);
     }
 
     while (true) {
@@ -67,6 +83,10 @@ static void CheckAggrElem(SdaiInstance inst, const char* attr, SdaiInteger index
     SdaiAggr aggr = 0;
     auto ret = sdaiGetAttrBN(inst, attr, sdaiAGGR, &aggr);
     ASSERT(ret == aggr && aggr);
+
+    SdaiAggr a2 = 0;
+    sdaiGetAttrBN(inst, attr, sdaiAGGR, &a2);
+    ASSERT(a2 == aggr);
 
     auto cnt = sdaiGetMemberCount(aggr);
     ASSERT(index < cnt);
