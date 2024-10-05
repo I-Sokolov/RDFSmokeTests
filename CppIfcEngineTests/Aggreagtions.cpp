@@ -280,6 +280,12 @@ static void Iterators()
     TestIterators(aggr, lstInst);
     TestIsMember(aggr, lstInst, 0);
 
+    //
+    aggr = NULL;
+    engiGetNotReferedAggr(model, (int_t*) & aggr);
+    auto cnt = sdaiGetMemberCount(aggr);
+    ASSERT(cnt == 31);
+
     sdaiCloseModel(model);
 }
 
