@@ -3,6 +3,44 @@
 
 using namespace IFC4;
 
+static void CopyAdbAggrTest(IfcIndexedPolyCurve poly)
+{
+    //
+    //There is aggregation of 2 segments
+    //
+    SdaiAggr aggr0 = NULL;
+    auto ret = sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &aggr0);
+    ASSERT(ret && aggr0);
+
+    auto cnt0 = sdaiGetMemberCount(aggr0);
+    ASSERT(cnt0 == 2);
+
+    //
+    // Save to list
+    //
+    SdaiADB segment[2] = { NULL,NULL };
+    for (int i = 0; i < cnt0; i++) {
+        SdaiADB seg = NULL;
+        ret = engiGetAggrElement(aggr0, i, sdaiADB, &segment[i]);
+        ASSERT(ret && segment[i]);
+    }
+
+    //
+    // Make a copy
+    //
+    SdaiAggr aggrCopy = sdaiCreateAggrBN(poly, "Segments");
+    for (int i = 0; i < cnt0; i++) {
+        sdaiAppend(aggrCopy, sdaiADB, segment[i]);
+    }
+
+    //
+    // Copy must have same members
+    //
+    auto cntCopy = sdaiGetMemberCount(aggrCopy);
+    ASSERT(cntCopy == cnt0);
+}
+
+
 
 extern void EarlyBound_IFC4_test()
 {
@@ -473,6 +511,9 @@ extern void EarlyBound_IFC4_test()
 
     ASSERT(arcInd.size()==3 && arcInd.front()==1 && arcInd.back()==3);
     ASSERT(lineInd.empty());
+
+    //
+    CopyAdbAggrTest(poly);
 
     //append line
     lineInd.push_back(3);
