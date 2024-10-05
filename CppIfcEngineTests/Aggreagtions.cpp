@@ -290,6 +290,7 @@ static void Iterators()
 
     //all entities
     aggr = xxxxGetAllInstances(model);
+    ASSERT(aggr == xxxxGetAllInstances(model));
     lstInst.clear();
     for (int i = 10; i < 420; i++) {
         auto inst = internalForceInstanceFromP21Line(model, i);
