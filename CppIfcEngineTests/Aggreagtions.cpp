@@ -286,6 +286,15 @@ static void Iterators()
     auto cnt = sdaiGetMemberCount(aggr);
     ASSERT(cnt == 31);
 
+    aggr = NULL;
+    engiGetAttributeAggr(wall, (int_t*)&aggr);
+    cnt = sdaiGetMemberCount(aggr);
+    ASSERT(cnt == 9);
+
+    aggr = xxxxGetInstancesUsing(pset);
+    cnt = sdaiGetMemberCount(aggr);
+    ASSERT(cnt == 1);
+
     sdaiCloseModel(model);
 }
 
@@ -460,6 +469,11 @@ static void IsMemberComplex()
     sdaiGetAggrByIndex(acheck, 0, sdaiAGGR, &ch);
     ASSERT(sdaiIsMember(aggr, sdaiAGGR, ch));
 
+    SdaiPrimitiveType valueType = 0;
+    engiGetAggrUnknownElement(acheck, 0, &valueType, &ch);
+    ASSERT(valueType == sdaiAGGR);
+    ASSERT(sdaiIsMember(aggr, sdaiAGGR, ch));
+
     ch = NULL;
     sdaiGetAggrByIndex(acheck, 1, sdaiAGGR, &ch);
     ASSERT( ! sdaiIsMember(aggr, sdaiAGGR, ch));
@@ -504,6 +518,12 @@ static void IsMemberComplex()
     aggr = NULL;
     sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &aggr);
     IsMemberADB(aggr, notMember);
+
+    valueType = 0;
+    int_t ttt = NULL;
+    engiGetAggrUnknownElement(aggr, 0, &valueType, &ttt);
+    ASSERT(valueType == sdaiAGGR);
+    ASSERT(sdaiGetMemberCount((SdaiAggr)ttt)==1);
 
     aggr = NULL;
     sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &aggr);
