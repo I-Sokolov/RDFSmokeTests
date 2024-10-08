@@ -324,6 +324,8 @@ static void PutGetRegionalChars(void)
     sdaiPutAttrBN(wall, "Name", sdaiSTRING, TEST_WIN1251);
     sdaiPutAttrBN(wall, "Description", sdaiUNICODE, TEST_WCHAR);
 
+    engiSetComment(wall, "Should we support regional characters in comment?");
+
     //
     wall = IFC4::IfcWall::Create(ifcModel);
     sdaiPutAttrBN(wall, "Name", sdaiSTRING, SLASH_ANSI);
