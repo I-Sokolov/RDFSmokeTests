@@ -6,33 +6,10 @@
 #define DATASET_IFC "C:\\DevArea\\RDF\\TestSets\\IfcEthalons\\"
 #define DATASET_AP242 "C:\\DevArea\\RDF\\TestSets\\STEP\\"
 
-static void ScreenFile(const char* pathname)
-{
-    ENTER_TEST2(pathname);
-
-    SdaiModel model = sdaiOpenModelBN(0, pathname, "");
-    ASSERT(model);
-
-    int nprod = 0;
-    auto aggr = xxxxGetEntityAndSubTypesExtentBN(model, "IfcProduct");
-    auto it = sdaiCreateIterator(aggr);
-    while (sdaiNext(it)) {
-        SdaiInstance product = NULL;
-        sdaiGetAggrByIterator(it, sdaiINSTANCE, &product);
-
-        CalculateInstance(product);
-
-        nprod++;
-    }
-    sdaiDeleteIterator(it);
-
-    sdaiCloseModel(model);
-}
-
 static bool ExtensionIs(const char* name, const char* ext)
 {
     size_t pos = strlen(name) - strlen(ext);
-    
+
     if (pos < 1) {
         return false;
     }
@@ -44,7 +21,40 @@ static bool ExtensionIs(const char* name, const char* ext)
     return 0 == _stricmp(name + pos, ext);
 }
 
-static void Screening(const char* folder, const char* ext)
+static bool IsIFC(const char* name)
+{
+    return ExtensionIs(name, "ifc");
+}
+
+static bool IsSTEP(const char* name)
+{
+    return ExtensionIs(name, "step");
+}
+
+static void ScreenFile(const char* pathname)
+{
+    ENTER_TEST2(pathname);
+
+    SdaiModel model = sdaiOpenModelBN(0, pathname, "");
+    ASSERT(model);
+
+    if (IsIFC(pathname)) {
+        auto aggr = xxxxGetEntityAndSubTypesExtentBN(model, "IfcProduct");
+        auto it = sdaiCreateIterator(aggr);
+        while (sdaiNext(it)) {
+            SdaiInstance product = NULL;
+            sdaiGetAggrByIterator(it, sdaiINSTANCE, &product);
+
+            CalculateInstance(product);
+
+        }
+        sdaiDeleteIterator(it);
+    }
+
+    sdaiCloseModel(model);
+}
+
+static void Screening(const char* folder)
 {
     ENTER_TEST2(folder);
 
@@ -60,10 +70,10 @@ static void Screening(const char* folder, const char* ext)
                     std::string subfolder(folder);
                     subfolder.append(ffd.cFileName);
                     subfolder.append("\\");
-                    Screening(subfolder.c_str(), ext);
+                    Screening(subfolder.c_str());
                 }
             }
-            else if (ExtensionIs(ffd.cFileName, ext)) {
+            else if (IsIFC(ffd.cFileName) || IsSTEP(ffd.cFileName)) {
                 std::string pathname(folder);
                 pathname.append(ffd.cFileName);
                 ScreenFile(pathname.c_str());
@@ -77,6 +87,6 @@ static void Screening(const char* folder, const char* ext)
 
 extern void Screening(void)
 {
-    Screening(DATASET_AP242, "step");
-    Screening(DATASET_IFC, "ifc");
+    Screening(DATASET_AP242);
+    Screening(DATASET_IFC);
 }
