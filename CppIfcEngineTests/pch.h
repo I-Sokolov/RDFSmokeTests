@@ -36,4 +36,5 @@ static void Assert(bool c, int line, const char* file)
 
 #define ASSERT(c) Assert(c, __LINE__, __FILE__);
 
-#define ENTER_TEST printf ("Running " __FUNCTION__ ".\n");
+#define ENTER_TEST              printf ("Running " __FUNCTION__ ".\n");
+#define ENTER_TEST2(name)       printf ("Running " __FUNCTION__ " : %s.\n", name);

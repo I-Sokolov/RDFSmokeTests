@@ -45,6 +45,9 @@
     <ClCompile Include="Aggreagtions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Screening.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

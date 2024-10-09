@@ -9,6 +9,7 @@ extern void EarlyBound_GuideExamples();
 extern void ADBcreate();
 extern void Encodings();
 extern void AggregationTests();
+extern void Screening(void);
 
 
 static long HeapUsed()
@@ -31,7 +32,9 @@ extern int main()
 {
     try {
         printf("--------- Starting IFC engine C++ tests\n");
-        
+
+        Screening();
+
 #ifdef VLD_ON
         VLDEnable();
 #endif
