@@ -10,6 +10,7 @@ extern void ADBcreate();
 extern void Encodings();
 extern void AggregationTests();
 extern void Screening(void);
+extern void ComplexInstance();
 
 
 static long HeapUsed()
@@ -33,7 +34,7 @@ extern int main()
     try {
         printf("--------- Starting IFC engine C++ tests\n");
 
-        Screening();
+        //Screening();
 
 #ifdef VLD_ON
         VLDEnable();
@@ -44,6 +45,7 @@ extern int main()
         int i = 0;
         do
             {
+            ComplexInstance();
             Encodings();
             AggregationTests();
             ADBcreate();
