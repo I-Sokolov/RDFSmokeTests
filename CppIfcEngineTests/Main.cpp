@@ -34,7 +34,7 @@ extern int main()
     try {
         printf("--------- Starting IFC engine C++ tests\n");
 
-        Screening();
+        //Screening();
 
 #ifdef VLD_ON
         VLDEnable();

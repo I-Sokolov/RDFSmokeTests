@@ -53,7 +53,7 @@ static void ScreenFile(const char* pathname, Statistic& stat)
         product = "IfcProduct";
     }
     else if (IsSTEP(pathname)) {
-       // product = "PRODUCT_DEFINITION";
+       product = "PRODUCT_DEFINITION";
     }
 
     if (product){
