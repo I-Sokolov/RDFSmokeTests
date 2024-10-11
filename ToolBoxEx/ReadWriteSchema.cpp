@@ -23,7 +23,7 @@ extern __declspec(dllimport) const char* parsingReadSchema_SetGeneratedSchemaFil
     const char* directory = nullptr
 );
 
-extern __declspec(dllimport) bool ParseFunctionsSmokeTest(int_t model);
+extern __declspec(dllimport) bool SmokeTest_ParseFunctions(int_t model);
 
 static bool FileEquals(std::string& file1, std::string& file2)
 {
@@ -72,7 +72,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     //test expression parsing
     ASSERT(model != 0);
 
-    ASSERT(ParseFunctionsSmokeTest(model));
+    ASSERT(SmokeTest_ParseFunctions(model));
 
     std::string writeFile = "WriteSchema_";
     writeFile.append(expFileName);
@@ -111,7 +111,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     //
     model = sdaiCreateModelBN(1, "", embeddedName);
     ASSERT(model != 0);
-    ASSERT(ParseFunctionsSmokeTest(model));
+    ASSERT(SmokeTest_ParseFunctions(model));
 
     std::string writeEmbedded = "WriteEmbedded_";
     writeEmbedded.append(embeddedName);
