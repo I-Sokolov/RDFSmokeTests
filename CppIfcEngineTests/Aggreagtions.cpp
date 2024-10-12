@@ -268,12 +268,20 @@ static void Iterators()
     TestIterators(aggr, lstInst);
     TestIsMember(aggr, lstInst, wall);
 
+    SdaiAggr aggrDefinedBy = NULL;
     lstInst.clear();
-    aggr = NULL;
     wall.get_IsDefinedBy(lstInst);
-    sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggr);
-    TestIterators(aggr, lstInst);
-    TestIsMember(aggr, lstInst, wall);
+    sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggrDefinedBy);
+    TestIterators(aggrDefinedBy, lstInst);
+    TestIsMember(aggrDefinedBy, lstInst, wall);
+
+    //test inverse aggregation reallocation
+    SdaiAggr aggr2 = NULL;
+    sdaiGetAttrBN(wall, "HasAssociations", sdaiAGGR, &aggr2);
+    ASSERT(aggr2 == aggr);
+    sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggr2);
+    ASSERT(aggr2 == aggrDefinedBy);
+
 
     //entity range
     aggr = sdaiGetEntityExtentBN(model, "IfcWall");
