@@ -562,10 +562,65 @@ static void IsMemberComplex()
     sdaiCloseModel(model);
 }
 
+static void CheckAdd(SdaiModel model, int64_t pointsId)
+{
+    IFC4::IfcCartesianPointList2D points = internalGetInstanceFromP21Line(model, pointsId);
+
+    SdaiAggr coordList = NULL;
+    auto res = sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &coordList);
+    ASSERT(res && sdaiGetMemberCount(coordList) == 2);
+
+    for (int i = 0; i < 2; i++) {
+
+        SdaiAggr pt = NULL;
+        res = sdaiGetAggrByIndex(coordList, i, sdaiAGGR, &pt);
+        ASSERT(res && sdaiGetMemberCount(pt) == 2);
+
+        for (int j = 0; j < 2; j++) {
+
+            double dval = 0;
+            res = sdaiGetAggrByIndex(pt, j, sdaiREAL, &dval);
+            ASSERT(fabs(dval - 1.23) < 1e-5);
+        }
+    }
+}
+
+static void Add()
+{
+    SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
+
+    auto points = IFC4::IfcCartesianPointList2D::Create(model);
+    int64_t pointsId = internalGetP21Line(points);
+
+    SdaiAggr coordList = sdaiCreateAggrBN(points, "CoordList");
+
+    SdaiAggr pt1 = sdaiCreateNestedAggr(coordList);
+
+    double dval = 1.23;
+    SdaiADB adbval = sdaiCreateADB(sdaiREAL, &dval);
+
+    sdaiAdd(pt1, sdaiREAL, &dval);
+    sdaiAdd(pt1, sdaiADB, adbval);
+    
+    SdaiAggr pt2 = sdaiCreateNestedAggrADB(coordList, adbval);
+    sdaiAdd(pt2, sdaiREAL, &dval);
+
+    const char* testFile = "TestAggregationAdd.ifc";
+    sdaiSaveModelBN(model, testFile);
+
+    CheckAdd(model, pointsId);
+
+    sdaiCloseModel(model);
+
+    //TODO sdaiOpenModelBN (0, )
+}
+
+
 extern void AggregationTests()
 {
     ENTER_TEST;
 
+    Add();
     Iterators();
     ExplicitAggregationsVariousTypes();
     IsMemberComplex();
