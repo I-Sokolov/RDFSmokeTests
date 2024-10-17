@@ -599,11 +599,11 @@ static void Add()
     double dval = 1.23;
     SdaiADB adbval = sdaiCreateADB(sdaiREAL, &dval);
 
-    sdaiAdd(pt1, sdaiREAL, &dval);
+    sdaiAdd(pt1, sdaiREAL, dval);
     sdaiAdd(pt1, sdaiADB, adbval);
     
     SdaiAggr pt2 = sdaiCreateNestedAggrADB(coordList, adbval);
-    sdaiAdd(pt2, sdaiREAL, &dval);
+    sdaiAdd(pt2, sdaiREAL, dval);
 
     const char* testFile = "TestAggregationAdd.ifc";
     sdaiSaveModelBN(model, testFile);
