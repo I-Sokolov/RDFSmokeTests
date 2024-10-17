@@ -178,57 +178,57 @@ namespace CsIfcEngineTests
             var model = ifcengine.sdaiCreateModelBN(0,"", "IFC4");
             ASSERT(model != 0);
 
-            var wall = IfcWall.Create(model);
+            var person = IfcPerson.Create(model);
 
-            var entity = ifcengine.sdaiGetInstanceType(wall);
+            var entity = ifcengine.sdaiGetInstanceType(person);
             ASSERT(entity != 0);
 
-            var attr = ifcengine.sdaiGetAttrDefinition(entity, "Name");
+            var attr = ifcengine.sdaiGetAttrDefinition(entity, "MiddleNames");
             ASSERT(attr != 0);
 
-            var aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            var aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "1234");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234",  aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234",  aggrLevel = 1 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "T");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel = 1 });
 
             Int64 i = 1234;
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINTEGER, ref i);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel = 1 });
 
             double d = 12.34;
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiREAL, ref d);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel = 1 });
 
             bool b = true;
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBOOLEAN, ref b);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel = 1 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiLOGICAL, "U");
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel = 1 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "EEE");
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel = 1 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "F");
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel = 1 });
 
             var typ = IfcWallType.Create(model);
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINSTANCE, typ);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { instVal = typ, aggrLevel = 1 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr = ifcengine.sdaiCreateAggr(person, attr);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBINARY, "0AF");
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel = 1 });
+            CheckValues(person, "MiddleNames", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel = 1 });
 
             ifcengine.sdaiCloseModel(model);
         }
@@ -240,86 +240,88 @@ namespace CsIfcEngineTests
             var model = ifcengine.sdaiCreateModelBN(0,"", "IFC4");
             ASSERT(model != 0);
 
-            var wall = IfcWall.Create(model);
+            var person = IfcPerson.Create(model);
 
-            var entity = ifcengine.sdaiGetInstanceType(wall);
+            var entity = ifcengine.sdaiGetInstanceType(person);
             ASSERT(entity != 0);
 
-            var attr = ifcengine.sdaiGetAttrDefinition(entity, "Name");
+            const string attrName = "MiddleNames";
+
+            var attr = ifcengine.sdaiGetAttrDefinition(entity, attrName);
             ASSERT(attr != 0);
 
-            var aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            var aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "1234");
             var adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel = 1 });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel = 1 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "T");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");  //put typePath makes complex
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=1, complexArg=true });
 
             Int64 i = 1234;
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINTEGER, ref i);
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=1, complexArg=true });
 
             double d = 12.34;
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiREAL, ref d);
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=1, complexArg=true });
 
             bool b = true;
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBOOLEAN, ref b);
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=1, complexArg=true });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiLOGICAL, "U");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=1, complexArg=true });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "EEE");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=1, complexArg=true });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "F");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArg=true });
 
             var typ = IfcWallType.Create(model);
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINSTANCE, typ);
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { instVal = typ, aggrLevel=1, complexArg=true });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(person, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBINARY, "0AF");
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiAGGR, aggr);
             ifcengine.sdaiPutADBTypePath(adb, 1, "TypePath");
-            ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=1, complexArg=true });
+            ifcengine.sdaiPutAttrBN(person, attrName, ifcengine.sdaiADB, adb);
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=1, complexArg=true });
 
             ifcengine.sdaiCloseModel(model);
         }
@@ -331,90 +333,92 @@ namespace CsIfcEngineTests
             var model = ifcengine.sdaiCreateModelBN(0,"", "IFC4");
             ASSERT(model != 0);
 
-            var wall = IfcWall.Create(model);
+            var person = IfcPerson.Create(model);
+
+            const string attrName = "MiddleNames";
 
             var adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "1234");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            var aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            var aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "T");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=1, complexArgAggregated=true });
 
             Int64 i = 1234;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINTEGER, ref i);
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=1, complexArgAggregated=true });
 
             double d = 12.34;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiREAL, ref d);
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=1, complexArgAggregated=true });
 
             bool b = true;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=1, complexArgAggregated=true });
 
             b = false;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiLOGICAL, "U");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
 
             var typ = IfcWallType.Create(model);
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINSTANCE, typ);
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, aggrLevel=1 });
+            CheckValues(person, attrName, new PrimitiveValues { instVal = typ, aggrLevel=1 });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBINARY, "0AF");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=1, complexArgAggregated=true });
 
             //empty ADB
             /* creates empty aggregation
             adb = ifcengine.sdaiCreateEmptyADB();
-            aggr = ifcengine.sdaiCreateAggrBN(wall, "Name");
+            aggr = ifcengine.sdaiCreateAggrBN(wall, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { aggrLevel = 1 });
+            CheckValues(wall, attrName, new PrimitiveValues { aggrLevel = 1 });
             */
 
             ifcengine.sdaiCloseModel(model);
@@ -427,77 +431,79 @@ namespace CsIfcEngineTests
             var model = ifcengine.sdaiCreateModelBN(0, "", "IFC4");
             ASSERT(model != 0);
 
-            var wall = IfcWall.Create(model);
+            var inst = IfcCartesianPointList2D.Create(model);
 
-            var entity = ifcengine.sdaiGetInstanceType(wall);
+            var entity = ifcengine.sdaiGetInstanceType(inst);
             ASSERT(entity != 0);
 
-            var attr = ifcengine.sdaiGetAttrDefinition(entity, "Name");
+            const string attrName = "CoordList";
+
+            var attr = ifcengine.sdaiGetAttrDefinition(entity, attrName);
             ASSERT(attr != 0);
 
-            var aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            var aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "1234");
-            var aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            var aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel=2 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiSTRING, "T");
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=2 });
 
             Int64 i = 1234;
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINTEGER, ref i);
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=2 });
 
             double d = 12.34;
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiREAL, ref d);
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=2 });
 
             bool b = true;
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBOOLEAN, ref b);
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=2 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiLOGICAL, "U");
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=2 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "EEE");
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=2 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiENUM, "F");
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=2 });
 
             var typ = IfcWallType.Create(model);
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiINSTANCE, typ);
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { instVal = typ, aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { instVal = typ, aggrLevel=2 });
 
-            aggr = ifcengine.sdaiCreateAggr(wall, 0);
+            aggr = ifcengine.sdaiCreateAggr(inst, 0);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiBINARY, "0AF");
-            aggr2 = ifcengine.sdaiCreateAggr(wall, attr);
+            aggr2 = ifcengine.sdaiCreateAggr(inst, attr);
             ifcengine.sdaiAppend(aggr2, ifcengine.sdaiAGGR, aggr);
-            CheckValues(wall, "Name", new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=2 });
+            CheckValues(inst, attrName, new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=2 });
 
             ifcengine.sdaiCloseModel(model);
         }

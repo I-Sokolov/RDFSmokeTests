@@ -83,7 +83,8 @@ namespace CsIfcEngineTests
             CheckADB(adb);
 
             //
-            var aggr = sdaiCreateAggrBN(wall, "ObjectType");
+            var person = IfcPerson.Create(model);
+            var aggr = sdaiCreateAggrBN(person, "MiddleNames");
 
             sdaiAppend(aggr, sdaiSTRING, TEXT);
             sdaiAppend(aggr, sdaiUNICODE, TEXT);
