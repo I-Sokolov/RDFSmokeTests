@@ -566,6 +566,7 @@ static void CheckAdd(SdaiModel model, int64_t pointsId)
 {
     IFC4::IfcCartesianPointList2D points = internalGetInstanceFromP21Line(model, pointsId);
 
+    //aggrgation of aggregation
     SdaiAggr coordList = NULL;
     auto res = sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &coordList);
     ASSERT(res && sdaiGetMemberCount(coordList) == 2);
@@ -583,12 +584,26 @@ static void CheckAdd(SdaiModel model, int64_t pointsId)
             ASSERT(fabs(dval - 1.23) < 1e-5);
         }
     }
+
+    //shared aggregation
+    for (int i = 1; i <= 4; i++) {
+        auto person = internalGetInstanceFromP21Line(model, pointsId + i);
+        SdaiAggr names = NULL;
+        sdaiGetAttrBN(person, "MiddleNames", sdaiAGGR, &names);
+        ASSERT(sdaiGetMemberCount(names) == 2);
+        SdaiString name = NULL;
+        sdaiGetAggrByIndex(names, 0, sdaiSTRING, &name);
+        ASSERT(!strcmp(name, "Name"));
+        sdaiGetAggrByIndex(names, 1, sdaiSTRING, &name);
+        ASSERT(!strcmp(name, "Name2"));
+    }
 }
 
 static void Add()
 {
-    SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
+    SdaiModel   model = sdaiCreateModelBN("IFC4");
 
+    // array of array
     auto points = IFC4::IfcCartesianPointList2D::Create(model);
     int64_t pointsId = internalGetP21Line(points);
 
@@ -605,14 +620,37 @@ static void Add()
     SdaiAggr pt2 = sdaiCreateNestedAggrADB(coordList, adbval);
     sdaiAdd(pt2, sdaiREAL, dval);
 
+    // shared aggregation
+    auto person1 = IFC4::IfcPerson::Create(model);
+    auto person2 = IFC4::IfcPerson::Create(model);
+    auto person3 = IFC4::IfcPerson::Create(model);
+    auto person4 = IFC4::IfcPerson::Create(model);
+    auto aggrNames = sdaiCreateAggrBN(person1, "MiddleNames");
+    sdaiPutAttrBN(person2, "MiddleNames", sdaiAGGR, aggrNames);
+    sdaiPutAttrBN(person3, "MiddleNames", sdaiAGGR, aggrNames);
+
+    sdaiAdd(aggrNames, sdaiSTRING, "Name");
+
+    //self-put
+    SdaiAggr aggrNames2 = NULL;
+    sdaiGetAttrBN(person2, "MiddleNames", sdaiAGGR, &aggrNames2);
+    sdaiPutAttrBN(person2, "MiddleNames", sdaiAGGR, aggrNames2);
+    sdaiPutAttrBN(person4, "MiddleNames", sdaiAGGR, aggrNames2);
+
+    sdaiAdd(aggrNames, sdaiSTRING, "Name2");
+
+    //
+    //
+    CheckAdd(model, pointsId);
+
     const char* testFile = "TestAggregationAdd.ifc";
     sdaiSaveModelBN(model, testFile);
 
-    CheckAdd(model, pointsId);
-
     sdaiCloseModel(model);
 
-    //TODO sdaiOpenModelBN (0, )
+    model = sdaiOpenModelBN(0, "TestAggregationAdd.ifc", "");
+    CheckAdd(model, pointsId);
+    sdaiCloseModel(model);
 }
 
 
@@ -625,4 +663,4 @@ extern void AggregationTests()
     ExplicitAggregationsVariousTypes();
     IsMemberComplex();
     Delete();
-}
+    }
