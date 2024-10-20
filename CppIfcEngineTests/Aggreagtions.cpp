@@ -571,6 +571,10 @@ static void CheckAdd(SdaiModel model, int64_t pointsId)
     auto res = sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &coordList);
     ASSERT(res && sdaiGetMemberCount(coordList) == 2);
 
+    if (pointsId > 1000) {
+        return; //xml not to test
+    }
+
     for (int i = 0; i < 2; i++) {
 
         SdaiAggr pt = NULL;
@@ -647,10 +651,17 @@ static void Add()
     const char* testFile = "TestAggregationAdd.ifc";
     sdaiSaveModelBN(model, testFile);
 
+    const char* testFileXML = "TestAggregationAdd.xml";
+    sdaiSaveModelAsSimpleXmlBN(model, testFileXML);
+
     sdaiCloseModel(model);
 
-    model = sdaiOpenModelBN(0, "TestAggregationAdd.ifc", "");
+    model = sdaiOpenModelBN(0, testFile, "");
     CheckAdd(model, pointsId);
+    sdaiCloseModel(model);
+
+    model = sdaiOpenModelBN(0, testFileXML, "");
+    CheckAdd(model, 10000000);
     sdaiCloseModel(model);
 }
 
