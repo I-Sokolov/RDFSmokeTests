@@ -8,8 +8,14 @@ extern void EarlyBound_IFC4x4_test()
 
     int_t  ifcModel = sdaiCreateModelBN(0, NULL, "IFC4x4");
     ASSERT(ifcModel);
-    SetSPFFHeaderItem(ifcModel, 9, 0, sdaiSTRING, "IFC4x4");
     SetSPFFHeaderItem(ifcModel, 9, 1, sdaiSTRING, (const char*)0);
+    SetSPFFHeaderItem(ifcModel, 9, 0, sdaiSTRING, "IFC4x4");
+
+    const char* val = NULL;
+    GetSPFFHeaderItem(ifcModel, 9, 1, sdaiSTRING, &val);
+    ASSERT(!val);
+    GetSPFFHeaderItem(ifcModel, 9, 0, sdaiSTRING, &val);
+    ASSERT(0==strcmp(val, "IFC4x4"));
 
     //
     auto logicalVoxelData = IFC4x4::IfcLogicalVoxelData::Create(ifcModel);

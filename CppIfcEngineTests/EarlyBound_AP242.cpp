@@ -61,6 +61,20 @@ static void test_list3()
     SetSPFFHeaderItem(model, 9, 0, sdaiSTRING, "AP242");
     SetSPFFHeaderItem(model, 9, 1, sdaiSTRING, (const char*)0);
 
+    //test some header funcs
+    const char* val = NULL;
+    GetSPFFHeaderItem(model, 9, 1, sdaiSTRING, &val);
+    ASSERT(!val);
+
+    SetSPFFHeaderItem(model, 9, 0, sdaiSTRING, (const char*)0);
+    GetSPFFHeaderItem(model, 9, 0, sdaiSTRING, &val);
+    ASSERT(!val);
+
+    SetSPFFHeaderItem(model, 9, 0, sdaiSTRING, "AP242");
+    GetSPFFHeaderItem(model, 9, 0, sdaiSTRING, &val);
+    ASSERT(0 == strcmp(val, "AP242"));
+    //test some header funcs
+
     ASSERT(model);
 
     auto bspline_volume = rational_b_spline_volume::Create(model);
