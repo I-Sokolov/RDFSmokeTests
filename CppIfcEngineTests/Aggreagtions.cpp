@@ -590,12 +590,12 @@ static void CheckAdd(SdaiModel model, int64_t pointsId)
         auto person = internalGetInstanceFromP21Line(model, pointsId + i);
         SdaiAggr names = NULL;
         sdaiGetAttrBN(person, "MiddleNames", sdaiAGGR, &names);
-        ASSERT(sdaiGetMemberCount(names) == 2);
-        SdaiString name = NULL;
-        sdaiGetAggrByIndex(names, 0, sdaiSTRING, &name);
-        ASSERT(!strcmp(name, "Name"));
-        sdaiGetAggrByIndex(names, 1, sdaiSTRING, &name);
-        ASSERT(!strcmp(name, "Name2"));
+        ASSERT(sdaiGetMemberCount(names) == 3);
+        for (int j = 0; j < 3; j++) {
+            SdaiString name = NULL;
+            sdaiGetAggrByIndex(names, j, sdaiSTRING, &name);
+            ASSERT(!strcmp(name, "Name"));
+        }
     }
 }
 
@@ -637,7 +637,8 @@ static void Add()
     sdaiPutAttrBN(person2, "MiddleNames", sdaiAGGR, aggrNames2);
     sdaiPutAttrBN(person4, "MiddleNames", sdaiAGGR, aggrNames2);
 
-    sdaiAdd(aggrNames, sdaiSTRING, "Name2");
+    sdaiAdd(aggrNames, sdaiSTRING, "Name");
+    sdaiAdd(aggrNames2, sdaiSTRING, "Name");
 
     //
     //
