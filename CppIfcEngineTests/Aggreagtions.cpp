@@ -601,6 +601,27 @@ static void CheckAdd(SdaiModel model, int64_t pointsId)
             ASSERT(!strcmp(name, "Name"));
         }
     }
+
+    //array of ADB of array
+    IFC4::IfcIndexedPolyCurve poly = internalGetInstanceFromP21Line(model, 6);
+    SdaiAggr segments = NULL;
+    res = sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &segments);
+    ASSERT(res && segments && sdaiGetMemberCount(segments) == 2);
+    for (int i = 0; i < 2; i++) {
+        SdaiADB adb = NULL;
+        res = sdaiGetAggrByIndex(segments, i, sdaiADB, &adb);
+        ASSERT(res && adb);
+        auto type = sdaiGetADBTypePath(adb, 1);
+        ASSERT(0 == strcmp(type, i ? "IFCARCINDEX" : "IFCLINEINDEX"));
+        SdaiAggr inds = 0;
+        res = sdaiGetADBValue(adb, sdaiAGGR, &inds);
+        ASSERT(res && sdaiGetMemberCount(inds) == 2);
+        for (int j = 0; j < 2; j++) {
+            SdaiInteger v = 0;
+            res = sdaiGetAggrByIndex(inds, j, sdaiINTEGER, &v);
+            ASSERT(res && v == 4);
+        }
+    }
 }
 
 static void Add()
@@ -634,15 +655,31 @@ static void Add()
     sdaiPutAttrBN(person3, "MiddleNames", sdaiAGGR, aggrNames);
 
     sdaiAdd(aggrNames, sdaiSTRING, "Name");
-
-    //self-put
+    
     SdaiAggr aggrNames2 = NULL;
     sdaiGetAttrBN(person2, "MiddleNames", sdaiAGGR, &aggrNames2);
-    sdaiPutAttrBN(person2, "MiddleNames", sdaiAGGR, aggrNames2);
+    sdaiPutAttrBN(person2, "MiddleNames", sdaiAGGR, aggrNames2);//self-put
     sdaiPutAttrBN(person4, "MiddleNames", sdaiAGGR, aggrNames2);
 
     sdaiAdd(aggrNames, sdaiSTRING, "Name");
     sdaiAdd(aggrNames2, sdaiSTRING, "Name");
+
+    //array of ADB of array
+    auto poly = IFC4::IfcIndexedPolyCurve::Create(model);
+    SdaiAggr segments = sdaiCreateAggrBN(poly, "Segments");
+
+    SdaiAggr indecies = sdaiCreateAggr(poly, NULL);
+    sdaiAdd(indecies, sdaiINTEGER, 4);
+
+    SdaiADB adb = sdaiCreateADB(sdaiAGGR, indecies);
+
+    sdaiPutADBTypePath(adb, 1, "IFCLINEINDEX");
+    sdaiAdd(segments, sdaiADB, adb);
+
+    sdaiPutADBTypePath(adb, 1, "IFCARCINDEX");
+    sdaiAdd(segments, sdaiADB, adb);
+
+    sdaiAdd(indecies, sdaiINTEGER, 4);
 
     //
     //
