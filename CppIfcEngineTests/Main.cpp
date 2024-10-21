@@ -6,7 +6,7 @@ extern void EarlyBound_IFC4_test();
 extern void EarlyBound_IFC4x4_test();
 extern void EarlyBound_AP242_test();
 extern void EarlyBound_GuideExamples();
-extern void ADBcreate();
+extern void ADBtests();
 extern void Encodings();
 extern void AggregationTests();
 extern void Screening(void);
@@ -48,7 +48,7 @@ extern int main()
             ComplexInstance();
             Encodings();
             AggregationTests();
-            ADBcreate();
+            ADBtests();
             EngineTests();
             EarlyBound_IFC4_test();
             EarlyBound_IFC4x4_test();

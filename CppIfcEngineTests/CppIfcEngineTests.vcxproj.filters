@@ -36,7 +36,7 @@
     <ClCompile Include="EarlyBound_IFC4x4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ADBcreate.cpp">
+    <ClCompile Include="ADB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EncodingTests.cpp">
