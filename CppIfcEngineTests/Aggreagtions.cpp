@@ -562,16 +562,16 @@ static void IsMemberComplex()
     sdaiCloseModel(model);
 }
 
-static void CheckAdd(SdaiModel model, int64_t pointsId)
+static void CheckAdd(SdaiModel model, int64_t oid)
 {
-    IFC4::IfcCartesianPointList2D points = internalGetInstanceFromP21Line(model, pointsId);
+    IFC4::IfcCartesianPointList2D points = internalGetInstanceFromP21Line(model, oid);
 
     //aggrgation of aggregation
     SdaiAggr coordList = NULL;
     auto res = sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &coordList);
     ASSERT(res && sdaiGetMemberCount(coordList) == 2);
 
-    if (pointsId > 1000) {
+    if (oid > 1000) {
         return; //xml not to test
     }
 
@@ -591,7 +591,7 @@ static void CheckAdd(SdaiModel model, int64_t pointsId)
 
     //shared aggregation
     for (int i = 1; i <= 4; i++) {
-        auto person = internalGetInstanceFromP21Line(model, pointsId + i);
+        auto person = internalGetInstanceFromP21Line(model, ++oid);
         SdaiAggr names = NULL;
         sdaiGetAttrBN(person, "MiddleNames", sdaiAGGR, &names);
         ASSERT(sdaiGetMemberCount(names) == 3);
@@ -603,23 +603,25 @@ static void CheckAdd(SdaiModel model, int64_t pointsId)
     }
 
     //array of ADB of array
-    IFC4::IfcIndexedPolyCurve poly = internalGetInstanceFromP21Line(model, 6);
-    SdaiAggr segments = NULL;
-    res = sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &segments);
-    ASSERT(res && segments && sdaiGetMemberCount(segments) == 2);
-    for (int i = 0; i < 2; i++) {
-        SdaiADB adb = NULL;
-        res = sdaiGetAggrByIndex(segments, i, sdaiADB, &adb);
-        ASSERT(res && adb);
-        auto type = sdaiGetADBTypePath(adb, 1);
-        ASSERT(0 == strcmp(type, i ? "IFCARCINDEX" : "IFCLINEINDEX"));
-        SdaiAggr inds = 0;
-        res = sdaiGetADBValue(adb, sdaiAGGR, &inds);
-        ASSERT(res && sdaiGetMemberCount(inds) == 2);
-        for (int j = 0; j < 2; j++) {
-            SdaiInteger v = 0;
-            res = sdaiGetAggrByIndex(inds, j, sdaiINTEGER, &v);
-            ASSERT(res && v == 4);
+    for (int n = 0; n < 1; n++) {
+        IFC4::IfcIndexedPolyCurve poly = internalGetInstanceFromP21Line(model, ++oid);
+        SdaiAggr segments = NULL;
+        res = sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &segments);
+        ASSERT(res && segments && sdaiGetMemberCount(segments) == 2);
+        for (int i = 0; i < 2; i++) {
+            SdaiADB adb = NULL;
+            res = sdaiGetAggrByIndex(segments, i, sdaiADB, &adb);
+            ASSERT(res && adb);
+            auto type = sdaiGetADBTypePath(adb, 1);
+            ASSERT(0 == strcmp(type, i ? "IFCARCINDEX" : "IFCLINEINDEX"));
+            SdaiAggr inds = 0;
+            res = sdaiGetADBValue(adb, sdaiAGGR, &inds);
+            ASSERT(res && sdaiGetMemberCount(inds) == 2);
+            for (int j = 0; j < 2; j++) {
+                SdaiInteger v = 0;
+                res = sdaiGetAggrByIndex(inds, j, sdaiINTEGER, &v);
+                ASSERT(res && v == 4);
+            }
         }
     }
 }
@@ -681,6 +683,27 @@ static void Add()
 
     sdaiAdd(indecies, sdaiINTEGER, 4);
 
+    sdaiDeleteADB(adb);
+#if 0
+    //by SDAI standard
+    poly = IFC4::IfcIndexedPolyCurve::Create(model);
+    segments = sdaiCreateAggrBN(poly, "Segments");
+
+    adb = sdaiCreateEmptyADB();
+    sdaiPutADBTypePath(adb, 1, "IFCLINEINDEX");
+
+    indecies = sdaiCreateNestedAggrADB(segments, adb);
+    sdaiAdd(indecies, 4);
+    sdaiAdd(indecies, 4);
+
+    sdaiPutADBTypePath(adb, 1, "IFCARCINDEX");
+
+    indecies = sdaiCreateNestedAggrADB(segments, adb);
+    sdaiAdd(indecies, 4);
+    sdaiAdd(indecies, 4);
+
+    sdaiDeleteADB(adb);
+#endif
     //
     //
     CheckAdd(model, pointsId);
