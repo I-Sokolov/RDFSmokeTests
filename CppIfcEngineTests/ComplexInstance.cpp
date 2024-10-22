@@ -1,6 +1,7 @@
 #include "pch.h"
 
-#define STEP_TEST "..\\TestData\\ComplexInstance.step"
+#define STEP_TEST1 "..\\TestData\\ComplexInstance1.step"
+#define STEP_TEST2 "..\\TestData\\ComplexInstance2.step"
 #define STEP_TEST_SAVED "ComplexInstance_saved.step"
 
 static void CheckComplex(SdaiModel model, ExpressID id, const char* rNames[], int nNames)
@@ -31,19 +32,13 @@ static void    __stdcall   WriteCallBackFunction(unsigned char* content, int64_t
 }
 
 
-extern void ComplexInstance()
+static void ComplexInstance(const char* testFile, ExpressID id, const char* rNames[], int nNames)
 {
-    const char* entityNames[] = {
-        "Set of Entity Instances",
-        "NAMED_UNIT",
-        "SI_UNIT",
-        "SOLID_ANGLE_UNIT"
-    };
 
     //
-    SdaiModel model = sdaiOpenModelBN(0, STEP_TEST, "");
+    SdaiModel model = sdaiOpenModelBN(0, testFile, "");
 
-    CheckComplex(model, 1007, entityNames, 4);
+    CheckComplex(model, id, rNames, nNames);
 
     sdaiSaveModelBN(model, STEP_TEST_SAVED);
 
@@ -52,7 +47,7 @@ extern void ComplexInstance()
     //
     model = sdaiOpenModelBN(0, STEP_TEST_SAVED, "");
     
-    CheckComplex(model, 1007, entityNames, 4);
+    CheckComplex(model, id, rNames, nNames);
 
     fopen_s(&myFileWrite, STEP_TEST_SAVED "_S", "wb");
     engiSaveModelByStream(model, WriteCallBackFunction, BLOCK_LENGTH_WRITE);
@@ -63,7 +58,32 @@ extern void ComplexInstance()
     //
     model = sdaiOpenModelBN(0, STEP_TEST_SAVED "_S", "");
 
-    CheckComplex(model, 1007, entityNames, 4);
+    CheckComplex(model, id, rNames, nNames);
 
     sdaiCloseModel(model);
+}
+
+extern void ComplexInstance()
+{
+    ENTER_TEST;
+
+    const char* entityNames1[] = {
+    "Set of Entity Instances",
+    "NAMED_UNIT",
+    "SI_UNIT",
+    "SOLID_ANGLE_UNIT"
+    };
+
+    const char* entityNames2[] = {
+    "Set of Entity Instances",
+    "PART",
+    "PART_PRISMATIC",
+    "PART_PRISMATIC_SIMPLE",
+    "STRUCTURAL_FRAME_ITEM",
+    "STRUCTURAL_FRAME_PRODUCT",
+    "STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL"
+    };
+
+    ComplexInstance(STEP_TEST1, 1007, entityNames1, 4);
+    ComplexInstance(STEP_TEST2, 1233, entityNames2, 7);
 }
