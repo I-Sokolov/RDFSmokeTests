@@ -4,23 +4,34 @@
 #define STEP_TEST2 "..\\TestData\\ComplexInstance2.step"
 #define STEP_TEST_SAVED "ComplexInstance_saved.step"
 
-static void CheckComplex(SdaiModel model, ExpressID id, const char* rNames[], int nNames)
+struct Instance
+{
+    const char* entityName = NULL;
+    int narg = 0;
+    const char** args = NULL;
+};
+
+static void CheckComplex(SdaiModel model, ExpressID id, Instance rInst[], int nInst)
 {
     auto inst = internalGetInstanceFromP21Line(model, id);
 
     int i = 0;
     while (inst) {
-        ASSERT(i < nNames);
+        ASSERT(i < nInst);
 
         auto entity = sdaiGetInstanceType(inst);
         auto name = engiGetEntityName(entity, sdaiSTRING);
-        ASSERT(0 == _stricmp(name, rNames[i]));
+        ASSERT(0 == _stricmp(name, rInst[i].entityName));
         
+        SdaiAggr args = NULL;
+        engiGetAttributeAggr(inst, (int_t*)&args);
+        ASSERT(sdaiGetMemberCount(args) == rInst[i].narg);
+
         inst = engiGetComplexInstanceNextPart(inst);
         i++;
     }
 
-    ASSERT(i == nNames);
+    ASSERT(i == nInst);
 }
 
 //
@@ -32,13 +43,13 @@ static void    __stdcall   WriteCallBackFunction(unsigned char* content, int64_t
 }
 
 
-static void ComplexInstance(const char* testFile, ExpressID id, const char* rNames[], int nNames)
+static void ComplexInstance(const char* testFile, ExpressID id, Instance rInst[], int nInst)
 {
 
     //
     SdaiModel model = sdaiOpenModelBN(0, testFile, "");
 
-    CheckComplex(model, id, rNames, nNames);
+    CheckComplex(model, id, rInst, nInst);
 
     sdaiSaveModelBN(model, STEP_TEST_SAVED);
 
@@ -47,7 +58,7 @@ static void ComplexInstance(const char* testFile, ExpressID id, const char* rNam
     //
     model = sdaiOpenModelBN(0, STEP_TEST_SAVED, "");
     
-    CheckComplex(model, id, rNames, nNames);
+    CheckComplex(model, id, rInst, nInst);
 
     fopen_s(&myFileWrite, STEP_TEST_SAVED "_S", "wb");
     engiSaveModelByStream(model, WriteCallBackFunction, BLOCK_LENGTH_WRITE);
@@ -58,7 +69,7 @@ static void ComplexInstance(const char* testFile, ExpressID id, const char* rNam
     //
     model = sdaiOpenModelBN(0, STEP_TEST_SAVED "_S", "");
 
-    CheckComplex(model, id, rNames, nNames);
+    CheckComplex(model, id, rInst, nInst);
 
     sdaiCloseModel(model);
 }
@@ -67,23 +78,23 @@ extern void ComplexInstance()
 {
     ENTER_TEST;
 
-    const char* entityNames1[] = {
-    "Set of Entity Instances",
-    "NAMED_UNIT",
-    "SI_UNIT",
-    "SOLID_ANGLE_UNIT"
+    Instance inst1[] = {
+        {"Set of Entity Instances", 0},
+        {"NAMED_UNIT", 1},
+        {"SI_UNIT", 2},
+        {"SOLID_ANGLE_UNIT", 0}
     };
 
-    const char* entityNames2[] = {
-    "Set of Entity Instances",
-    "PART",
-    "PART_PRISMATIC",
-    "PART_PRISMATIC_SIMPLE",
-    "STRUCTURAL_FRAME_ITEM",
-    "STRUCTURAL_FRAME_PRODUCT",
-    "STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL"
+    Instance inst2[] = {
+        {"Set of Entity Instances", 0},
+        {"PART", 2},
+        {"PART_PRISMATIC", 0},
+        {"PART_PRISMATIC_SIMPLE", 4},
+        {"STRUCTURAL_FRAME_ITEM", 3},
+        {"STRUCTURAL_FRAME_PRODUCT", 1},
+        {"STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL", 3}
     };
 
-    ComplexInstance(STEP_TEST1, 1007, entityNames1, 4);
-    ComplexInstance(STEP_TEST2, 1233, entityNames2, 7);
+    ComplexInstance(STEP_TEST1, 1007, inst1, 4);
+    ComplexInstance(STEP_TEST2, 1233, inst2, 7);
 }
