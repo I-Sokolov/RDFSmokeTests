@@ -548,6 +548,13 @@ static void IsMemberComplex()
     sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &aggr);
     IsMemberADB(aggr, notMember);
 
+    //Segments is member of complex aggregation
+    SdaiAggr allArgs = NULL;
+    engiGetAttributeAggr(poly, (int_t*)&allArgs);
+    ASSERT(sdaiIsMember(allArgs, sdaiAGGR, aggr)); 
+    IsMemberADB(allArgs, notMember);
+
+    //
     valueType = 0;
     int_t ttt = NULL;
     engiGetAggrUnknownElement(aggr, 0, &valueType, &ttt);
