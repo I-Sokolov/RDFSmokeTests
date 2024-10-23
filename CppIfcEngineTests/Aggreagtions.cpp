@@ -603,7 +603,7 @@ static void CheckAdd(SdaiModel model, int64_t oid)
     }
 
     //array of ADB of array
-    for (int n = 0; n < 1; n++) {
+    for (int n = 0; n < 2; n++) {
         IFC4::IfcIndexedPolyCurve poly = internalGetInstanceFromP21Line(model, ++oid);
         SdaiAggr segments = NULL;
         res = sdaiGetAttrBN(poly, "Segments", sdaiAGGR, &segments);
@@ -644,7 +644,8 @@ static void Add()
     sdaiAdd(pt1, sdaiREAL, dval);
     sdaiAdd(pt1, sdaiADB, adbval);
     
-    SdaiAggr pt2 = sdaiCreateNestedAggrADB(coordList, adbval);
+    SdaiAggr pt2 = sdaiCreateNestedAggr(coordList);
+    sdaiAdd(pt2, sdaiADB, adbval);
     sdaiAdd(pt2, sdaiREAL, dval);
 
     // shared aggregation
@@ -684,7 +685,7 @@ static void Add()
     sdaiAdd(indecies, sdaiINTEGER, 4);
 
     sdaiDeleteADB(adb);
-#if 0
+
     //by SDAI standard
     poly = IFC4::IfcIndexedPolyCurve::Create(model);
     segments = sdaiCreateAggrBN(poly, "Segments");
@@ -693,17 +694,17 @@ static void Add()
     sdaiPutADBTypePath(adb, 1, "IFCLINEINDEX");
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
-    sdaiAdd(indecies, 4);
-    sdaiAdd(indecies, 4);
+    sdaiAdd(indecies, sdaiINTEGER, 4);
+    sdaiAdd(indecies, sdaiINTEGER, 4);
 
     sdaiPutADBTypePath(adb, 1, "IFCARCINDEX");
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
-    sdaiAdd(indecies, 4);
-    sdaiAdd(indecies, 4);
+    sdaiAdd(indecies, sdaiINTEGER, 4);
+    sdaiAdd(indecies, sdaiINTEGER, 4);
 
     sdaiDeleteADB(adb);
-#endif
+
     //
     //
     CheckAdd(model, pointsId);
