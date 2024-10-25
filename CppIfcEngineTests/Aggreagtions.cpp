@@ -569,31 +569,31 @@ static void IsMemberComplex()
     sdaiCloseModel(model);
 }
 
-static void CheckAdd(SdaiModel model, int64_t oid)
+static void CheckAdd(SdaiModel model, int64_t oid, bool xml)
 {
     IFC4::IfcCartesianPointList2D points = internalGetInstanceFromP21Line(model, oid);
 
     //aggrgation of aggregation
     SdaiAggr coordList = NULL;
     auto res = sdaiGetAttrBN(points, "CoordList", sdaiAGGR, &coordList);
-    ASSERT(res && sdaiGetMemberCount(coordList) == 2);
+    ASSERT(res && sdaiGetMemberCount(coordList) == 6);
 
-    if (oid > 1000) {
-        return; //xml not to test
-    }
-
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 6; i++) {
 
         SdaiAggr pt = NULL;
         res = sdaiGetAggrByIndex(coordList, i, sdaiAGGR, &pt);
         ASSERT(res && sdaiGetMemberCount(pt) == 2);
 
-        for (int j = 0; j < 2; j++) {
+        double dval = 0;
+        res = sdaiGetAggrByIndex(pt, 0, sdaiREAL, &dval);
+        ASSERT(fabs(dval - 10) < 1e-5);
 
-            double dval = 0;
-            res = sdaiGetAggrByIndex(pt, j, sdaiREAL, &dval);
-            ASSERT(fabs(dval - 1.23) < 1e-5);
-        }
+        res = sdaiGetAggrByIndex(pt, 1, sdaiREAL, &dval);
+        ASSERT(fabs(dval - (i+1)*10) < 1e-5);
+    }
+
+    if (xml) {
+        return; //xml not to test
     }
 
     //shared aggregation
@@ -645,15 +645,18 @@ static void Add()
 
     SdaiAggr pt1 = sdaiCreateNestedAggr(coordList);
 
-    double dval = 1.23;
+    double dval = 10.0;
     SdaiADB adbval = sdaiCreateADB(sdaiREAL, &dval);
 
     sdaiAdd(pt1, sdaiREAL, dval);
     sdaiAdd(pt1, sdaiADB, adbval);
-    
-    SdaiAggr pt2 = sdaiCreateNestedAggr(coordList);
-    sdaiAdd(pt2, sdaiADB, adbval);
-    sdaiAdd(pt2, sdaiREAL, dval);
+
+    for (int i = 0; i < 5; i++) {
+        SdaiAggr pt2 = sdaiCreateNestedAggr(coordList);
+        sdaiAdd(pt2, sdaiADB, adbval);
+        dval = (i + 2) * 10;
+        sdaiAdd(pt2, sdaiREAL, dval);
+    }
 
     // shared aggregation
     auto person1 = IFC4::IfcPerson::Create(model);
@@ -676,6 +679,7 @@ static void Add()
 
     //array of ADB of array
     auto poly = IFC4::IfcIndexedPolyCurve::Create(model);
+    poly.put_Points(points);
     SdaiAggr segments = sdaiCreateAggrBN(poly, "Segments");
 
     SdaiAggr indecies = sdaiCreateAggr(poly, NULL);
@@ -695,6 +699,7 @@ static void Add()
 
     //by SDAI standard
     poly = IFC4::IfcIndexedPolyCurve::Create(model);
+    poly.put_Points(points);
     segments = sdaiCreateAggrBN(poly, "Segments");
 
     adb = sdaiCreateEmptyADB();
@@ -714,7 +719,7 @@ static void Add()
 
     //
     //
-    CheckAdd(model, pointsId);
+    CheckAdd(model, pointsId, false);
 
     const char* testFile = "TestAggregationAdd.ifc";
     sdaiSaveModelBN(model, testFile);
@@ -725,11 +730,11 @@ static void Add()
     sdaiCloseModel(model);
 
     model = sdaiOpenModelBN(0, testFile, "");
-    CheckAdd(model, pointsId);
+    CheckAdd(model, pointsId, false);
     sdaiCloseModel(model);
 
     model = sdaiOpenModelBN(0, testFileXML, "");
-    CheckAdd(model, 10000000);
+    CheckAdd(model, 1, true);
     sdaiCloseModel(model);
 }
 
