@@ -623,11 +623,12 @@ static void CheckAdd(SdaiModel model, int64_t oid, bool xml)
             ASSERT(0 == strcmp(type, i ? "IFCARCINDEX" : "IFCLINEINDEX"));
             SdaiAggr inds = 0;
             res = sdaiGetADBValue(adb, sdaiAGGR, &inds);
-            ASSERT(res && sdaiGetMemberCount(inds) == 2);
-            for (int j = 0; j < 2; j++) {
+            auto cnt = sdaiGetMemberCount(inds);
+            ASSERT(res &&  cnt== 6);
+            for (int j = 0; j < cnt; j++) {
                 SdaiInteger v = 0;
                 res = sdaiGetAggrByIndex(inds, j, sdaiINTEGER, &v);
-                ASSERT(res && v == 4);
+                ASSERT(res && v == j);
             }
         }
     }
@@ -683,7 +684,7 @@ static void Add()
     SdaiAggr segments = sdaiCreateAggrBN(poly, "Segments");
 
     SdaiAggr indecies = sdaiCreateAggr(poly, NULL);
-    sdaiAdd(indecies, sdaiINTEGER, 4);
+    sdaiAdd(indecies, sdaiINTEGER, 2);
 
     SdaiADB adb = sdaiCreateADB(sdaiAGGR, indecies);
 
@@ -694,6 +695,15 @@ static void Add()
     sdaiAdd(segments, sdaiADB, adb);
 
     sdaiAdd(indecies, sdaiINTEGER, 4);
+
+    SdaiInteger ival = 0;
+    sdaiInsertByIndex(indecies, 0, sdaiINTEGER, &ival);
+    ival = 1;
+    sdaiInsertByIndex(indecies, 1, sdaiINTEGER, &ival);
+    ival = 3;
+    sdaiInsertByIndex(indecies, 3, sdaiINTEGER, &ival);
+    ival = 5;
+    sdaiInsertByIndex(indecies, 5, sdaiINTEGER, &ival);
 
     sdaiDeleteADB(adb);
 
@@ -706,14 +716,22 @@ static void Add()
     sdaiPutADBTypePath(adb, 1, "IFCLINEINDEX");
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
+    sdaiAdd(indecies, sdaiINTEGER, 0);
+    sdaiAdd(indecies, sdaiINTEGER, 1);
+    sdaiAdd(indecies, sdaiINTEGER, 2); //by iterator
+    sdaiAdd(indecies, sdaiINTEGER, 3);
     sdaiAdd(indecies, sdaiINTEGER, 4);
-    sdaiAdd(indecies, sdaiINTEGER, 4);
+    sdaiAdd(indecies, sdaiINTEGER, 5);
 
     sdaiPutADBTypePath(adb, 1, "IFCARCINDEX");
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
+    sdaiAdd(indecies, sdaiINTEGER, 0);
+    sdaiAdd(indecies, sdaiINTEGER, 1);
+    sdaiAdd(indecies, sdaiINTEGER, 2); //by iterator
+    sdaiAdd(indecies, sdaiINTEGER, 3);
     sdaiAdd(indecies, sdaiINTEGER, 4);
-    sdaiAdd(indecies, sdaiINTEGER, 4);
+    sdaiAdd(indecies, sdaiINTEGER, 5);
 
     sdaiDeleteADB(adb);
 
