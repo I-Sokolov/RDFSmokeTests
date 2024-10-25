@@ -716,19 +716,35 @@ static void Add()
     sdaiPutADBTypePath(adb, 1, "IFCLINEINDEX");
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
-    sdaiAdd(indecies, sdaiINTEGER, 0);
-    sdaiAdd(indecies, sdaiINTEGER, 1);
-    sdaiAdd(indecies, sdaiINTEGER, 2); //by iterator
-    sdaiAdd(indecies, sdaiINTEGER, 3);
+    sdaiAdd(indecies, sdaiINTEGER, 2);
     sdaiAdd(indecies, sdaiINTEGER, 4);
-    sdaiAdd(indecies, sdaiINTEGER, 5);
+    
+    SdaiIterator iter = sdaiCreateIterator(indecies);
+    sdaiNext(iter);
+    
+    ival = 0;
+    sdaiInsertBefore(iter, sdaiINTEGER, &ival);
+
+    ival = 1;
+    sdaiInsertBefore(iter, sdaiINTEGER, &ival);
+    
+    ival = 3;
+    sdaiInsertAfter(iter, sdaiINTEGER, &ival);
+
+    sdaiNext(iter);
+    sdaiNext(iter);
+
+    ival = 5;
+    sdaiInsertAfter(iter, sdaiINTEGER, &ival);
+    
+    sdaiDeleteIterator(iter);
 
     sdaiPutADBTypePath(adb, 1, "IFCARCINDEX");
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
-    sdaiAdd(indecies, sdaiINTEGER, 0);
+    sdaiAdd(indecies, sdaiINTEGER, 0); //can be used to test someting elese? variaous delete?
     sdaiAdd(indecies, sdaiINTEGER, 1);
-    sdaiAdd(indecies, sdaiINTEGER, 2); //by iterator
+    sdaiAdd(indecies, sdaiINTEGER, 2); 
     sdaiAdd(indecies, sdaiINTEGER, 3);
     sdaiAdd(indecies, sdaiINTEGER, 4);
     sdaiAdd(indecies, sdaiINTEGER, 5);
