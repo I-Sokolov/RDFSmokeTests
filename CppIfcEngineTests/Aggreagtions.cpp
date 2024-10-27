@@ -346,6 +346,8 @@ static void TestAggregationFunctions(SdaiAggr aggr, SdaiInteger numElems, SdaiIn
     sdaiNext(it);
     ASSERT(sdaiGetAggrElementBoundByItr(it) == elementBound);
     sdaiDeleteIterator(it);
+
+    ASSERT(sdaiGetAggrElementBoundByIndex(aggr, 0) == elementBound);
 }
 
 static void ExplicitAggregationsVariousTypes()
