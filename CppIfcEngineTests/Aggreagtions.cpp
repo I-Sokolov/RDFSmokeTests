@@ -996,6 +996,65 @@ static SdaiInstance TestCreateNestedArgByIndexADB(SdaiModel model)
     return poly;
 }
 
+static SdaiInstance TestCreateNestedArgByItrADB(SdaiModel model)
+{
+    auto poly = IFC4::IfcIndexedPolyCurve::Create(model);
+
+    auto segments = sdaiCreateAggrBN(poly, "Segments");
+
+    //works like add for new index
+    for (int i = 0; i < 5; i++) {
+        SdaiADB adb = sdaiCreateEmptyADB();
+        sdaiPutADBTypePath(adb, 1, (2 % 2) ? "IFCARCINDEX" : "IFCLINEINDEX");
+
+        auto inds = sdaiCreateNestedAggrByIndexADB(segments, i, adb);
+
+        if (i % 2) {
+            AddIndecies(inds, 2);
+        }
+        else {
+            SdaiAggr aggr = 0;
+            auto res = sdaiGetADBValue(adb, sdaiAGGR, &aggr);
+            ASSERT(res && aggr);
+            AddIndecies(aggr, 2);
+        }
+
+        sdaiDeleteADB(adb);
+    }
+
+
+    //
+    SdaiIterator iter = sdaiCreateIterator(segments);
+    for (int i = 0; i < 5; i++) {
+        ASSERT(sdaiNext(iter));
+
+        if (i == 2) {
+            continue;
+        }
+
+        SdaiADB adb = sdaiCreateEmptyADB();
+        sdaiPutADBTypePath(adb, 1, (i % 2) ? "IFCARCINDEX" : "IFCLINEINDEX");
+
+        auto inds = sdaiCreateNestedAggrByItrADB(iter, adb);
+
+        if (i % 2) {
+            AddIndecies(inds, i);
+        }
+        else {
+            SdaiAggr aggr = 0;
+            auto res = sdaiGetADBValue(adb, sdaiAGGR, &aggr);
+            ASSERT(res && aggr);
+            AddIndecies(aggr, i);
+        }
+
+        sdaiDeleteADB(adb);
+    }
+    ASSERT(!sdaiNext(iter));
+    sdaiDeleteIterator(iter);
+
+    return poly;
+}
+
 
 static void CreateNested()
 {
@@ -1014,6 +1073,9 @@ static void CreateNested()
     CheckPolyCurve(inst);
 
     inst = TestCreateNestedArgByIndexADB(model);
+    CheckPolyCurve(inst);
+
+    inst = TestCreateNestedArgByItrADB(model);
     CheckPolyCurve(inst);
 
     sdaiCloseModel(model);
