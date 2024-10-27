@@ -742,12 +742,18 @@ static void Add()
     sdaiPutADBTypePath(adb, 1, "IFCARCINDEX");
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
-    sdaiAdd(indecies, sdaiINTEGER, 0); //can be used to test someting elese? variaous delete?
-    sdaiAdd(indecies, sdaiINTEGER, 1);
-    sdaiAdd(indecies, sdaiINTEGER, 2); 
-    sdaiAdd(indecies, sdaiINTEGER, 3);
-    sdaiAdd(indecies, sdaiINTEGER, 4);
-    sdaiAdd(indecies, sdaiINTEGER, 5);
+    for (int i = 0; i < 6; i++) {
+        sdaiAdd(indecies, sdaiINTEGER, 9999);
+    }
+    iter = sdaiCreateIterator(indecies);
+    for (SdaiInteger i = 0; i < 2; i++) {
+        sdaiNext(iter);
+        sdaiPutAggrByIterator(iter, sdaiINTEGER, &i);
+        for (SdaiInteger j = 0; j < 6; j++) {
+            sdaiPutAggrByIndex(indecies, j, sdaiINTEGER, &j);
+        }
+    }
+    sdaiDeleteIterator(iter);
 
     sdaiDeleteADB(adb);
 
