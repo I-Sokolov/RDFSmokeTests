@@ -780,12 +780,91 @@ static void Add()
     sdaiCloseModel(model);
 }
 
+static void CheckPointList(IFC4::IfcCartesianPointList2D ptlst)
+{
+    SdaiAggr coordList = NULL;
+    auto res = sdaiGetAttrBN(ptlst, "CoordList", sdaiAGGR, &coordList);
+    ASSERT(res && coordList);
+
+    auto cnt = sdaiGetMemberCount(coordList);
+    ASSERT(cnt == 5);
+
+    for (int i = 0; i < cnt; i++) {
+        SdaiAggr coords = NULL;
+        res = sdaiGetAggrByIndex(coordList, i, sdaiAGGR, &coords);
+        ASSERT(res && coords);
+
+        auto dim = sdaiGetMemberCount(coords);
+        ASSERT(dim == 2);
+
+        for (int j = 0; j < dim; j++) {
+            double v = 0;
+            res = sdaiGetAggrByIndex(coords, j, sdaiREAL, &v);
+            ASSERT(res && fabs(v - i) < 1e-7);
+        }
+    }
+}
+
+static SdaiInstance TestCreateNestedArgByIndex_0(SdaiModel model)
+{
+    auto ptlst = IFC4::IfcCartesianPointList2D::Create(model);
+
+    auto coordList = sdaiCreateAggrBN(ptlst, "CoordList");
+
+    //works like add for new index
+    for (int i = 0; i < 5; i++) {
+        auto coords = sdaiCreateNestedAggrByIndex(coordList, i);
+        sdaiAdd(coords, sdaiREAL, double(i));
+        sdaiAdd(coords, sdaiREAL, double(i));
+    }
+
+    return ptlst;
+}
+
+static SdaiInstance TestCreateNestedArgByIndex(SdaiModel model)
+{
+    auto ptlst = IFC4::IfcCartesianPointList2D::Create(model);
+
+    auto coordList = sdaiCreateAggrBN(ptlst, "CoordList");
+
+    //works like add for new index
+    for (int i = 0; i < 5; i++) {
+        auto coords = sdaiCreateNestedAggrByIndex(coordList, i);
+        sdaiAdd(coords, sdaiREAL, 2.0);
+        sdaiAdd(coords, sdaiREAL, 2.0);
+    }
+
+    //works as replace for existing instances
+    for (int i = 0; i < 5; i++) {
+        if (i != 2) {
+            auto coords = sdaiCreateNestedAggrByIndex(coordList, i);
+            sdaiAdd(coords, sdaiREAL, double(i));
+            sdaiAdd(coords, sdaiREAL, double(i));
+        }
+    }
+
+    return ptlst;
+}
+
+static void CreateNested()
+{
+    SdaiModel   model = sdaiCreateModelBN("IFC4");
+
+    auto inst = TestCreateNestedArgByIndex_0(model);
+    CheckPointList(inst);
+
+    inst = TestCreateNestedArgByIndex(model);
+    CheckPointList(inst);
+
+    sdaiCloseModel(model);
+}
 
 extern void AggregationTests()
 {
     ENTER_TEST;
 
     Add();
+    CreateNested();
     Iterators();
     ExplicitAggregationsVariousTypes();
     IsMemberComplex();
