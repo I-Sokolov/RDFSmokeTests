@@ -846,6 +846,34 @@ static SdaiInstance TestCreateNestedArgByIndex(SdaiModel model)
     return ptlst;
 }
 
+static SdaiInstance TestCreateNestedArgByItr(SdaiModel model)
+{
+    auto ptlst = IFC4::IfcCartesianPointList2D::Create(model);
+
+    auto coordList = sdaiCreateAggrBN(ptlst, "CoordList");
+
+    //works like add for new index
+    for (int i = 0; i < 5; i++) {
+        auto coords = sdaiCreateNestedAggrByIndex(coordList, i);
+        sdaiAdd(coords, sdaiREAL, 2.0);
+        sdaiAdd(coords, sdaiREAL, 2.0);
+    }
+
+    //works as replace for existing instances
+    SdaiIterator iter = sdaiCreateIterator(coordList);
+    for (int i = 0; sdaiNext(iter); i++) {
+        if (i != 2) {
+            auto coords = sdaiCreateNestedAggrByItr(iter);
+            sdaiAdd(coords, sdaiREAL, double(i));
+            sdaiAdd(coords, sdaiREAL, double(i));
+        }
+    }
+    sdaiDeleteIterator(iter);
+
+    return ptlst;
+}
+
+
 static void CreateNested()
 {
     SdaiModel   model = sdaiCreateModelBN("IFC4");
@@ -854,6 +882,9 @@ static void CreateNested()
     CheckPointList(inst);
 
     inst = TestCreateNestedArgByIndex(model);
+    CheckPointList(inst);
+
+    inst = TestCreateNestedArgByItr(model);
     CheckPointList(inst);
 
     sdaiCloseModel(model);
