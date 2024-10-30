@@ -1252,6 +1252,187 @@ static void CreateNested()
     sdaiCloseModel(model);
 }
 
+/// <summary>
+/// insert/delete with backlinks check
+/// </summary>
+
+#define NPS 4
+
+struct Property
+{
+    SdaiInstance inst;
+    SdaiBoolean in[NPS];
+
+    Property()
+    {
+        inst = NULL;
+        for (int i = 0; i < NPS; i++) {
+            in[i] = sdaiFALSE;
+        }
+    }
+};
+
+typedef std::list<Property> PropList;
+
+static void CheckProperties(SdaiInstance allPsets[NPS], PropList& props)
+{
+    //direct links
+    for (int i = 0; i < NPS; i++) {
+        SdaiAggr hasProps = 0;
+        auto res = sdaiGetAttrBN(allPsets[i], "HasProperties", sdaiAGGR, &hasProps);
+        ASSERT(res && hasProps);
+
+        int n = 0;
+        for (auto& prop : props) {
+            ASSERT(sdaiIsMember(hasProps, sdaiINSTANCE, prop.inst) == prop.in[i]);
+            if (prop.in[i]) {
+                n++;
+            }
+        }
+
+        ASSERT(n == sdaiGetMemberCount(hasProps));
+    }
+        
+    //back links
+    for (auto& prop : props) {
+        SdaiAggr partOfPsets = NULL;
+        auto ret = sdaiGetAttrBN(prop.inst, "PartOfPset", sdaiAGGR, &partOfPsets);
+        ASSERT(ret && partOfPsets);
+
+        int n = 0;
+        for (int i = 0; i < NPS; i++) {
+            ASSERT(sdaiIsMember(partOfPsets, sdaiINSTANCE, allPsets[i])== prop.in[i]);
+            if (prop.in[i]) {
+                n++;
+            }
+        }
+
+        ASSERT(sdaiGetMemberCount(partOfPsets) == n);
+    }
+}
+
+
+static void AddByIndex(SdaiModel model, SdaiAggr aggr[NPS], PropList& props)
+{
+    for (int i = 0; i < 3; i++) {
+        props.push_back(Property());
+        auto& prop = props.back();
+        prop.inst = IFC4::IfcPropertySingleValue::Create(model);
+
+        for (int j = 0; j < NPS; j++) {
+            sdaiPutAggrByIndex(aggr[j], i, sdaiINSTANCE, (void*)prop.inst);
+#pragma message ("search and remove all (void*) casts");
+            prop.in[j] = sdaiTRUE;
+        }
+    }
+}
+
+static void AddByIterator(SdaiModel model, SdaiAggr aggr[NPS], PropList& props)
+{
+    for (int i = 0; i < 2; i++) {
+        props.push_front(Property());
+        auto& fr1 = props.front();
+        fr1.inst = IFC4::IfcPropertySingleValue::Create(model);
+
+        props.push_front(Property());
+        auto& fr2 = props.front();
+        fr2.inst = IFC4::IfcPropertySingleValue::Create(model);
+
+        props.push_back(Property());
+        auto& bk1 = props.back();
+        bk1.inst = IFC4::IfcPropertySingleValue::Create(model);
+
+        props.push_back(Property());
+        auto& bk2 = props.back();
+        bk2.inst = IFC4::IfcPropertySingleValue::Create(model);
+
+        for (int j = 0; j < NPS; j++) {
+            auto it = sdaiCreateIterator(aggr[j]);
+            sdaiNext(it);
+            sdaiInsertBefore(it, sdaiINSTANCE, (void*)fr1.inst);
+            fr1.in[j] = sdaiTRUE;
+            sdaiDeleteIterator(it);
+
+            sdaiInsertByIndex(aggr[j], 0, sdaiINSTANCE, (void*)fr2.inst);
+            fr2.in[j] = sdaiTRUE;
+
+            it = sdaiCreateIterator(aggr[j]);
+            sdaiEnd(it);
+            sdaiPrevious(it);
+            sdaiInsertAfter(it, sdaiINSTANCE, (void*)bk1.inst);
+            bk1.in[j] = sdaiTRUE;
+            sdaiDeleteIterator(it);
+
+            sdaiInsertByIndex(aggr[j], -1, sdaiINSTANCE, (void*)bk2.inst);
+            bk2.in[j] = sdaiTRUE;
+        }
+    }
+
+}
+
+static void RemoveProperties(SdaiAggr aggr[NPS], PropList& props)
+{
+    auto pit = props.begin();
+
+    auto ait = sdaiCreateIterator(aggr[0]);
+    sdaiBeginning(ait);
+    sdaiNext(ait);
+    sdaiRemoveByIterator(ait);
+    pit->in[0] = sdaiFALSE;
+    sdaiDeleteIterator(ait);
+
+    pit++;
+
+    sdaiRemoveByIndex(aggr[1], 1);
+    pit->in[1] = sdaiFALSE;
+}
+
+static void ReplaceProperties(SdaiModel model, SdaiAggr aggr[NPS], PropList& props)
+{
+    props.back().in[0] = sdaiFALSE;
+    
+    props.push_back(Property());
+    auto& prop = props.back();
+    prop.inst = IFC4::IfcPropertySingleValue::Create(model);
+
+    SdaiIterator it = sdaiCreateIterator(aggr[0]);
+    sdaiEnd(it);
+    sdaiPrevious(it);
+    sdaiPutAggrByIterator(it, sdaiINSTANCE, (void*)prop.inst);
+    prop.in[0] = sdaiTRUE;
+    sdaiDeleteIterator(it);
+}
+
+
+static void InsertDeleteCheckBacklinks()
+{
+    SdaiModel   model = sdaiCreateModelBN("IFC4");
+
+    SdaiInstance rpset[NPS];
+    SdaiAggr raggr[NPS];
+    for (int i = 0; i < NPS; i++) {
+        rpset[i] = IFC4::IfcPropertySet::Create(model);
+        raggr[i] = sdaiCreateAggrBN(rpset[i], "HasProperties");
+    }
+
+    PropList props;
+
+    AddByIndex(model, raggr, props);
+    CheckProperties(rpset, props);
+
+    RemoveProperties(raggr, props);
+    CheckProperties(rpset, props);
+
+    AddByIterator(model, raggr, props);
+    CheckProperties(rpset, props);
+
+    ReplaceProperties(model, raggr, props);
+    CheckProperties(rpset, props);
+
+    sdaiCloseModel(model);
+}
+
+
 extern void AggregationTests()
 {
     ENTER_TEST;
@@ -1262,4 +1443,5 @@ extern void AggregationTests()
     ExplicitAggregationsVariousTypes();
     IsMemberComplex();
     Delete();
+    InsertDeleteCheckBacklinks();
 }
