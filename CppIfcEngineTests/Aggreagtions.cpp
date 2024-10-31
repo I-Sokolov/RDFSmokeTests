@@ -1385,6 +1385,11 @@ static void RemoveProperties(SdaiAggr aggr[NPS], PropList& props)
 
     sdaiRemoveByIndex(aggr[1], 1);
     pit->in[1] = sdaiFALSE;
+
+    pit++;
+
+    sdaiRemove(aggr[2], sdaiINSTANCE, (void*)pit->inst);
+    pit->in[2] = sdaiFALSE;
 }
 
 static void ReplaceProperties(SdaiModel model, SdaiAggr aggr[NPS], PropList& props)
