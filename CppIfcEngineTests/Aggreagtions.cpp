@@ -1450,6 +1450,17 @@ static void TestNulls(SdaiModel   model)
     ASSERT(sdaiTRUE == sdaiTestArrayByIndex(aggr, 0));
     ASSERT(sdaiFALSE == sdaiTestArrayByIndex(aggr, 1));
     ASSERT(sdaiFALSE == sdaiTestArrayByIndex(aggr, 2));
+
+    auto iter = sdaiCreateIterator(aggr);
+    sdaiBeginning(iter);
+
+    ASSERT(sdaiNext(iter));
+    ASSERT(sdaiTRUE == sdaiTestArrayByItr(iter));
+
+    ASSERT(sdaiNext(iter));
+    ASSERT(sdaiFALSE == sdaiTestArrayByItr(iter));
+
+    sdaiDeleteIterator(iter);
 }
 
 static void TestNulls()
