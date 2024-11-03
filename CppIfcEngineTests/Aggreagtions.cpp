@@ -1307,6 +1307,8 @@ static void CheckProperties(SdaiInstance allPsets[NPS], PropList& props)
             }
         }
 
+        ASSERT(n==0 || sdaiTRUE == sdaiTestArrayByIndex(partOfPsets, 0));
+
         ASSERT(sdaiGetMemberCount(partOfPsets) == n);
     }
 }
@@ -1437,6 +1439,39 @@ static void InsertDeleteCheckBacklinks()
     sdaiCloseModel(model);
 }
 
+static void TestNulls(SdaiModel   model)
+{
+    auto inst = internalGetInstanceFromP21Line(model, 1);
+
+    SdaiAggr aggr = NULL;
+    auto ret = sdaiGetAttrBN(inst, "OffsetValues", sdaiAGGR, &aggr);
+    ASSERT(ret && aggr);
+
+    ASSERT(sdaiTRUE == sdaiTestArrayByIndex(aggr, 0));
+    ASSERT(sdaiFALSE == sdaiTestArrayByIndex(aggr, 1));
+    ASSERT(sdaiFALSE == sdaiTestArrayByIndex(aggr, 2));
+}
+
+static void TestNulls()
+{
+    SdaiModel   model = sdaiCreateModelBN("IFC4");
+
+    auto inst = IFC4::IfcMaterialProfileWithOffsets::Create(model);
+    auto aggr = sdaiCreateAggrBN(inst, "OffsetValues");
+
+    sdaiAdd(aggr, sdaiREAL, 1.0);
+    sdaiAdd(aggr, 0);
+
+    TestNulls(model);
+    
+    sdaiSaveModelBN(model, "NullInAggr.ifc");
+    sdaiCloseModel(model);
+
+    model = sdaiOpenModelBN(0, "NullInAggr.ifc", "");
+    TestNulls(model);
+    sdaiCloseModel(model);
+}
+
 
 extern void AggregationTests()
 {
@@ -1449,4 +1484,5 @@ extern void AggregationTests()
     IsMemberComplex();
     Delete();
     InsertDeleteCheckBacklinks();
+    TestNulls();
 }
