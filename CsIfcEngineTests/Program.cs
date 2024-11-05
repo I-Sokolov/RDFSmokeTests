@@ -27,6 +27,7 @@ namespace CsIfcEngineTests
                 Console.WriteLine("--------- Starting IFC engine C# tests");
                 //RDF.ifcengine.setStringUnicode(1);`
 
+                MixedTests.Run();
                 RegionalChars.Run();
                 ExpressParser.Run();
                 PutGetAttr.Run();
