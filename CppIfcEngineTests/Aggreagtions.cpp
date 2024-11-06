@@ -1439,34 +1439,30 @@ static void InsertDeleteCheckBacklinks()
     sdaiCloseModel(model);
 }
 
-static void TestNulls(SdaiModel   model)
+static void CheckNullsAndResize(SdaiArray  aggr, SdaiInteger size)
 {
-    auto inst = internalGetInstanceFromP21Line(model, 1);
+    ASSERT(size == sdaiGetMemberCount(aggr));
 
-    SdaiAggr aggr = NULL;
-    auto ret = sdaiGetAttrBN(inst, "OffsetValues", sdaiAGGR, &aggr);
-    ASSERT(ret && aggr);
+    for (SdaiInteger i = 0; i < size + 3; i++) { //want to check outside
+        SdaiBoolean test = (i == 0 && size > 0 || i == 2 && size > 2) ? sdaiTRUE : sdaiFALSE;
+        ASSERT(test == sdaiTestArrayByIndex(aggr, i));
+    }
 
-    ASSERT(sdaiTRUE == sdaiTestArrayByIndex(aggr, 0));
-    ASSERT(sdaiFALSE == sdaiTestArrayByIndex(aggr, 1));
-    ASSERT(sdaiTRUE == sdaiTestArrayByIndex(aggr, 2));
-    ASSERT(sdaiFALSE == sdaiTestArrayByIndex(aggr, 3));
-    ASSERT(sdaiFALSE == sdaiTestArrayByIndex(aggr, 4));
-    ASSERT(sdaiFALSE == sdaiTestArrayByIndex(aggr, 5));
+    if (size > 0) {
+        auto iter = sdaiCreateIterator(aggr);
+        sdaiBeginning(iter);
 
-    auto iter = sdaiCreateIterator(aggr);
-    sdaiBeginning(iter);
+        ASSERT(sdaiNext(iter));
+        ASSERT(sdaiTRUE == sdaiTestArrayByItr(iter));
 
-    ASSERT(sdaiNext(iter));
-    ASSERT(sdaiTRUE == sdaiTestArrayByItr(iter));
+        ASSERT(sdaiNext(iter));
+        ASSERT(sdaiFALSE == sdaiTestArrayByItr(iter));
 
-    ASSERT(sdaiNext(iter));
-    ASSERT(sdaiFALSE == sdaiTestArrayByItr(iter));
-
-    sdaiDeleteIterator(iter);
+        sdaiDeleteIterator(iter);
+    }
 }
 
-static void TestNulls()
+static void TestNullsAndResize()
 {
     SdaiModel   model = sdaiCreateModelBN("IFC4");
 
@@ -1487,13 +1483,34 @@ static void TestNulls()
 
     sdaiUnsetArrayByIndex(aggr, 3);
 
-    TestNulls(model);
+    CheckNullsAndResize(aggr, 5);
     
+    //reopen
     sdaiSaveModelBN(model, "NullInAggr.ifc");
     sdaiCloseModel(model);
-
     model = sdaiOpenModelBN(0, "NullInAggr.ifc", "");
-    TestNulls(model);
+
+    inst = internalGetInstanceFromP21Line(model, 1);
+    aggr = NULL;
+    auto ret = sdaiGetAttrBN(inst, "OffsetValues", sdaiAGGR, &aggr);
+    ASSERT(ret && aggr);
+
+    CheckNullsAndResize(aggr, 5);
+
+    //expand
+    sdaiResetArrayIndex(aggr, 0, 10);
+    CheckNullsAndResize(aggr, 10);
+
+    //truncate
+    sdaiResetArrayIndex(aggr, 0, 8);
+    CheckNullsAndResize(aggr, 8);
+
+    sdaiReindexArray(aggr);
+    CheckNullsAndResize(aggr, 2);
+
+    sdaiResetArrayIndex(aggr, 0, 0);
+    CheckNullsAndResize(aggr, 0);
+
     sdaiCloseModel(model);
 }
 
@@ -1509,5 +1526,5 @@ extern void AggregationTests()
     IsMemberComplex();
     Delete();
     InsertDeleteCheckBacklinks();
-    TestNulls();
+    TestNullsAndResize();
 }
