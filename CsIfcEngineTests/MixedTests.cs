@@ -34,8 +34,8 @@ namespace CsIfcEngineTests
             expectedOrigin[11] = 3.0;
             ifcengine.setGlobalPlacement(model, ref expectedOrigin[0], 0);
 
-            //check
-            ifcengine.getGlobalPlacement(model, out getOrigin[0]);
+            //check, use second form 
+            ifcengine.getGlobalPlacement(model, getOrigin);
             ASSERT_EQ(getOrigin, expectedOrigin);
 
             ifcengine.sdaiCloseModel(model);
