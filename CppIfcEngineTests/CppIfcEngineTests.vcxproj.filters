@@ -57,4 +57,60 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\TestData\schemas\AP214E3_2010.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\ap242_is_mim_lf_v1.36.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\ap242ed2_mim_lf_v1.101.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\ap242ed3_mim_lf_v1.152.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC2X3_TC1.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4_ADD2_TC1.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4x1.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4x2.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4X3_ADD1.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4X3_ADD2.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4x3_RC1.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4x3_RC2.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4x3_RC3.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4x3_RC4.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4X3_TC1.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\IFC4x4.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\part403ts_wg3n2635mim_lf.exp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\TestData\schemas\structural_frame_schema.exp">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
