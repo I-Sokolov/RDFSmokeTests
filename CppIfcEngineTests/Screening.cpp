@@ -2,11 +2,11 @@
 #include "engine.h"
 #include <Windows.h>
 
+#define ENABLE_SMOKE_TESTS
+#include "SmokeTests.h"
 
 #define DATASET_IFC "C:\\DevArea\\RDF\\TestSets\\IfcEthalons\\"
 #define DATASET_AP242 "C:\\DevArea\\RDF\\TestSets\\STEP\\"
-
-extern __declspec(dllimport) void SmokeTest_AuxDataCount(int_t model, int_t& nInstances, int_t& nComplex, int_t& nRdfReference, int_t& nExternalReference);
 
 struct Statistic
 {

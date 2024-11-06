@@ -155,6 +155,9 @@ namespace Configurator
                 CreateSymLink(cbEbApi.Text, "AP242.h", folder, null, cfgFile);
                 CreateSymLink(cbEbApi.Text, "CIS2.h", folder, null, cfgFile);
 
+                var smokeTestsH = Path.Combine(cbIncludePath.Text, "..", "ToolBoxEx");
+                CreateSymLink(smokeTestsH, "SmokeTests.h", folder, null, cfgFile);
+
                 CreateSymLink(".", "ifcEngine.dll", ".", "engine.dll", cfgFile); //trick because engine.cs refers to engine.dll, not ifcengine.dll
                 CreateSymLink(".", "ifcEngine.lib", ".", "engine.lib", cfgFile);
             }             
