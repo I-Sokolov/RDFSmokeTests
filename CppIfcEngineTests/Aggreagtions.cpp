@@ -1514,11 +1514,108 @@ static void TestNullsAndResize()
     sdaiCloseModel(model);
 }
 
+static void UpdateCounters()
+{
+    SdaiModel   model = sdaiCreateModelBN("IFC4");
+
+    auto aggrAll = xxxxGetAllInstances(model);
+    auto itAll = sdaiCreateIterator(aggrAll);
+    auto itAllBk = sdaiCreateIterator(aggrAll);
+
+    auto aggrSVProps = sdaiGetEntityExtentBN(model, "IfcPropertySingleValue");
+    auto itSVProps = sdaiCreateIterator(aggrSVProps);
+
+    auto aggrPropsExtent = xxxxGetEntityAndSubTypesExtentBN(model, "IfcProperty");
+    auto itPropsExtent = sdaiCreateIterator(aggrPropsExtent);
+
+    //
+    sdaiBeginning(itAll);
+    ASSERT(!sdaiNext(itAll));
+    sdaiEnd(itAllBk);
+    ASSERT(!sdaiPrevious(itAllBk));
+    sdaiBeginning(itSVProps);
+    ASSERT(!sdaiNext(itSVProps));
+    sdaiBeginning(itPropsExtent);
+    ASSERT(!sdaiNext(itPropsExtent));
+
+    //
+    //
+    auto pset = IFC4::IfcPropertySet::Create(model);
+    auto prop = IFC4::IfcPropertySingleValue::Create(model);
+
+    //
+    sdaiBeginning(itAll);
+    ASSERT(sdaiNext(itAll));
+    sdaiEnd(itAllBk);
+    ASSERT(sdaiPrevious(itAllBk));
+    sdaiBeginning(itSVProps);
+    ASSERT(sdaiNext(itSVProps));
+    sdaiBeginning(itPropsExtent);
+    ASSERT(sdaiNext(itPropsExtent));
+
+    //
+    //
+    SdaiAggr aggrProps = sdaiCreateAggrBN (pset, "HasProperties");
+    SdaiIterator itProps = sdaiCreateIterator(aggrProps);
+
+    SdaiAggr aggrPsets;
+    sdaiGetAttrBN(prop, "PartOfPset", sdaiAGGR, &aggrPsets);
+    SdaiIterator itPsets = sdaiCreateIterator(aggrPsets);
+
+    auto prop2 = IFC4::IfcPropertySingleValue::Create(model);
+    sdaiAdd(aggrProps, sdaiINSTANCE, (SdaiInstance)prop2);
+
+    //
+    sdaiBeginning(itProps);
+    ASSERT(sdaiNext(itProps));
+    ASSERT(!sdaiNext(itProps));
+    sdaiBeginning(itPsets);
+    ASSERT(!sdaiNext(itPsets));
+
+    //
+    sdaiAdd(aggrProps, sdaiINSTANCE, (SdaiInstance)prop);
+
+    //
+    sdaiBeginning(itProps);
+    ASSERT(sdaiNext(itProps));
+    ASSERT(sdaiNext(itProps));
+    sdaiBeginning(itPsets);
+    ASSERT(sdaiNext(itPsets));
+
+    //
+    sdaiRemoveByIndex(aggrProps, 0);
+    sdaiRemoveByIndex(aggrProps, 0);
+
+    //
+    sdaiBeginning(itProps);
+    ASSERT(!sdaiNext(itProps));
+    sdaiBeginning(itPsets);
+    ASSERT(!sdaiNext(itPsets));
+
+    //
+    sdaiDeleteInstance(prop);
+    sdaiDeleteInstance(prop2);
+    sdaiDeleteInstance(pset);
+
+    //
+    sdaiBeginning(itAll);
+    ASSERT(!sdaiNext(itAll));
+    sdaiEnd(itAllBk);
+    ASSERT(!sdaiPrevious(itAllBk));
+    sdaiBeginning(itSVProps);
+    ASSERT(!sdaiNext(itSVProps));
+    sdaiBeginning(itPropsExtent);
+    ASSERT(!sdaiNext(itPropsExtent));
+
+    //
+    sdaiCloseModel(model);
+}
 
 extern void AggregationTests()
 {
     ENTER_TEST;
 
+    UpdateCounters();
     Add();
     CreateNested();
     Iterators();
