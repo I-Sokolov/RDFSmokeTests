@@ -9,10 +9,10 @@ static void TestCreate()
     int_t model = sdaiCreateModelBN(0, nullptr, "IFC4x1");
 
     for (int_t i = 0; i < 100000; i++) {
-        void* value = sdaiCreateADB(sdaiSTRING, (void*)"bar");
+        void* value = sdaiCreateADB(sdaiSTRING, "bar");
         sdaiPutADBTypePath(value, 1, "IFCTEXT");
         int_t prop = sdaiCreateInstanceBN(model, "IFCPROPERTYSINGLEVALUE");
-        sdaiPutAttrBN(prop, "Name", sdaiUNICODE, (void*)L"foo");
+        sdaiPutAttrBN(prop, "Name", sdaiUNICODE, L"foo");
         sdaiPutAttrBN(prop, "NominalValue", sdaiADB, value);
     }
 

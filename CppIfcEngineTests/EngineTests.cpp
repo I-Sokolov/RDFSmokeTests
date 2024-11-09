@@ -255,13 +255,13 @@ static void TestPutAttr(SdaiModel model)
     ASSERT(window.get_PredefinedType().IsNull());
     window.put_PredefinedType(IfcWindowTypeEnum::SKYLIGHT);
     ASSERT(window.get_PredefinedType().Value()==IfcWindowTypeEnum::SKYLIGHT);
-    sdaiPutAttrBN(window, "PredefinedType", sdaiENUM, (void*)NULL);
+    sdaiPutAttrBN(window, "PredefinedType", sdaiENUM, nullptr);
     ASSERT(window.get_PredefinedType().IsNull());
 
     ASSERT(window.get_OverallWidth().IsNull());
     window.put_OverallWidth(50);
     ASSERT(window.get_OverallWidth().Value() == 50);
-    sdaiPutAttrBN(window, "OverallWidth", sdaiREAL, (void*)NULL);
+    sdaiPutAttrBN(window, "OverallWidth", sdaiREAL, nullptr);
     ASSERT(window.get_OverallWidth().IsNull());
 
     //*/$
@@ -730,7 +730,7 @@ static void TestAttrIndex(SdaiModel ifcModel)
 
     SdaiInstance building = 0;
     res = sdaiGetAttr(story, attr, sdaiINSTANCE, &building);
-    ASSERT(res == (void*)building);
+    ASSERT((SdaiInstance)res == building);
     auto stepId = internalGetP21Line(building);
     ASSERT(stepId == 7);
 

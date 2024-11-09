@@ -93,7 +93,7 @@ static void CheckAggrElem(SdaiInstance inst, const char* attr, SdaiInteger index
 
     SdaiInstance val = 0;
     ret = sdaiGetAggrByIndex(aggr, index, sdaiINSTANCE, &val);
-    ASSERT(ret == (void*)val && val);
+    ASSERT((SdaiInstance)ret == val && val);
 
     auto sid = internalGetP21Line(val);
     ASSERT(sid == stepId);
@@ -1322,8 +1322,7 @@ static void AddByIndex(SdaiModel model, SdaiAggr aggr[NPS], PropList& props)
         prop.inst = IFC4::IfcPropertySingleValue::Create(model);
 
         for (int j = 0; j < NPS; j++) {
-            sdaiPutAggrByIndex(aggr[j], i, sdaiINSTANCE, (void*)prop.inst);
-#pragma message ("search and remove all (void*) casts");
+            sdaiPutAggrByIndex(aggr[j], i, sdaiINSTANCE, prop.inst);
             prop.in[j] = sdaiTRUE;
         }
     }
@@ -1351,21 +1350,21 @@ static void AddByIterator(SdaiModel model, SdaiAggr aggr[NPS], PropList& props)
         for (int j = 0; j < NPS; j++) {
             auto it = sdaiCreateIterator(aggr[j]);
             sdaiNext(it);
-            sdaiInsertBefore(it, sdaiINSTANCE, (void*)fr1.inst);
+            sdaiInsertBefore(it, sdaiINSTANCE, fr1.inst);
             fr1.in[j] = sdaiTRUE;
             sdaiDeleteIterator(it);
 
-            sdaiInsertByIndex(aggr[j], 0, sdaiINSTANCE, (void*)fr2.inst);
+            sdaiInsertByIndex(aggr[j], 0, sdaiINSTANCE, fr2.inst);
             fr2.in[j] = sdaiTRUE;
 
             it = sdaiCreateIterator(aggr[j]);
             sdaiEnd(it);
             sdaiPrevious(it);
-            sdaiInsertAfter(it, sdaiINSTANCE, (void*)bk1.inst);
+            sdaiInsertAfter(it, sdaiINSTANCE, bk1.inst);
             bk1.in[j] = sdaiTRUE;
             sdaiDeleteIterator(it);
 
-            sdaiInsertByIndex(aggr[j], -1, sdaiINSTANCE, (void*)bk2.inst);
+            sdaiInsertByIndex(aggr[j], -1, sdaiINSTANCE, bk2.inst);
             bk2.in[j] = sdaiTRUE;
         }
     }
@@ -1390,7 +1389,7 @@ static void RemoveProperties(SdaiAggr aggr[NPS], PropList& props)
 
     pit++;
 
-    sdaiRemove(aggr[2], sdaiINSTANCE, (void*)pit->inst);
+    sdaiRemove(aggr[2], sdaiINSTANCE, pit->inst);
     pit->in[2] = sdaiFALSE;
 }
 
@@ -1405,7 +1404,7 @@ static void ReplaceProperties(SdaiModel model, SdaiAggr aggr[NPS], PropList& pro
     SdaiIterator it = sdaiCreateIterator(aggr[0]);
     sdaiEnd(it);
     sdaiPrevious(it);
-    sdaiPutAggrByIterator(it, sdaiINSTANCE, (void*)prop.inst);
+    sdaiPutAggrByIterator(it, sdaiINSTANCE, prop.inst);
     prop.in[0] = sdaiTRUE;
     sdaiDeleteIterator(it);
 }
