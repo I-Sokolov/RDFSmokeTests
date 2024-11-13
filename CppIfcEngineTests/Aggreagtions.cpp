@@ -243,7 +243,7 @@ static void TestIsMember(SdaiAggr aggr, std::list<SdaiInstance>& members, SdaiIn
         ASSERT(sdaiIsMember(aggr, sdaiINSTANCE, m));
     }
 
-    ASSERT(!sdaiIsMember(aggr, sdaiINSTANCE, notMember));
+    ASSERT(!sdaiIsMember(aggr, sdaiINSTANCE, &notMember));
 }
 
 static void Iterators()
@@ -328,7 +328,17 @@ static void Iterators()
 }
 
 template <typename T>
-static void TestIsMember(SdaiAggr aggr, SdaiPrimitiveType sdaiType, T* rMembers, int nMembers, T notMember)
+static void TestIsMemberVal (SdaiAggr aggr, SdaiPrimitiveType sdaiType, T* rMembers, int nMembers, T notMember)
+{
+    for (int i = 0; i < nMembers; i++) {
+        ASSERT(sdaiIsMember(aggr, sdaiType, &rMembers[i]));
+    }
+
+    ASSERT(!sdaiIsMember(aggr, sdaiType, &notMember));
+}
+
+template <typename T>
+static void TestIsMemberPtr(SdaiAggr aggr, SdaiPrimitiveType sdaiType, T* rMembers, int nMembers, T notMember)
 {
     for (int i = 0; i < nMembers; i++) {
         ASSERT(sdaiIsMember(aggr, sdaiType, rMembers[i]));
@@ -363,7 +373,7 @@ static void ExplicitAggregationsVariousTypes()
     
     SdaiAggr aggr = NULL;
     sdaiGetAttrBN(pt, "Coordinates", sdaiAGGR, &aggr);
-    TestIsMember(aggr, sdaiREAL, rd, 3, 8 + 1e-11);
+    TestIsMemberVal (aggr, sdaiREAL, rd, 3, 8 + 1e-11);
     TestAggregationFunctions(aggr, 3, 12);
 
     //
@@ -373,7 +383,7 @@ static void ExplicitAggregationsVariousTypes()
 
     aggr = 0;
     sdaiGetAttrBN(site, "RefLatitude", sdaiAGGR, &aggr);
-    TestIsMember(aggr, sdaiINTEGER, lat, 4, lat[0]+1);
+    TestIsMemberVal(aggr, sdaiINTEGER, lat, 4, lat[0]+1);
     TestAggregationFunctions(aggr, 4, -1);
 
     //
@@ -383,7 +393,7 @@ static void ExplicitAggregationsVariousTypes()
 
     aggr = 0;
     sdaiGetAttrBN(voxelGrid, "Voxels", sdaiAGGR, &aggr);
-    TestIsMember(aggr, sdaiBOOLEAN, voxels, 1, sdaiFALSE);
+    TestIsMemberVal(aggr, sdaiBOOLEAN, voxels, 1, sdaiFALSE);
     TestAggregationFunctions(aggr, 1, -1);
 
     //
@@ -394,7 +404,7 @@ static void ExplicitAggregationsVariousTypes()
 
     aggr = 0;
     sdaiGetAttrBN(voxelData, "ValueData", sdaiAGGR, &aggr);
-    TestIsMember(aggr, sdaiLOGICAL, voxelDataValues_s, 2, "T");
+    TestIsMemberPtr(aggr, sdaiLOGICAL, voxelDataValues_s, 2, "T");
     TestAggregationFunctions(aggr, 2, -1);
 
     //
@@ -404,7 +414,7 @@ static void ExplicitAggregationsVariousTypes()
 
     aggr = 0;
     sdaiGetAttrBN(person, "MiddleNames", sdaiAGGR, &aggr);
-    TestIsMember(aggr, sdaiSTRING, rNames, 3, "Salvador");
+    TestIsMemberPtr(aggr, sdaiSTRING, rNames, 3, "Salvador");
     TestAggregationFunctions(aggr, 3, strlen(rNames[0]));
 
     //
@@ -414,7 +424,7 @@ static void ExplicitAggregationsVariousTypes()
 
     aggr = 0;
     sdaiGetAttrBN(texture, "Pixel", sdaiAGGR, &aggr);
-    TestIsMember(aggr, sdaiBINARY, rBin, 3, "30");
+    TestIsMemberPtr(aggr, sdaiBINARY, rBin, 3, "30");
     TestAggregationFunctions(aggr, 3, strlen(rBin[0]));
 
     //
@@ -426,7 +436,7 @@ static void ExplicitAggregationsVariousTypes()
 
     aggr = 0;
     sdaiGetAttrBN(criterion, "compared_element_types", sdaiAGGR, &aggr);
-    TestIsMember(aggr, sdaiENUM, a3mtypes_s, 2, "eeee");
+    TestIsMemberPtr(aggr, sdaiENUM, a3mtypes_s, 2, "eeee");
     TestAggregationFunctions(aggr, 2, -1);
 
     //
