@@ -186,19 +186,21 @@ void CheckExpectedIssuses::OnIssue(ValidationIssue issue)
     __super::OnIssue(issue);
 
     //check issue expected
-    bool found = false;
     auto stepId = GetStepId(issue);
+    auto vi = validateGetIssueType(issue);
+    auto attrInd = GetAttrIndex(issue);
+    auto aggrLevel = validateGetAggrLevel(issue);
+    auto aggrIndArray = validateGetAggrIndArray(issue);
+
+    bool found = false;
     for (int i = 0; i < m_nExpectedIssues; i++) {
         auto& expected = m_rExpectedIssues[i];
         if (expected.stepId == stepId 
-            && expected.attrInd == GetAttrIndex (issue) 
-            && expected.aggrLevel == validateGetAggrLevel (issue)) {
+            && expected.attrInd ==  attrInd
+            && expected.aggrLevel == aggrLevel) {
 
-            auto vi = validateGetIssueType(issue);
             ASSERT(expected.issueType == vi);
             
-            auto aggrLevel = validateGetAggrLevel(issue);
-            auto aggrIndArray = validateGetAggrIndArray(issue);
             for (int i = 0; i < aggrLevel; i++) {
                 ASSERT(expected.aggrIndArray[i] == aggrIndArray[i]);
             }
@@ -216,6 +218,7 @@ static int_t r1[] = { 1 };
 static int_t r2[] = { 2 };
 static int_t r3[] = { 3 };
 static int_t r4[] = { 4 };
+static int_t r5[] = { 5 };
 static int_t r6[] = { 6 };
 static int_t r7[] = { 7 };
 static int_t r9[] = { 9 };
@@ -337,7 +340,8 @@ static IssueInfo rExpectedIssuesIFC4[] =
     {24,    "IfcMeasureWithUnit",        "ValueComponent",      0,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {25,    "IfcMeasureWithUnit",        "ValueComponent",      0,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {39,    "IfcIndexedPolyCurve",       "Segments",            1,      1,r2,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
-    {39,    "IfcIndexedPolyCurve",       "Segments",            -1,     0,NULL,         enum_validation_type::__WHERE_RULE}
+    {39,    "IfcIndexedPolyCurve",       "Segments",            -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
+    {27,    "IfcPropertyEnumeration",    "EnumerationValues",   1,      1,r5,           enum_validation_type::__AGGREGATION_UNIQUE}
 };
 
 static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
@@ -356,7 +360,8 @@ static IssueInfo rExpectedIssuesIFC4_ExcludeRules[] =
     {22,    "IfcIndexedColourMap",       "Colours",             2,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {24,    "IfcMeasureWithUnit",        "ValueComponent",      0,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
     {25,    "IfcMeasureWithUnit",        "ValueComponent",      0,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
-    {39,    "IfcIndexedPolyCurve",       "Segments",            1,      1,r2,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE}
+    {39,    "IfcIndexedPolyCurve",       "Segments",            1,      1,r2,           enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
+    {27,    "IfcPropertyEnumeration",    "EnumerationValues",   1,      1,r5,           enum_validation_type::__AGGREGATION_UNIQUE}
 };
 
 static IssueInfo rExpectedIssuesIFC4x3[] =
@@ -582,8 +587,8 @@ extern void ModelCheckerTests()
     printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     printf("<RDFExpressModelChecker>\n");
 
-    PassOrFailTests();
     CompositeTests();
+    PassOrFailTests();
 
     printf("</RDFExpressModelChecker>\n");
 }
