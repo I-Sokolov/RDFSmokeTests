@@ -11,7 +11,7 @@ extern void Encodings();
 extern void AggregationTests();
 extern void Screening(void);
 extern void ComplexInstance();
-
+extern void DeriveAttrTests();
 
 static long HeapUsed()
 {
@@ -45,6 +45,7 @@ extern int main()
         int i = 0;
         do
             {
+            DeriveAttrTests();
             ComplexInstance();
             Encodings();
             AggregationTests();
