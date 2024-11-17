@@ -360,38 +360,85 @@ static void TestAggregationFunctions(SdaiAggr aggr, SdaiInteger numElems, SdaiIn
     ASSERT(sdaiGetAggrElementBoundByIndex(aggr, 0) == elementBound);
 }
 
-static void ExplicitAggregationsVariousTypes()
-{
-    SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
-    SdaiModel   model4x4 = sdaiCreateModelBN(0, "test IFC4x4", "IFC4x4");
-    SdaiModel   model242 = sdaiCreateModelBN(0, "test AP242", "AP242");
+//
+static double rd[] = { 1,2.5,5 };
+SdaiInteger lat[] = { 20,2,3,1 };
+SdaiString rNames[] = { "Domingo", "Felipe", "Jacinto" };
+SdaiString rBin[] = { "31", "23B", "092A" };
 
-    //
-    double rd[] = { 1,2.5,5 };
-    auto pt = IFC4::IfcCartesianPoint::Create(model);
-    pt.put_Coordinates(rd, 3);
-    
+static void ExplicitAggregationsVariousTypes_Test4(SdaiModel model)
+{
+    ExpressID id = 1;
+
+    SdaiInstance pt = internalGetInstanceFromP21Line(model, id++);
+
     SdaiAggr aggr = NULL;
     sdaiGetAttrBN(pt, "Coordinates", sdaiAGGR, &aggr);
-    TestIsMemberVal (aggr, sdaiREAL, rd, 3, 8 + 1e-11);
+    TestIsMemberVal(aggr, sdaiREAL, rd, 3, 8 + 1e-11);
     TestAggregationFunctions(aggr, 3, 12);
 
+    auto site = internalGetInstanceFromP21Line(model, id++);
+    aggr = 0;
+    sdaiGetAttrBN(site, "RefLatitude", sdaiAGGR, &aggr);
+    TestIsMemberVal(aggr, sdaiINTEGER, lat, 4, lat[0] + 1);
+    TestAggregationFunctions(aggr, 4, -1);
+
+    auto person = internalGetInstanceFromP21Line(model, id++);
+    aggr = 0;
+    sdaiGetAttrBN(person, "MiddleNames", sdaiAGGR, &aggr);
+    TestIsMemberPtr(aggr, sdaiSTRING, rNames, 3, "Salvador");
+    TestAggregationFunctions(aggr, 3, strlen(rNames[0]));
+
+    auto texture = internalGetInstanceFromP21Line(model, id++);
+    aggr = 0;
+    sdaiGetAttrBN(texture, "Pixel", sdaiAGGR, &aggr);
+    TestIsMemberPtr(aggr, sdaiBINARY, rBin, 3, "30");
+    TestAggregationFunctions(aggr, 3, strlen(rBin[0]));
+}
+
+static void ExplicitAggregationsVariousTypes4()
+{
+    SdaiModel   model = sdaiCreateModelBN(0, "test IFC4", "IFC4");
+
     //
-    SdaiInteger lat [] = { 20,2,3,1 };
+    auto pt = IFC4::IfcCartesianPoint::Create(model);
+    pt.put_Coordinates(rd, 3);
+
     auto site = IFC4::IfcSite::Create(model);
     site.put_RefLatitude(lat, 4);
 
-    aggr = 0;
-    sdaiGetAttrBN(site, "RefLatitude", sdaiAGGR, &aggr);
-    TestIsMemberVal(aggr, sdaiINTEGER, lat, 4, lat[0]+1);
-    TestAggregationFunctions(aggr, 4, -1);
+    auto person = IFC4::IfcPerson::Create(model);
+    person.put_MiddleNames(rNames, 3);
+
+    //
+    auto texture = IFC4::IfcPixelTexture::Create(model);
+    texture.put_Pixel(rBin, 3);
+
+    ExplicitAggregationsVariousTypes_Test4(model);
+
+    const char* fileName = "ExplicitAggregationsVariousTypes.ifc";
+    sdaiSaveModelBN(model, fileName);
+    sdaiCloseModel(model);
+    model = 0;
+
+    model = sdaiOpenModelBN(0, fileName, "");
+    ASSERT(model);
+    ExplicitAggregationsVariousTypes_Test4(model);
+    sdaiCloseModel(model);
+}
+
+static void ExplicitAggregationsVariousTypes()
+{
+    //
+    SdaiModel   model4x4 = sdaiCreateModelBN(0, "test IFC4x4", "IFC4x4");
+    SdaiModel   model242 = sdaiCreateModelBN(0, "test AP242", "AP242");
 
     //
     SdaiBoolean voxels[] = { true };
     auto voxelGrid = IFC4x4::IfcVoxelGrid::Create(model4x4);
     voxelGrid.put_Voxels(voxels, 1);
 
-    aggr = 0;
+    SdaiAggr aggr = 0;
     sdaiGetAttrBN(voxelGrid, "Voxels", sdaiAGGR, &aggr);
     TestIsMemberVal(aggr, sdaiBOOLEAN, voxels, 1, sdaiFALSE);
     TestAggregationFunctions(aggr, 1, -1);
@@ -408,26 +455,6 @@ static void ExplicitAggregationsVariousTypes()
     TestAggregationFunctions(aggr, 2, -1);
 
     //
-    SdaiString rNames[] = { "Domingo", "Felipe", "Jacinto" };
-    auto person = IFC4::IfcPerson::Create(model);
-    person.put_MiddleNames(rNames, 3);
-
-    aggr = 0;
-    sdaiGetAttrBN(person, "MiddleNames", sdaiAGGR, &aggr);
-    TestIsMemberPtr(aggr, sdaiSTRING, rNames, 3, "Salvador");
-    TestAggregationFunctions(aggr, 3, strlen(rNames[0]));
-
-    //
-    SdaiString rBin[] = { "31", "23B", "092A" };
-    auto texture = IFC4::IfcPixelTexture::Create(model);
-    texture.put_Pixel(rBin, 3);
-
-    aggr = 0;
-    sdaiGetAttrBN(texture, "Pixel", sdaiAGGR, &aggr);
-    TestIsMemberPtr(aggr, sdaiBINARY, rBin, 3, "30");
-    TestAggregationFunctions(aggr, 3, strlen(rBin[0]));
-
-    //
     AP242::a3m_element_type_name a3mtypes[] = { AP242::a3m_element_type_name::etna_shape_representation, AP242::a3m_element_type_name::etns_point_cloud_dataset };
     SdaiString a3mtypes_s[] = { "etna_shape_representation", "etns_point_cloud_dataset"};
 
@@ -440,7 +467,6 @@ static void ExplicitAggregationsVariousTypes()
     TestAggregationFunctions(aggr, 2, -1);
 
     //
-    sdaiCloseModel(model);
     sdaiCloseModel(model4x4);
     sdaiCloseModel(model242);
 }
@@ -1628,6 +1654,7 @@ extern void AggregationTests()
     Add();
     CreateNested();
     Iterators();
+    ExplicitAggregationsVariousTypes4();
     ExplicitAggregationsVariousTypes();
     IsMemberComplex();
     Delete();
