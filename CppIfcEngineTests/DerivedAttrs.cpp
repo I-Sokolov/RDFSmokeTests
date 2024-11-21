@@ -2,7 +2,7 @@
 
 #define TEST_FILE "DeriveAttr.ifc"
 
-static void DimensionalExponents_Check(SdaiModel model, bool calculated)
+static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getDerived)
 {
     IFC4::IfcSIUnit lengthUnit = internalGetInstanceFromP21Line(model, 391);
     ASSERT(lengthUnit);
@@ -15,14 +15,14 @@ static void DimensionalExponents_Check(SdaiModel model, bool calculated)
 
     IFC4::IfcCartesianPoint pt = internalGetInstanceFromP21Line(model, 100);
     ASSERT(pt);
-/*
-    IfcCartesianTransformationOperator3DnonUniform.
-        Scl2
-        IfcCompositeCurve.ClosedCurve
-        IfcGeometricRepresentationContext.Precision
-        IfcMaterialLayerSet.TotalThickness
-        */
-    if (calculated) {
+
+    IFC4::IfcCartesianTransformationOperator3DnonUniform oper = internalForceInstanceFromP21Line(model, extID);
+    ASSERT(oper);
+
+    IFC4::IfcCompositeCurve composite = internalGetInstanceFromP21Line(model, extID + 2);
+    ASSERT(composite);
+
+    if (getDerived) {
         auto exponents = lengthUnit.get_Dimensions();
         ASSERT(exponents);
 
@@ -58,6 +58,14 @@ static void DimensionalExponents_Check(SdaiModel model, bool calculated)
                 ASSERT(fabs(comps[j] - (i == j) ? 1 : 0) < 1e-8);
             }
         }
+
+        SdaiReal scl = 0;
+        res = sdaiGetAttrBN(oper, "Scl2", sdaiREAL, &scl);
+        ASSERT(res && fabs(scl - 1.5) < 1e-11);
+
+        const char* closed = nullptr;
+        res = sdaiGetAttrBN(composite, "ClosedCurve", sdaiLOGICAL, &closed);
+        ASSERT(res && *closed == 'T');
     }
     else {
         //
@@ -74,29 +82,52 @@ static void DimensionalExponents_Check(SdaiModel model, bool calculated)
         SdaiAggr P = NULL;
         res = sdaiGetAttrBN(a2p3d, "P", sdaiAGGR, &P);
         ASSERT(!res && !P);
+
+        SdaiReal scl = 0;
+        res = sdaiGetAttrBN(oper, "Scl2", sdaiREAL, &scl);
+        ASSERT(!res);
+
+        const char* closed = nullptr;
+        res = sdaiGetAttrBN(composite, "ClosedCurve", sdaiLOGICAL, &closed);
+        ASSERT(!res);
     }
 }
 
-//int
-//ID 32
-//CoordinateSpaceDimension
 
-static void DimensionalExponents()
+static void Ifc4test()
 {
     auto model = sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
     ASSERT(model);
 
-    DimensionalExponents_Check(model, false);
+    auto oper = IFC4::IfcCartesianTransformationOperator3DnonUniform::Create(model);
+    auto extID = internalGetP21Line(oper);
+    oper.put_Scale(1.5);
+
+    IFC4::IfcCurve curve = internalGetInstanceFromP21Line(model, 79);
+    ASSERT(curve);
+
+    auto seg = IFC4::IfcCompositeCurveSegment::Create(model);
+    seg.put_ParentCurve(curve);
+    seg.put_Transition(IFC4::IfcTransitionCode::CONTINUOUS);
+
+    auto composite = IFC4::IfcCompositeCurve::Create(model);
+    IFC4::ListOfIfcCompositeCurveSegment lstSeg;
+    lstSeg.push_back(seg);
+    composite.put_Segments(lstSeg);
+
+    //
+    Ifc4test_Check(model, extID, false);
 
     bool ok = engiSetDerivedAttributesSupport(model, true, false);
     ASSERT(ok);
 
-    DimensionalExponents_Check(model, true);
+    Ifc4test_Check(model, extID, true);
 
     ok = engiSetDerivedAttributesSupport(model, false, true);
     ASSERT(ok);
 
-    DimensionalExponents_Check(model, false);
+    Ifc4test_Check(model, extID, false);
+    //
 
     //sdaiSaveModelBN(model, TEST_FILE);
     sdaiCloseModel(model);
@@ -104,7 +135,7 @@ static void DimensionalExponents()
     model = sdaiOpenModelBN(0, TEST_FILE, "");
     ASSERT(model);
 
-    DimensionalExponents_Check(model, true);
+    Ifc4test_Check(model, extID, true);
 
     sdaiCloseModel(model);
 }
@@ -113,5 +144,5 @@ extern void DeriveAttrTests()
 {
     ENTER_TEST;
 
-    DimensionalExponents();
+    Ifc4test();
 }
