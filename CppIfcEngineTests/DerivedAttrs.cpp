@@ -2,10 +2,13 @@
 
 #define TEST_FILE "DeriveAttr.ifc"
 
-static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getDerived)
+static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getOn, bool all1, bool all2)
 {
     IFC4::IfcSIUnit lengthUnit = internalGetInstanceFromP21Line(model, 391);
     ASSERT(lengthUnit);
+
+    IFC4::IfcSIUnit areaUnit = internalGetInstanceFromP21Line(model, 392);
+    ASSERT(areaUnit);
 
     IFC4::IfcGeometricRepresentationSubContext sctx = internalGetInstanceFromP21Line(model, 33);
     ASSERT(sctx);
@@ -22,7 +25,7 @@ static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getDerived)
     IFC4::IfcCompositeCurve composite = internalGetInstanceFromP21Line(model, extID + 2);
     ASSERT(composite);
 
-    if (getDerived) {
+    if (getOn || all1 || all2) {
         auto exponents = lengthUnit.get_Dimensions();
         ASSERT(exponents);
 
@@ -34,7 +37,31 @@ static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getDerived)
 
         auto dim = sctx.get_CoordinateSpaceDimension();
         ASSERT(!dim.IsNull() && dim.Value() == 3);
+    }
+    else {
+        auto exponents = lengthUnit.get_Dimensions();
+        ASSERT(!exponents);
 
+        auto dim = sctx.get_CoordinateSpaceDimension();
+        ASSERT(dim.IsNull());
+    }
+
+    if (all2) {
+        auto exponents = areaUnit.get_Dimensions();
+        ASSERT(exponents);
+
+        auto exp = exponents.get_LengthExponent();
+        ASSERT(!exp.IsNull() && exp.Value() == 2);
+
+        exp = exponents.get_TimeExponent();
+        ASSERT(!exp.IsNull() && exp.Value() == 0);
+    }
+    else {
+        auto exponents = areaUnit.get_Dimensions();
+        ASSERT(!exponents);
+    }
+
+    if (getOn) {
         SdaiInteger dm = 0;
         auto res = sdaiGetAttrBN(pt, "Dim", sdaiINTEGER, &dm);
         ASSERT(res && dm == 3);
@@ -69,12 +96,6 @@ static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getDerived)
     }
     else {
         //
-        auto exponents = lengthUnit.get_Dimensions();
-        ASSERT(!exponents);
-
-        auto dim = sctx.get_CoordinateSpaceDimension();
-        ASSERT(dim.IsNull());
-
         SdaiInteger dm = 0;
         auto res = sdaiGetAttrBN(pt, "Dim", sdaiINTEGER, &dm);
         ASSERT(!res);
@@ -115,32 +136,21 @@ ExpressID Ifc4test()
     composite.put_Segments(lstSeg);
 
     //
-    Ifc4test_Check(model, extID, false);
+    Ifc4test_Check(model, extID, false, false, false);
 
     bool ok = engiEnableDerivedAttributes(model, true);
     ASSERT(ok);
 
-    Ifc4test_Check(model, extID, true);
+    Ifc4test_Check(model, extID, true, false, false);
 
     ok = engiEnableDerivedAttributes(model, false);
     ASSERT(ok);
 
-    Ifc4test_Check(model, extID, false);
+    Ifc4test_Check(model, extID, false, false, false);
     //
 
     sdaiSaveModelBN(model, TEST_FILE);
     sdaiCloseModel(model);
-    
-    //
-    //
-    return extID;
-    model = sdaiOpenModelBN(0, TEST_FILE, "");
-    ASSERT(model);
-
-    Ifc4test_Check(model, extID, true);
-
-    sdaiCloseModel(model);
-
     return extID;
 }
 
@@ -170,6 +180,37 @@ static void CheckDerivedCache(ExpressID operId)
     sdaiCloseModel(model);
 }
 
+static void TestEvaluateAll(ExpressID operId)
+{
+    SdaiModel model = sdaiOpenModelBN(0, TEST_FILE, "");
+    ASSERT(model);
+
+    Ifc4test_Check(model, operId, false, false, false);
+
+    //
+    engiEvaluateAllDerivedAttributes(model, false);
+    sdaiSaveModelBN(model, "engiEvaluateAllDerivedAttributes_0.ifc");
+
+    Ifc4test_Check(model, operId, false, true, false);
+
+    //
+    engiEvaluateAllDerivedAttributes(model, true);
+    sdaiSaveModelBN(model, "engiEvaluateAllDerivedAttributes_1.ifc");
+
+    Ifc4test_Check(model, operId, false, true, true);
+
+    sdaiCloseModel(model);
+
+    //
+    model = sdaiOpenModelBN(0, "engiEvaluateAllDerivedAttributes_0.ifc", "");
+    Ifc4test_Check(model, operId, false, true, false);
+    sdaiCloseModel(model);
+
+    model = sdaiOpenModelBN(0, "engiEvaluateAllDerivedAttributes_1.ifc", "");
+    Ifc4test_Check(model, operId, false, true, true);
+    sdaiCloseModel(model);
+}
+
 extern void DeriveAttrTests()
 {
     ENTER_TEST;
@@ -177,4 +218,6 @@ extern void DeriveAttrTests()
     auto operId = Ifc4test();
 
     CheckDerivedCache(operId);
+
+    TestEvaluateAll(operId);
 }
