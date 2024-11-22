@@ -93,8 +93,7 @@ static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getDerived)
     }
 }
 
-
-static void Ifc4test()
+ExpressID Ifc4test()
 {
     auto model = sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
     ASSERT(model);
@@ -129,13 +128,44 @@ static void Ifc4test()
     Ifc4test_Check(model, extID, false);
     //
 
-    //sdaiSaveModelBN(model, TEST_FILE);
+    sdaiSaveModelBN(model, TEST_FILE);
     sdaiCloseModel(model);
-    return;
+    
+    //
+    //
+    return extID;
     model = sdaiOpenModelBN(0, TEST_FILE, "");
     ASSERT(model);
 
     Ifc4test_Check(model, extID, true);
+
+    sdaiCloseModel(model);
+
+    return extID;
+}
+
+static void CheckDerivedCache(ExpressID operId)
+{
+    auto model = sdaiOpenModelBN(0, TEST_FILE, "");
+    ASSERT(model);
+
+    IFC4::IfcCartesianTransformationOperator3DnonUniform oper = internalForceInstanceFromP21Line(model, operId);
+    ASSERT(oper);
+
+    bool ok = engiSetDerivedAttributesSupport(model, true, false);
+    ASSERT(ok);
+
+    SdaiReal scl = 0;
+    auto res = sdaiGetAttrBN(oper, "Scl2", sdaiREAL, &scl);
+    ASSERT(res && fabs(scl - 1.5) < 1e-11);
+
+    res = sdaiGetAttrBN(oper, "Scl2", sdaiREAL, &scl);
+    ASSERT(res && fabs(scl - 1.5) < 1e-11);
+
+    oper.put_Scale2(2.3);
+
+    res = sdaiGetAttrBN(oper, "Scl2", sdaiREAL, &scl);
+    ASSERT(res && fabs(scl - 2.3) < 1e-11);
 
     sdaiCloseModel(model);
 }
@@ -144,5 +174,7 @@ extern void DeriveAttrTests()
 {
     ENTER_TEST;
 
-    Ifc4test();
+    auto operId = Ifc4test();
+
+    CheckDerivedCache(operId);
 }
