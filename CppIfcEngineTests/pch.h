@@ -10,6 +10,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <vector>
 #include <iostream>
 

@@ -4,6 +4,53 @@
 #define TEST_FILE_DEL "..\\TestData\\Walls.ifc"
 #define TEST_FILE_AGGR "..\\TestData\\AggregationTest.ifc"
 
+
+static void* Value2Ptr(SdaiPrimitiveType valueType, va_list value)
+{
+    switch (valueType) {
+        case 0:
+            return nullptr;
+
+        case sdaiINTEGER:
+        case sdaiREAL:
+        case sdaiBOOLEAN:
+            //need &
+            return value;
+            break;
+
+        case sdaiLOGICAL:
+        case sdaiSTRING:
+        case sdaiBINARY:
+        case sdaiENUM:
+        case sdaiADB:
+        case sdaiINSTANCE:
+        case sdaiAGGR:
+            //do not need &
+            return va_arg(value, void*);
+            break;
+
+        default:
+            assert(false); //not supported value type
+            return nullptr;
+    }
+}
+
+
+void sdaiAdd(
+    const SdaiAggr			aggregate,
+    SdaiPrimitiveType		valueType,
+    ...
+)
+{
+    va_list value;
+    va_start(value, valueType);
+
+    sdaiAppend(aggregate, valueType, Value2Ptr(valueType, value));
+
+    va_end(value);
+}
+
+
 static void DeleteWalls(bool subtypes)
 {
     SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_DEL, "");
@@ -240,10 +287,10 @@ static void TestIterators(SdaiAggr aggr, std::list<SdaiInstance>& expected)
 static void TestIsMember(SdaiAggr aggr, std::list<SdaiInstance>& members, SdaiInstance notMember)
 {
     for (auto& m : members) {
-        ASSERT(sdaiIsMember(aggr, sdaiINSTANCE, m));
+        ASSERT(sdaiIsMember(aggr, m));
     }
 
-    ASSERT(!sdaiIsMember(aggr, sdaiINSTANCE, &notMember));
+    ASSERT(!sdaiIsMember(aggr, notMember));
 }
 
 static void Iterators()
@@ -440,7 +487,7 @@ static void ExplicitAggregationsVariousTypes()
 
     SdaiAggr aggr = 0;
     sdaiGetAttrBN(voxelGrid, "Voxels", sdaiAGGR, &aggr);
-    TestIsMemberVal(aggr, sdaiBOOLEAN, voxels, 1, sdaiFALSE);
+    TestIsMemberVal<SdaiBoolean>(aggr, sdaiBOOLEAN, voxels, 1, sdaiFALSE);
     TestAggregationFunctions(aggr, 1, -1);
 
     //
@@ -1320,7 +1367,7 @@ static void CheckProperties(SdaiInstance allPsets[NPS], PropList& props)
 
         int n = 0;
         for (auto& prop : props) {
-            ASSERT(sdaiIsMember(hasProps, sdaiINSTANCE, prop.inst) == prop.in[i]);
+            ASSERT(sdaiIsMember(hasProps, prop.inst) == prop.in[i]);
             if (prop.in[i]) {
                 n++;
             }
@@ -1337,7 +1384,7 @@ static void CheckProperties(SdaiInstance allPsets[NPS], PropList& props)
 
         int n = 0;
         for (int i = 0; i < NPS; i++) {
-            ASSERT(sdaiIsMember(partOfPsets, sdaiINSTANCE, allPsets[i])== prop.in[i]);
+            ASSERT(sdaiIsMember(partOfPsets, allPsets[i])== prop.in[i]);
             if (prop.in[i]) {
                 n++;
             }
@@ -1358,7 +1405,7 @@ static void AddByIndex(SdaiModel model, SdaiAggr aggr[NPS], PropList& props)
         prop.inst = IFC4::IfcPropertySingleValue::Create(model);
 
         for (int j = 0; j < NPS; j++) {
-            sdaiPutAggrByIndex(aggr[j], i, sdaiINSTANCE, prop.inst);
+            sdaiPutAggrByIndex(aggr[j], i, prop.inst);
             prop.in[j] = sdaiTRUE;
         }
     }
@@ -1386,21 +1433,21 @@ static void AddByIterator(SdaiModel model, SdaiAggr aggr[NPS], PropList& props)
         for (int j = 0; j < NPS; j++) {
             auto it = sdaiCreateIterator(aggr[j]);
             sdaiNext(it);
-            sdaiInsertBefore(it, sdaiINSTANCE, fr1.inst);
+            sdaiInsertBefore(it, fr1.inst);
             fr1.in[j] = sdaiTRUE;
             sdaiDeleteIterator(it);
 
-            sdaiInsertByIndex(aggr[j], 0, sdaiINSTANCE, fr2.inst);
+            sdaiInsertByIndex(aggr[j], 0, fr2.inst);
             fr2.in[j] = sdaiTRUE;
 
             it = sdaiCreateIterator(aggr[j]);
             sdaiEnd(it);
             sdaiPrevious(it);
-            sdaiInsertAfter(it, sdaiINSTANCE, bk1.inst);
+            sdaiInsertAfter(it, bk1.inst);
             bk1.in[j] = sdaiTRUE;
             sdaiDeleteIterator(it);
 
-            sdaiInsertByIndex(aggr[j], -1, sdaiINSTANCE, bk2.inst);
+            sdaiInsertByIndex(aggr[j], -1, bk2.inst);
             bk2.in[j] = sdaiTRUE;
         }
     }
@@ -1425,7 +1472,7 @@ static void RemoveProperties(SdaiAggr aggr[NPS], PropList& props)
 
     pit++;
 
-    sdaiRemove(aggr[2], sdaiINSTANCE, pit->inst);
+    sdaiRemove(aggr[2], pit->inst);
     pit->in[2] = sdaiFALSE;
 }
 
@@ -1440,7 +1487,7 @@ static void ReplaceProperties(SdaiModel model, SdaiAggr aggr[NPS], PropList& pro
     SdaiIterator it = sdaiCreateIterator(aggr[0]);
     sdaiEnd(it);
     sdaiPrevious(it);
-    sdaiPutAggrByIterator(it, sdaiINSTANCE, prop.inst);
+    sdaiPutAggrByIterator(it, prop.inst);
     prop.in[0] = sdaiTRUE;
     sdaiDeleteIterator(it);
 }
@@ -1505,7 +1552,7 @@ static void TestNullsAndResize()
     auto aggr = sdaiCreateAggrBN(inst, "OffsetValues");
 
     sdaiAdd(aggr, sdaiREAL, 1.0);
-    sdaiAdd(aggr, 0);
+    sdaiAdd(aggr, 0, NULL);
     sdaiAdd(aggr, sdaiREAL, 1.0);
     sdaiAdd(aggr, sdaiREAL, 1.0);
     sdaiAdd(aggr, sdaiREAL, 1.0);
@@ -1661,3 +1708,5 @@ extern void AggregationTests()
     InsertDeleteCheckBacklinks();
     TestNullsAndResize();
 }
+
+
