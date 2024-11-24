@@ -701,7 +701,7 @@ static void TestAttrIndex(SdaiModel ifcModel)
     SdaiEntity domainEntity = 0;
     SchemaAggr aggrDescr = 0;
     bool optional = false;
-    engiGetAttributeTraits(attr, &attrName, &definingEntity, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
+    engiGetAttributeTraits(attr, &attrName, &definingEntity, nullptr, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
     ASSERT(!inverse && !strcmp(attrName, "PredefinedType") && optional);
     ASSERT(attrType == enum_express_attr_type::__NONE);
     auto sz = engiGetEntityName(definingEntity, sdaiSTRING);

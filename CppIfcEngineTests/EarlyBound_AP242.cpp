@@ -268,7 +268,7 @@ static void test_multi_parent()
         SdaiEntity domainEntity = 0;
         SchemaAggr aggrDescr = 0;
         bool optional = false;
-        engiGetAttributeTraits(attribute, &name, &definingEntity, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
+        engiGetAttributeTraits(attribute, &name, &definingEntity, nullptr, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
 
         ASSERT(!strcmp(name, rAttr[i]));
         
@@ -286,7 +286,7 @@ static void test_multi_parent()
         ASSERT(type == rTypes[i]);
 
         //not crashing with nulls
-        engiGetAttributeTraits(attribute, &name, 0, 0, 0, 0, 0, 0);
+        engiGetAttributeTraits(attribute, &name, 0, 0, 0, 0, 0, 0, 0);
     }
     
     //wrapper test
