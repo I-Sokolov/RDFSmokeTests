@@ -211,7 +211,7 @@ static void TestEvaluateAll(ExpressID operId)
     sdaiCloseModel(model);
 }
 
-static void TestAttributes(SdaiEntity entity, int nAttr, const char* rNames[], SdaiBoolean derived[])
+static void TestAttributes(SdaiEntity entity, int nAttr, const char* rNames[], const char* rDef[], SdaiBoolean derived[])
 {
     SdaiAttr attr = 0;
     int i = 0;
@@ -219,8 +219,13 @@ static void TestAttributes(SdaiEntity entity, int nAttr, const char* rNames[], S
         ASSERT(i < nAttr);
 
         const char* name = 0;
-        engiGetAttributeTraits(attr, &name, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+        SdaiEntity def = 0;
+        engiGetAttributeTraits(attr, &name, &def, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
         ASSERT(0 == strcmp(name, rNames[i]));
+        ASSERT(def);
+
+        const char* defName = engiGetEntityName(def, sdaiSTRING);
+        ASSERT(0 == strcmp(defName, rDef[i]));
 
         auto der = engiGetAttrDerived(entity, attr);
         ASSERT(der == derived[i]);
@@ -235,23 +240,26 @@ static void IterateAttributes()
     auto model = sdaiCreateModelBN("IFC4");
 
     auto ent = sdaiGetEntity(model, "IfcSIUnit");
-    const char* rNames[] = { "Dimensions", "UnitType", "Prefix", "Name"};
+    const char* rNames[] = { "Dimensions", "UnitType", "Prefix", "Name" };
+    const char* rDef[] = { "IfcNamedUnit", "IfcNamedUnit", "IfcSIUnit", "IfcSIUnit" };
     SdaiBoolean derived[] = { sdaiTRUE, false, false, false };
-    TestAttributes(ent, 4, rNames, derived);
+    TestAttributes(ent, 4, rNames, rDef, derived);
 
     ent = sdaiGetEntity(model, "IfcNamedUnit");
     derived[0] = sdaiFALSE;
-    TestAttributes(ent, 2, rNames, derived);
+    TestAttributes(ent, 2, rNames, rDef, derived);
 
     ent = sdaiGetEntity(model, "IfcCartesianPoint");
-    const char* rNames2[] = { "LayerAssignment", "StyledByItem", "Coordinates", "Dim"};
+    const char* rNames2[] = { "LayerAssignment", "StyledByItem", "Coordinates", "Dim" };
+    const char* rDef2[] = { "IfcRepresentationItem", "IfcRepresentationItem", "IfcCartesianPoint", "IfcCartesianPoint" };
     SdaiBoolean rDerv2[] = { sdaiFALSE, sdaiFALSE, sdaiFALSE, sdaiTRUE };
-    TestAttributes(ent, 4, rNames2, rDerv2);
+    TestAttributes(ent, 4, rNames2, rDef2, rDerv2);
 
     ent = sdaiGetEntity(model, "IfcLine");
     const char* rNames3[] = { "LayerAssignment", "StyledByItem", "Pnt", "Dir", "Dim" };
     SdaiBoolean rDerv3[] = { sdaiFALSE, sdaiFALSE, sdaiFALSE, sdaiFALSE, sdaiTRUE };
-    TestAttributes(ent, 5, rNames3, rDerv3);
+    const char* rDef3[] = { "IfcRepresentationItem", "IfcRepresentationItem", "IfcLine", "IfcLine", "IfcCurve"};
+    TestAttributes(ent, 5, rNames3, rDef3, rDerv3);
 
     sdaiCloseModel(model);
 }
