@@ -22,15 +22,27 @@ static void ReadWhereRules(SdaiModel model)
 
     SchemaWhereRule rule = engiGetEntityWhereRuleByIterator(angle, 0);
     ASSERT(rule);
+    ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
+
+    const char* name = NULL;
+    const char* body = NULL;
+    engiGetRuleDefinition(rule, &name, &body);
+    ASSERT(!strcmp(name, "MinutesInRange") && !strcmp(body, "ABS(SELF[2]) < 60;"));
 
     rule = engiGetEntityWhereRuleByIterator(angle, rule);
     ASSERT(rule); 
-    
+    ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
+
+    engiGetRuleDefinition(rule, &name, &body);
+    ASSERT(!strcmp(name, "SecondsInRange") && !strcmp(body, "ABS(SELF[3]) < 60;"));
+
     rule = engiGetEntityWhereRuleByIterator(angle, rule);
     ASSERT(rule);
-    
+    ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
+
     rule = engiGetEntityWhereRuleByIterator(angle, rule);
     ASSERT(rule);
+    ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
 
     rule = engiGetEntityWhereRuleByIterator(angle, rule);
     ASSERT(!rule);
@@ -39,6 +51,7 @@ static void ReadWhereRules(SdaiModel model)
 static void SchemaRuleByIterator(SdaiModel model)
 {
     int numRules[3] = { 0, 0, 0 };
+    const char* name1 = "IfcAssociatedSurface";
 
     SchemaDecl rule = NULL;
     while (rule = engiGetSchemaRuleByIterator(model, rule)) {
@@ -46,6 +59,13 @@ static void SchemaRuleByIterator(SdaiModel model)
         auto type = engiGetDeclarationType(rule);
         ASSERT(type >= enum_express_declaration::__FUNCTION && type <= enum_express_declaration::__SCHEMA_RULE);
         numRules[(int)type - (int)enum_express_declaration::__FUNCTION]++;
+
+        if (name1) {
+            const char* name = NULL;
+            engiGetRuleDefinition(rule, &name, NULL);
+            ASSERT(name, name1);
+            name1 = NULL;
+        }
     }
 
     ASSERT(numRules[0] == 47 && numRules[1] == 0 && numRules[2] == 2);
