@@ -63,7 +63,7 @@ static void SchemaRuleByIterator(SdaiModel model)
         if (name1) {
             const char* name = NULL;
             engiGetRuleDefinition(rule, &name, NULL);
-            ASSERT(name, name1);
+            ASSERT(0==strcmp(name, name1));
             name1 = NULL;
         }
     }
