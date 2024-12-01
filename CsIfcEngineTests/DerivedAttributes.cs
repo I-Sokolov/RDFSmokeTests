@@ -22,14 +22,30 @@ namespace CsIfcEngineTests
             var model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\Wall_SweptSolid.ifc", "");
             ASSERT(model!=0);
 
-            var ok = ifcengine.engiEnableEvaluatingDerivedAttributes(model, 1);
-            ASSERT(ok!=0);
+            TestSIUnits(model, false);
 
+            var ok = ifcengine.engiEnableExpressScript(model, true);
+            ASSERT(ok);
+            TestSIUnits(model, true);
+
+            ok = ifcengine.engiEnableExpressScript(model, false);
+            ASSERT(ok);
+            TestSIUnits(model, false);
+
+            ok = ifcengine.engiEnableExpressScript(model, true);
+            ASSERT(ok);
+            TestSIUnits(model, true);
+
+            ifcengine.sdaiCloseModel(model);
+        }
+
+        static void TestSIUnits (Int64 model, bool scriptEnabled)
+        {
             var units = ifcengine.sdaiGetEntityExtentBN(model, "IfcSIUnit");
-            ASSERT(units!=0);
+            ASSERT(units != 0);
 
             var it = ifcengine.sdaiCreateIterator(units);
-            ASSERT(it!=0);
+            ASSERT(it != 0);
 
             while (ifcengine.sdaiNext(it) != 0)
             {
@@ -40,26 +56,31 @@ namespace CsIfcEngineTests
 
 
                 IFC4.IfcDimensionalExponents dim = unit.Dimensions;
-                IFC4.IfcUnitEnum? unitType        = unit.UnitType;
-                IFC4.IfcSIUnitName? name          = unit.Name;
-                string prefix                     = unit.Prefix.HasValue ? unit.Prefix.Value.ToString() : "";
+                ASSERT(scriptEnabled == (dim != 0));
 
-                //print
-                System.Console.Write($" {unitType.Value} {prefix} {name.Value}  ");
+                IFC4.IfcUnitEnum? unitType = unit.UnitType;
+                ASSERT(unitType != null);
 
-                System.Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}",
-                        dim.LengthExponent,
-                        dim.MassExponent,
-                        dim.TimeExponent,
-                        dim.ElectricCurrentExponent,
-                        dim.ThermodynamicTemperatureExponent,
-                        dim.AmountOfSubstanceExponent,
-                        dim.LuminousIntensityExponent
-                    );             
+                if (unitType.Value == IFC4.IfcUnitEnum.MASSUNIT)
+                {
+
+                    IFC4.IfcSIUnitName? name = unit.Name;
+                    ASSERT(name.HasValue);
+                    ASSERT(name.Value == IFC4.IfcSIUnitName.GRAM);
+
+                    if (dim != 0)
+                    {
+                        ASSERT(dim.LengthExponent == 0);
+                        ASSERT(dim.MassExponent == 1);
+                        ASSERT(dim.TimeExponent == 0);
+                        ASSERT(dim.ElectricCurrentExponent == 0);
+                        ASSERT(dim.ThermodynamicTemperatureExponent == 0);
+                        ASSERT(dim.AmountOfSubstanceExponent == 0);
+                        ASSERT(dim.LuminousIntensityExponent == 0);
+                    }
+                }
             }
             ifcengine.sdaiDeleteIterator(it);
-
-            ifcengine.sdaiCloseModel(model);
         }
     }
 }
