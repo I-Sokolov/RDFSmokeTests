@@ -9,37 +9,40 @@ using RDF;
 
 namespace CsIfcEngineTests
 {
-    internal class DerivedAttributes : CsTests.TestBase
+    internal class ExpressScripts : CsTests.TestBase
     {
         public static void Run()
         {
             ENTER_TEST();
-            TestSIUnits();
-        }
 
-        static void TestSIUnits()
-        {
             var model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\Wall_SweptSolid.ifc", "");
-            ASSERT(model!=0);
+            ASSERT(model != 0);
 
-            TestSIUnits(model, false);
+            TestSIUnitsDerivedDim(model);
 
-            var ok = ifcengine.engiEnableExpressScript(model, true);
-            ASSERT(ok);
-            TestSIUnits(model, true);
-
-            ok = ifcengine.engiEnableExpressScript(model, false);
-            ASSERT(ok);
-            TestSIUnits(model, false);
-
-            ok = ifcengine.engiEnableExpressScript(model, true);
-            ASSERT(ok);
-            TestSIUnits(model, true);
+            
 
             ifcengine.sdaiCloseModel(model);
         }
 
-        static void TestSIUnits (Int64 model, bool scriptEnabled)
+        static void TestSIUnitsDerivedDim(Int64 model)
+        {
+            TestSIUnitsDerivedDim(model, false);
+
+            var ok = ifcengine.engiEnableExpressScript(model, true);
+            ASSERT(ok);
+            TestSIUnitsDerivedDim(model, true);
+
+            ok = ifcengine.engiEnableExpressScript(model, false);
+            ASSERT(ok);
+            TestSIUnitsDerivedDim(model, false);
+
+            ok = ifcengine.engiEnableExpressScript(model, true);
+            ASSERT(ok);
+            TestSIUnitsDerivedDim(model, true);
+        }
+
+        static void TestSIUnitsDerivedDim (Int64 model, bool scriptEnabled)
         {
             var units = ifcengine.sdaiGetEntityExtentBN(model, "IfcSIUnit");
             ASSERT(units != 0);
