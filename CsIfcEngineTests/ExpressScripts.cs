@@ -74,12 +74,32 @@ namespace CsIfcEngineTests
 
             //
             //
-            IFC4.IfcGeometricRepresentationSubContext sctx = ifcengine.internalGetInstanceFromP21Line(model, 33);
-            ASSERT(sctx!=0);
-
             IFC4.IfcCartesianPoint pt = ifcengine.internalGetInstanceFromP21Line(model, 100);
             ASSERT(pt!=0);
+            var entity = ifcengine.sdaiGetInstanceType(pt);
+            derivedScript = ifcengine.engiGetAttrDerivedBN(entity, "Dim");
+            ASSERT(derivedScript != 0);
 
+            var derivedScript2 = ifcengine.engiGetAttrDerivedBN(entity, Encoding.ASCII.GetBytes("Dim"));
+            ASSERT(derivedScript2 == derivedScript);
+
+            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiINSTANCE, out dim);
+            ASSERT(res == IntPtr.Zero);
+
+            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiINTEGER, out dim);
+            ASSERT(res != IntPtr.Zero && dim == 3);
+
+            double v;
+            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiREAL, out v);
+            ASSERT(res != IntPtr.Zero && v == 3);
+
+            bool b;
+            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiBOOLEAN, out b);
+            ASSERT(res == IntPtr.Zero);
+
+            string s;
+            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiSTRING, out s);
+            ASSERT(res == IntPtr.Zero);
 
             ifcengine.sdaiCloseModel(model);
         }
