@@ -59,13 +59,13 @@ namespace CsIfcEngineTests
 
             Int64 dim;
             var res = ifcengine.engiEvaluateScriptExpression (model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
-            ASSERT(res == IntPtr.Zero && dim == 0);
+            ASSERT(!res);
 
             var ok = ifcengine.engiEnableExpressScript(model, true);
             ASSERT(ok);
 
             res = ifcengine.engiEvaluateScriptExpression(model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
-            ASSERT(res != IntPtr.Zero && dim != 0);
+            ASSERT(res && dim != 0);
 
             IFC4.IfcDimensionalExponents ddim = dim;
             ASSERT(ddim != 0);
@@ -84,22 +84,22 @@ namespace CsIfcEngineTests
             ASSERT(derivedScript2 == derivedScript);
 
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiINSTANCE, out dim);
-            ASSERT(res == IntPtr.Zero);
+            ASSERT(!res);
 
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiINTEGER, out dim);
-            ASSERT(res != IntPtr.Zero && dim == 3);
+            ASSERT(res && dim == 3);
 
             double v;
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiREAL, out v);
-            ASSERT(res != IntPtr.Zero && v == 3);
+            ASSERT(res && v == 3);
 
             bool b;
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiBOOLEAN, out b);
-            ASSERT(res == IntPtr.Zero);
+            ASSERT(!res);
 
             string s;
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiSTRING, out s);
-            ASSERT(res == IntPtr.Zero);
+            ASSERT(!res);
 
             ifcengine.sdaiCloseModel(model);
         }
