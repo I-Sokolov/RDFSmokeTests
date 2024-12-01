@@ -20,12 +20,71 @@ namespace CsIfcEngineTests
 
             TestSIUnitsDerivedDim(model);
 
-            TestGlobalRules(model);
+            EnumerateGlobalScripts(model);
+
+            ifcengine.sdaiCloseModel(model);
+
+            //
+
+            TestEvaluateDerivedByScript();
+        }
+
+
+        static void TestEvaluateDerivedByScript()
+        {
+            var model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
+
+            IFC4.IfcSIUnit lengthUnit = ifcengine.internalGetInstanceFromP21Line(model, 391);
+            ASSERT(lengthUnit!=0);
+
+            var entityNamedUnit = ifcengine.sdaiGetEntity(model, "IfcNamedUnit");
+            ASSERT(entityNamedUnit!=0);
+
+            var entitySIUnit = ifcengine.sdaiGetEntity(model, "IfcSIUnit");
+            ASSERT(entitySIUnit != 0);
+
+            var dimAttr = ifcengine.sdaiGetAttrDefinition(entityNamedUnit, "Dimensions");
+            ASSERT(dimAttr != 0);
+
+            var derivedScript = ifcengine.engiGetAttrDerived (entityNamedUnit, dimAttr);
+            ASSERT(derivedScript == 0);
+
+            derivedScript = ifcengine.engiGetAttrDerived(entitySIUnit, dimAttr);
+            ASSERT(derivedScript != 0);
+
+            string label;
+            string text;
+            ifcengine.engiGetScriptText(derivedScript, out label, out text);
+            ASSERT(label == null && text == "IfcDimensionsForSiUnit (SELF.Name);");
+
+            Int64 dim;
+            var res = ifcengine.engiEvaluateScriptExpression (model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
+            ASSERT(res == IntPtr.Zero && dim == 0);
+
+            var ok = ifcengine.engiEnableExpressScript(model, true);
+            ASSERT(ok);
+
+            res = ifcengine.engiEvaluateScriptExpression(model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
+            ASSERT(res != IntPtr.Zero && dim != 0);
+
+            IFC4.IfcDimensionalExponents ddim = dim;
+            ASSERT(ddim != 0);
+            ASSERT(ddim.LengthExponent.Value == 1);
+            ASSERT(ddim.LuminousIntensityExponent.Value == 0);
+
+            //
+            //
+            IFC4.IfcGeometricRepresentationSubContext sctx = ifcengine.internalGetInstanceFromP21Line(model, 33);
+            ASSERT(sctx!=0);
+
+            IFC4.IfcCartesianPoint pt = ifcengine.internalGetInstanceFromP21Line(model, 100);
+            ASSERT(pt!=0);
+
 
             ifcengine.sdaiCloseModel(model);
         }
 
-        static void TestGlobalRules(Int64 model)
+        static void EnumerateGlobalScripts(Int64 model)
         {
             var ok = ifcengine.engiEnableExpressScript(model, true);
             ASSERT(ok);
