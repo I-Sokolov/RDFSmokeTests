@@ -20,9 +20,56 @@ namespace CsIfcEngineTests
 
             TestSIUnitsDerivedDim(model);
 
-            
+            TestGlobalRules(model);
 
             ifcengine.sdaiCloseModel(model);
+        }
+
+        static void TestGlobalRules(Int64 model)
+        {
+            var ok = ifcengine.engiEnableExpressScript(model, true);
+            ASSERT(ok);
+
+            var funcNames = new HashSet<string>();
+            funcNames.Add("IfcAssociatedSurface");
+            funcNames.Add("IfcBaseAxis");
+            funcNames.Add("IfcBooleanChoose");
+
+            var ruleNames = new HashSet<string>();
+            ruleNames.Add("IfcSingleProjectInstance");
+            ruleNames.Add("IfcRepresentationContextSameWCS");
+
+            Int64 script = 0;
+            while (0!=(script = ifcengine.engiGetSchemaScriptDeclarationByIterator(model, script)))
+            {
+                string label;
+                string text;
+
+                var type = ifcengine.engiGetDeclarationType(script);
+                switch (type)
+                {
+                    case enum_express_declaration.__PROCEDURE:
+                        ASSERT(false); //not expected in IFC4
+                        break;
+
+                    case enum_express_declaration.__FUNCTION:
+                        ifcengine.engiGetScriptText(script, out label, out _);
+                        funcNames.Remove(label);
+                        break;
+
+                    case enum_express_declaration.__GLOBAL_RULE:
+                        ifcengine.engiGetScriptText(script, out label, out text);
+                        ASSERT(ruleNames.Contains(label));
+                        ruleNames.Remove(label);
+                        break;
+
+                    default:
+                        ASSERT(false); //not expected
+                        break;
+                } 
+            }
+
+            ASSERT(funcNames.Count == 0 && ruleNames.Count == 0);
         }
 
         static void TestSIUnitsDerivedDim(Int64 model)
