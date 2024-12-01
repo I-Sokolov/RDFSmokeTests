@@ -138,12 +138,12 @@ ExpressID Ifc4test()
     //
     Ifc4test_Check(model, extID, false, false, false);
 
-    bool ok = engiEnableEvaluatingDerivedAttributes(model, true);
+    bool ok = engiEnableExpressScript(model, true);
     ASSERT(ok);
 
     Ifc4test_Check(model, extID, true, false, false);
 
-    ok = engiEnableEvaluatingDerivedAttributes(model, false);
+    ok = engiEnableExpressScript(model, false);
     ASSERT(ok);
 
     Ifc4test_Check(model, extID, false, false, false);
@@ -162,7 +162,7 @@ static void CheckDerivedCache(ExpressID operId)
     IFC4::IfcCartesianTransformationOperator3DnonUniform oper = internalForceInstanceFromP21Line(model, operId);
     ASSERT(oper);
 
-    bool ok = engiEnableEvaluatingDerivedAttributes(model, true);
+    bool ok = engiEnableExpressScript(model, true);
     ASSERT(ok);
 
     SdaiReal scl = 0;
@@ -220,7 +220,7 @@ static void TestAttributes(SdaiEntity entity, int nAttr, const char* rNames[], c
 
         const char* name = 0;
         SdaiEntity def = 0;
-        engiGetAttributeTraits(attr, &name, &def, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+        engiGetAttrTraits(attr, &name, &def, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
         ASSERT(0 == strcmp(name, rNames[i]));
         ASSERT(def);
 
@@ -228,7 +228,7 @@ static void TestAttributes(SdaiEntity entity, int nAttr, const char* rNames[], c
         ASSERT(0 == strcmp(defName, rDef[i]));
 
         auto der = engiGetAttrDerived(entity, attr);
-        ASSERT(der == derived[i]);
+        ASSERT(der && derived[i] || !der && !derived[i]);
 
         i++;
     }

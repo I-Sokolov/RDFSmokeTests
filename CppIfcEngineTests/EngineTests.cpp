@@ -213,11 +213,11 @@ static void TestBinaries(SdaiModel ifcModel)
     ASSERT(!ret && !inst);
 
     const char* argName = NULL;
-    engiGetEntityArgumentName(entityBlobTexture, 1, sdaiSTRING, &argName);
+    engiGetAttrNameByIndex(entityBlobTexture, 1, sdaiSTRING, &argName);
     ASSERT(0 == strcmp(argName, "RepeatT"));
 
     int_t argType;
-    engiGetEntityArgumentType(entityBlobTexture, 1, &argType);
+    engiGetAttrPrimitiveTypeByIndex(entityBlobTexture, 1, &argType);
     ASSERT(argType == sdaiBOOLEAN);
 
     auto entityPixelTexture = sdaiGetEntity(readModel, "IfcPixelTexture");
@@ -677,11 +677,11 @@ static void TestGetADBValue(SdaiModel ifcModel)
 
     //
     auto entityCtx = sdaiGetEntity(ifcModel, "IfcContext");
-    auto ind = engiGetEntityAttributeIndex(entityCtx, "UnitsInContext");
+    auto ind = engiGetAttrIndexBN(entityCtx, "UnitsInContext");
     ASSERT(ind == 15);
-    ind = engiGetEntityAttributeIndexEx(entityCtx, "UnitsInContext", true, false);
+    ind = engiGetAttrIndexExBN(entityCtx, "UnitsInContext", true, false);
     ASSERT(ind == 8);
-    ind = engiGetEntityAttributeIndexEx(entityCtx, "UnitsInContext", false, false);
+    ind = engiGetAttrIndexExBN(entityCtx, "UnitsInContext", false, false);
     ASSERT(ind == 4);
 }
 
@@ -695,13 +695,13 @@ static void TestAttrIndex(SdaiModel ifcModel)
     auto attr = engiGetEntityAttributeByIndex(wall, 0, false, false);
 
     const char* attrName = nullptr;
-    bool inverse = false;
+    SdaiBoolean inverse = false;
     SdaiEntity definingEntity = 0;
     enum_express_attr_type attrType = enum_express_attr_type::__NONE;
     SdaiEntity domainEntity = 0;
     SchemaAggr aggrDescr = 0;
-    bool optional = false;
-    engiGetAttributeTraits(attr, &attrName, &definingEntity, nullptr, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
+    SdaiBoolean optional = false;
+    engiGetAttrTraits(attr, &attrName, &definingEntity, nullptr, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
     ASSERT(!inverse && !strcmp(attrName, "PredefinedType") && optional);
     ASSERT(attrType == enum_express_attr_type::__NONE);
     auto sz = engiGetEntityName(definingEntity, sdaiSTRING);
@@ -716,11 +716,11 @@ static void TestAttrIndex(SdaiModel ifcModel)
     auto res = sdaiGetAttrBN(wall, "PredefinedType", sdaiENUM, &type);
     ASSERT(res == &type && !strcmp(type, "SOLIDWALL"));
 
-    auto ind = engiGetEntityAttributeIndexEx(wall, "PredefinedType", true, true);
+    auto ind = engiGetAttrIndexExBN(wall, "PredefinedType", true, true);
     ASSERT(ind == 32);
-    ind = engiGetEntityAttributeIndexEx(wall, "PredefinedType", true, false);
+    ind = engiGetAttrIndexExBN(wall, "PredefinedType", true, false);
     ASSERT(ind == 8);
-    ind = engiGetEntityAttributeIndexEx(wall, "PredefinedType", false, true);
+    ind = engiGetAttrIndexExBN(wall, "PredefinedType", false, true);
     ASSERT(ind == 0);
 
     //inverse attribute
@@ -738,11 +738,11 @@ static void TestAttrIndex(SdaiModel ifcModel)
     stepId = internalGetP21Line(building);
     ASSERT(stepId == 7);
 
-    ind = engiGetEntityAttributeIndexEx(wall, "Decomposes", true, true);
+    ind = engiGetAttrIndexExBN(wall, "Decomposes", true, true);
     ASSERT(ind == 9);
-    ind = engiGetEntityAttributeIndexEx(wall, "Decomposes", true, false);
+    ind = engiGetAttrIndexExBN(wall, "Decomposes", true, false);
     ASSERT(ind == -1);
-    ind = engiGetEntityAttributeIndexEx(wall, "Decomposes", false, true);
+    ind = engiGetAttrIndexExBN(wall, "Decomposes", false, true);
     ASSERT(ind == -1);
 }
 

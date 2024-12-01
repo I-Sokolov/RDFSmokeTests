@@ -5,13 +5,14 @@ static void ReadUniqueRules(SdaiModel model)
     auto app = sdaiGetEntity(model, "IfcApplication");
     ASSERT(app);
     
-    SchemaUniqueRule uniq = engiGetEntityUniqueRuleByIterator(app, 0);
+    UniqueRule uniq = engiGetEntityUniqueRuleByIterator(app, 0, nullptr);
     ASSERT(uniq);
 
-    uniq = engiGetEntityUniqueRuleByIterator(app, uniq);
+    SdaiString label;
+    uniq = engiGetEntityUniqueRuleByIterator(app, uniq, &label);
     ASSERT(uniq);
 
-    uniq = engiGetEntityUniqueRuleByIterator(app, uniq);
+    uniq = engiGetEntityUniqueRuleByIterator(app, uniq, nullptr);
     ASSERT(!uniq);
 }
 
@@ -20,31 +21,32 @@ static void ReadWhereRules(SdaiModel model)
     auto angle = sdaiGetEntity(model, "IfcCompoundPlaneAngleMeasure");
     ASSERT(angle);
 
-    SchemaWhereRule rule = engiGetEntityWhereRuleByIterator(angle, 0);
+    ExpressScript rule = engiGetEntityWhereRuleByIterator(angle, 0, NULL);
     ASSERT(rule);
     ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
 
     const char* name = NULL;
     const char* body = NULL;
-    engiGetRuleDefinition(rule, &name, &body);
+    engiGetScriptText(rule, &name, &body);
     ASSERT(!strcmp(name, "MinutesInRange") && !strcmp(body, "ABS(SELF[2]) < 60;"));
 
-    rule = engiGetEntityWhereRuleByIterator(angle, rule);
+    rule = engiGetEntityWhereRuleByIterator(angle, rule, &name);
     ASSERT(rule); 
     ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
+    ASSERT(!strcmp(name, "SecondsInRange"));
 
-    engiGetRuleDefinition(rule, &name, &body);
+    engiGetScriptText(rule, &name, &body);
     ASSERT(!strcmp(name, "SecondsInRange") && !strcmp(body, "ABS(SELF[3]) < 60;"));
 
-    rule = engiGetEntityWhereRuleByIterator(angle, rule);
+    rule = engiGetEntityWhereRuleByIterator(angle, rule, NULL);
     ASSERT(rule);
     ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
 
-    rule = engiGetEntityWhereRuleByIterator(angle, rule);
+    rule = engiGetEntityWhereRuleByIterator(angle, rule, NULL);
     ASSERT(rule);
     ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
 
-    rule = engiGetEntityWhereRuleByIterator(angle, rule);
+    rule = engiGetEntityWhereRuleByIterator(angle, rule, NULL);
     ASSERT(!rule);
 }
 
@@ -54,7 +56,7 @@ static void SchemaRuleByIterator(SdaiModel model)
     const char* name1 = "IfcAssociatedSurface";
 
     SchemaDecl rule = NULL;
-    while (rule = engiGetSchemaRuleByIterator(model, rule)) {
+    while (rule = engiGetSchemaScriptDeclarationByIterator(model, rule)) {
 
         auto type = engiGetDeclarationType(rule);
         ASSERT(type >= enum_express_declaration::__FUNCTION && type <= enum_express_declaration::__SCHEMA_RULE);
@@ -62,7 +64,7 @@ static void SchemaRuleByIterator(SdaiModel model)
 
         if (name1) {
             const char* name = NULL;
-            engiGetRuleDefinition(rule, &name, NULL);
+            engiGetScriptText(rule, &name, NULL);
             ASSERT(0==strcmp(name, name1));
             name1 = NULL;
         }

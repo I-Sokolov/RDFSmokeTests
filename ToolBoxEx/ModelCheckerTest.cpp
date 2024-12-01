@@ -36,7 +36,7 @@ struct PrintIssue : public IssueHandler
         auto attr = validateGetAttr(issue);
         if (attr) {
             const char* name = 0;
-            engiGetAttributeTraits(attr, &name, 0, 0, 0, 0, 0, 0, 0);
+            engiGetAttrTraits(attr, &name, 0, 0, 0, 0, 0, 0, 0);
             return name;
         }
         else {
@@ -49,7 +49,7 @@ struct PrintIssue : public IssueHandler
         auto ent = validateGetEntity(issue);
         const char* name = GetAttrName(issue);
         if (ent && name) {
-            return engiGetEntityAttributeIndexEx(ent, name, true, false);
+            return engiGetAttrIndexExBN(ent, name, true, false);
         }
         else {
             return -1;
