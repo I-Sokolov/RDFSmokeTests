@@ -197,26 +197,6 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\TestData\schemas\AP214E3_2010.exp" />
-    <None Include="..\TestData\schemas\ap242ed2_mim_lf_v1.101.exp" />
-    <None Include="..\TestData\schemas\ap242ed3_mim_lf_v1.152.exp" />
-    <None Include="..\TestData\schemas\ap242_is_mim_lf_v1.36.exp" />
-    <None Include="..\TestData\schemas\IFC2X3_TC1.exp" />
-    <None Include="..\TestData\schemas\IFC4x1.exp" />
-    <None Include="..\TestData\schemas\IFC4x2.exp" />
-    <None Include="..\TestData\schemas\IFC4X3_ADD1.exp" />
-    <None Include="..\TestData\schemas\IFC4X3_ADD2.exp" />
-    <None Include="..\TestData\schemas\IFC4x3_RC1.exp" />
-    <None Include="..\TestData\schemas\IFC4x3_RC2.exp" />
-    <None Include="..\TestData\schemas\IFC4x3_RC3.exp" />
-    <None Include="..\TestData\schemas\IFC4x3_RC4.exp" />
-    <None Include="..\TestData\schemas\IFC4X3_TC1.exp" />
-    <None Include="..\TestData\schemas\IFC4x4.exp" />
-    <None Include="..\TestData\schemas\IFC4_ADD2_TC1.exp" />
-    <None Include="..\TestData\schemas\part403ts_wg3n2635mim_lf.exp" />
-    <None Include="..\TestData\schemas\structural_frame_schema.exp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
