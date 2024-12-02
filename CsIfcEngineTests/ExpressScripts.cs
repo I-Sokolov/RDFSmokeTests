@@ -31,7 +31,27 @@ namespace CsIfcEngineTests
 
             TestWhereRulesScript(model);
 
+            TestUniqueRules(model);
+
             ifcengine.sdaiCloseModel(model);
+        }
+
+        static void TestUniqueRules(Int64 model)
+        {
+            var app = ifcengine.sdaiGetEntity(model, "IfcApplication");
+            ASSERT(app);
+
+            string label;
+            Int64 rule = ifcengine.engiGetEntityUniqueRuleByIterator(app, 0, out label);
+            ASSERT(rule);
+            ASSERT(label == "UR1");
+
+            rule = ifcengine.engiGetEntityUniqueRuleByIterator(app, rule, out label);
+            ASSERT(rule);
+            ASSERT(label == "UR2");
+
+            rule = ifcengine.engiGetEntityUniqueRuleByIterator(app, rule, out label);
+            ASSERT(rule==0);
         }
 
         static void TestWhereRulesScript(Int64 model)
