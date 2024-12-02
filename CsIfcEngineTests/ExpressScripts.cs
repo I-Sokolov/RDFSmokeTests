@@ -25,15 +25,44 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
 
             //
+            model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
 
-            TestEvaluateDerivedByScript();
+            TestEvaluateDerivedByScript(model);
+
+            TestWhereRulesScript(model);
+
+            ifcengine.sdaiCloseModel(model);
         }
 
-
-        static void TestEvaluateDerivedByScript()
+        static void TestWhereRulesScript(Int64 model)
         {
-            var model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
+            long typeAngle = ifcengine.sdaiGetEntity(model, "IfcCompoundPlaneAngleMeasure");
+            ASSERT(typeAngle != 0);
 
+            string label;
+            string text;
+            Int64 rule = ifcengine.engiGetEntityWhereRuleByIterator(typeAngle, 0, out label);
+            ASSERT(rule != 0 && label == "MinutesInRange");
+
+            ifcengine.engiGetScriptText(rule, out _, out text);
+            ASSERT(text == "ABS(SELF[2]) < 60;");
+
+            string[] rLabels = { "SecondsInRange", "MicrosecondsInRange", "ConsistentSign" };
+
+            int i = 0;
+            while (0!=(rule = ifcengine.engiGetEntityWhereRuleByIterator(typeAngle, rule, out IntPtr _)))
+            {
+                ifcengine.engiGetScriptText(rule, out label, out _);
+                ASSERT(label == rLabels[i]);
+
+                i++;
+            }
+
+            ASSERT(i == 3);
+        }
+
+        static void TestEvaluateDerivedByScript(Int64 model)
+        {
             IFC4.IfcSIUnit lengthUnit = ifcengine.internalGetInstanceFromP21Line(model, 391);
             ASSERT(lengthUnit!=0);
 
@@ -100,8 +129,6 @@ namespace CsIfcEngineTests
             string s;
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiSTRING, out s);
             ASSERT(!res);
-
-            ifcengine.sdaiCloseModel(model);
         }
 
         static void EnumerateGlobalScripts(Int64 model)
