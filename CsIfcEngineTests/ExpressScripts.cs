@@ -54,11 +54,20 @@ namespace CsIfcEngineTests
             {
                 ifcengine.engiGetScriptText(rule, out label, out _);
                 ASSERT(label == rLabels[i]);
-
                 i++;
             }
-
             ASSERT(i == 3);
+
+            //
+            IFC4.IfcCartesianPoint pt = ifcengine.internalForceInstanceFromP21Line(model, 99);
+            var entity = ifcengine.sdaiGetInstanceType(pt);
+            
+            rule = ifcengine.engiGetEntityWhereRuleByIterator (entity, 0, out label);
+            ASSERT(rule != 0 && label == "CP2Dor3D");
+
+            string logval;
+            var r = ifcengine.engiEvaluateScriptExpression (model, pt, rule, ifcengine.sdaiLOGICAL, out logval);
+            ASSERT(r && logval == "T");
         }
 
         static void TestEvaluateDerivedByScript(Int64 model)
