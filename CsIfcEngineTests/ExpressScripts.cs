@@ -46,9 +46,25 @@ namespace CsIfcEngineTests
             ASSERT(rule);
             ASSERT(label == "UR1");
 
+            string domain;
+            string attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, null, out domain);
+            ASSERT(attrName == "ApplicationIdentifier" && domain == null);
+
+            attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
+            ASSERT(attrName == null && domain == null);
+
             rule = ifcengine.engiGetEntityUniqueRuleByIterator(app, rule, out label);
             ASSERT(rule);
             ASSERT(label == "UR2");
+
+            attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, null, out domain);
+            ASSERT(attrName == "ApplicationFullName" && domain == null);
+
+            attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
+            ASSERT(attrName == "Version" && domain == null);
+
+            attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
+            ASSERT(attrName == null && domain == null);
 
             rule = ifcengine.engiGetEntityUniqueRuleByIterator(app, rule, out label);
             ASSERT(rule==0);
