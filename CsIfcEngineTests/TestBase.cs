@@ -26,6 +26,13 @@ namespace CsTests
             }
         }
 
+        protected static void ASSERT(Int64 condition) 
+        {
+            if (condition==0)
+            {
+                throw new ApplicationException("ASSERT failed");
+            }
+        }
 
         protected static void ASSERT_EQ(IEnumerable lst1, IEnumerable lst2)
         {
