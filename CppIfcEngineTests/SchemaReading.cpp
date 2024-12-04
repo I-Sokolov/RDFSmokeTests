@@ -59,7 +59,7 @@ static void SchemaRuleByIterator(SdaiModel model)
     while (rule = engiGetSchemaScriptDeclarationByIterator(model, rule)) {
 
         auto type = engiGetDeclarationType(rule);
-        ASSERT(type >= enum_express_declaration::__FUNCTION && type <= enum_express_declaration::__SCHEMA_RULE);
+        ASSERT(type >= enum_express_declaration::__FUNCTION && type <= enum_express_declaration::__GLOBAL_RULE);
         numRules[(int)type - (int)enum_express_declaration::__FUNCTION]++;
 
         if (name1) {
