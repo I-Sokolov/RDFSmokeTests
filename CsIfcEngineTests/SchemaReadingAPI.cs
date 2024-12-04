@@ -93,6 +93,9 @@ namespace CsIfcEngineTests
             FillWallAttr(wallAttr);
 
             IterateAttributes(wall, wallAttr.ToArray());
+
+            var name = ifcengine.engiGetAttrNameByIndex(wall, 2);
+            ASSERT(name == "Name");
         }
 
         static void IterateAttributes(Int64 entity, AttrTrairs[] traits)
@@ -176,7 +179,7 @@ namespace CsIfcEngineTests
 
             Check(aggrType, aggrDef.aggrType);
             Check(cardinalityMin, aggrDef.cardinalityMin);
-            Check(cardinalityMax, aggrDef.cardinalityMin);
+            Check(cardinalityMax, aggrDef.cardinalityMax);
             Check(optional, aggrDef.optional);
             Check(unique, aggrDef.unique);
 
