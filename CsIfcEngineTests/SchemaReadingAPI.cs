@@ -109,6 +109,8 @@ namespace CsIfcEngineTests
             ASSERT(ind == -1);
             ind = ifcengine.engiGetAttrIndexBN(wall, "PredefinedType");
             ASSERT(ind == 32);
+            ind = ifcengine.engiGetAttrIndexExBN(wall, "PredefinedType", true, false);
+            ASSERT(ind == 8);
         }
 
         static void IterateAttributes(Int64 entity, AttrTrairs[] traits)
