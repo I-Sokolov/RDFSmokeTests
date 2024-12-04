@@ -137,6 +137,19 @@ namespace CsIfcEngineTests
 
                 TestAggregationDefinition(aggregationDefinition, traits[ind].aggrDef);
 
+                var str = ifcengine.engiGetAttrName(attr);
+                ASSERT(str == name);
+                var b = ifcengine.engiIsAttrDirect(attr);
+                ASSERT(b == direct);
+                b = ifcengine.engiIsAttrInverse(attr);
+                ASSERT(b == inverse);
+                b = ifcengine.engiIsAttrOptional(attr);
+                ASSERT(b == optional);
+                Int64 val = ifcengine.engiGetAttrDefiningEntity(attr);
+                ASSERT(val == definingEntity);
+                str = ifcengine.engiGetAttrDomainName(attr);
+                ASSERT(str == domainName);
+
 #if WRITE
                 Console.WriteLine("));");
 #endif
@@ -152,15 +165,13 @@ namespace CsIfcEngineTests
             {
 #if WRITE
                 Console.WriteLine("null");
-                return;
-#else
+#endif
                 ASSERT(aggrDef == null);
                 return;
             }
             else
             {
                 ASSERT(aggrDef != null);
-#endif
             }
 
 
@@ -195,9 +206,8 @@ namespace CsIfcEngineTests
 #if WRITE
             System.Console.Write (i);
             System.Console.WriteLine(",");
-#else
-            ASSERT(i == expected);
 #endif
+            ASSERT(i == expected);
         }
 
         static void Check(string str, string expected)
@@ -214,9 +224,8 @@ namespace CsIfcEngineTests
                 System.Console.Write("null");
             }
             System.Console.WriteLine(",");
-#else
-            ASSERT(str == expected);
 #endif
+            ASSERT(str == expected);
         }
 
         static void Check(bool b, bool expected)
@@ -224,9 +233,8 @@ namespace CsIfcEngineTests
 #if WRITE
             System.Console.Write(b ? "true" : "false");
             System.Console.WriteLine(",");
-#else
-            ASSERT(b==expected);
 #endif
+            ASSERT(b==expected);
         }
 
         static void Check (enum_express_attr_type attrType, enum_express_attr_type expected)
@@ -235,9 +243,8 @@ namespace CsIfcEngineTests
             System.Console.Write("enum_express_attr_type.");
             System.Console.Write (attrType.ToString());
             System.Console.WriteLine(",");
-#else
-            ASSERT(attrType == expected);
 #endif
+            ASSERT(attrType == expected);
         }
 
         static void Check(enum_express_aggr aggrType, enum_express_aggr expected)
@@ -246,9 +253,8 @@ namespace CsIfcEngineTests
             System.Console.Write("enum_express_aggr.");
             System.Console.Write(aggrType.ToString());
             System.Console.WriteLine(",");
-#else
-            ASSERT(aggrType == expected);
 #endif
+            ASSERT(aggrType == expected);
         }
 
         static void IterateEntities(Int64 model)
