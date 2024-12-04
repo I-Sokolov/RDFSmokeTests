@@ -94,8 +94,21 @@ namespace CsIfcEngineTests
 
             IterateAttributes(wall, wallAttr.ToArray());
 
-            var name = ifcengine.engiGetAttrNameByIndex(wall, 2);
-            ASSERT(name == "Name");
+            var str = ifcengine.engiGetAttrNameByIndex(wall, 2);
+            ASSERT(str == "Name");
+            bool b = ifcengine.engiIsAttrDirectBN(wall, "Name");
+            ASSERT(b);
+            b = ifcengine.engiIsAttrInverseBN(wall, "Name");
+            ASSERT(!b);
+            b = ifcengine.engiIsAttrOptionalBN(wall, "Name");
+            ASSERT(b);
+            str = ifcengine.engiGetAttrDomainNameBN (wall, "Name");
+            ASSERT(str == "IfcLabel");
+
+            Int64 ind = ifcengine.engiGetAttrIndexBN (wall, "WallType");
+            ASSERT(ind == -1);
+            ind = ifcengine.engiGetAttrIndexBN(wall, "PredefinedType");
+            ASSERT(ind == 32);
         }
 
         static void IterateAttributes(Int64 entity, AttrTrairs[] traits)
