@@ -111,6 +111,15 @@ namespace CsIfcEngineTests
             ASSERT(ind == 32);
             ind = ifcengine.engiGetAttrIndexExBN(wall, "PredefinedType", true, false);
             ASSERT(ind == 8);
+
+            var attr = ifcengine.sdaiGetAttrDefinition(wall, "Name");
+            var tp = ifcengine.engiGetAttrPrimitiveType(attr);
+            ASSERT(tp == ifcengine.sdaiSTRING);
+
+            ifcengine.engiGetAttrPrimitiveTypeByIndex(wall, 900, out tp);
+            ASSERT(tp == 0);
+            ifcengine.engiGetAttrPrimitiveTypeByIndex(wall, 32, out tp);
+            ASSERT(tp == ifcengine.sdaiENUM);
         }
 
         static void IterateAttributes(Int64 entity, AttrTrairs[] traits)
