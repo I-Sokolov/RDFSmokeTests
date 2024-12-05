@@ -96,7 +96,7 @@ namespace CsIfcEngineTests
 
             var str = ifcengine.engiGetAttrNameByIndex(wall, 2);
             ASSERT(str == "Name");
-            bool b = ifcengine.engiIsAttrDirectBN(wall, "Name");
+            bool b = ifcengine.engiIsAttrExplicitBN(wall, "Name");
             ASSERT(b);
             b = ifcengine.engiIsAttrInverseBN(wall, "Name");
             ASSERT(!b);
@@ -113,12 +113,12 @@ namespace CsIfcEngineTests
             ASSERT(ind == 8);
 
             var attr = ifcengine.sdaiGetAttrDefinition(wall, "Name");
-            var tp = ifcengine.engiGetAttrPrimitiveType(attr);
+            var tp = ifcengine.engiGetAttrType(attr);
             ASSERT(tp == ifcengine.sdaiSTRING);
 
-            ifcengine.engiGetAttrPrimitiveTypeByIndex(wall, 900, out tp);
+            ifcengine.engiGetAttrTypeByIndex(wall, 900, out tp);
             ASSERT(tp == 0);
-            ifcengine.engiGetAttrPrimitiveTypeByIndex(wall, 32, out tp);
+            ifcengine.engiGetAttrTypeByIndex(wall, 32, out tp);
             ASSERT(tp == ifcengine.sdaiENUM);
         }
 
@@ -163,7 +163,7 @@ namespace CsIfcEngineTests
 
                 var str = ifcengine.engiGetAttrName(attr);
                 ASSERT(str == name);
-                var b = ifcengine.engiIsAttrDirect(attr);
+                var b = ifcengine.engiIsAttrExplicit(attr);
                 ASSERT(b == direct);
                 b = ifcengine.engiIsAttrInverse(attr);
                 ASSERT(b == inverse);

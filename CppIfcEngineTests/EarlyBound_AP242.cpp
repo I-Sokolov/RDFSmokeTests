@@ -280,7 +280,7 @@ static void test_multi_parent()
         ASSERT((aggrDescr != 0) == (i==2 || i==3 || i >= 5));
 
         int_t type = 0;
-        engiGetAttrPrimitiveTypeByIndex(entity, i, &type);
+        engiGetAttrTypeByIndex(entity, i, &type);
         ASSERT(type == rTypes[i]);
 
         //not crashing with nulls

@@ -138,12 +138,12 @@ ExpressID Ifc4test()
     //
     Ifc4test_Check(model, extID, false, false, false);
 
-    bool ok = engiEnableExpressScript(model, true);
+    bool ok = engiEnableDerivedAttributes(model, true);
     ASSERT(ok);
 
     Ifc4test_Check(model, extID, true, false, false);
 
-    ok = engiEnableExpressScript(model, false);
+    ok = engiEnableDerivedAttributes(model, false);
     ASSERT(ok);
 
     Ifc4test_Check(model, extID, false, false, false);
@@ -162,7 +162,7 @@ static void CheckDerivedCache(ExpressID operId)
     IFC4::IfcCartesianTransformationOperator3DnonUniform oper = internalForceInstanceFromP21Line(model, operId);
     ASSERT(oper);
 
-    bool ok = engiEnableExpressScript(model, true);
+    bool ok = engiEnableDerivedAttributes(model, true);
     ASSERT(ok);
 
     SdaiReal scl = 0;

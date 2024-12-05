@@ -132,14 +132,11 @@ namespace CsIfcEngineTests
             ASSERT(label == null && text == "IfcDimensionsForSiUnit (SELF.Name);");
 
             Int64 dim;
-            var res = ifcengine.engiEvaluateScriptExpression (model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
-            ASSERT(!res);
-
-            var ok = ifcengine.engiEnableExpressScript(model, true);
-            ASSERT(ok);
-
-            res = ifcengine.engiEvaluateScriptExpression(model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
+            var res = ifcengine.engiEvaluateScriptExpression(model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
             ASSERT(res && dim != 0);
+
+            var ok = ifcengine.engiEnableDerivedAttributes(model, true);
+            ASSERT(ok);
 
             IFC4.IfcDimensionalExponents ddim = dim;
             ASSERT(ddim != 0);
@@ -178,7 +175,7 @@ namespace CsIfcEngineTests
 
         static void EnumerateGlobalScripts(Int64 model)
         {
-            var ok = ifcengine.engiEnableExpressScript(model, true);
+            var ok = ifcengine.engiEnableDerivedAttributes(model, true);
             ASSERT(ok);
 
             var funcNames = new HashSet<string>();
@@ -227,15 +224,15 @@ namespace CsIfcEngineTests
         {
             TestSIUnitsDerivedDim(model, false);
 
-            var ok = ifcengine.engiEnableExpressScript(model, true);
+            var ok = ifcengine.engiEnableDerivedAttributes(model, true);
             ASSERT(ok);
             TestSIUnitsDerivedDim(model, true);
 
-            ok = ifcengine.engiEnableExpressScript(model, false);
+            ok = ifcengine.engiEnableDerivedAttributes(model, false);
             ASSERT(ok);
             TestSIUnitsDerivedDim(model, false);
 
-            ok = ifcengine.engiEnableExpressScript(model, true);
+            ok = ifcengine.engiEnableDerivedAttributes(model, true);
             ASSERT(ok);
             TestSIUnitsDerivedDim(model, true);
         }

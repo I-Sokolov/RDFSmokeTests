@@ -217,7 +217,7 @@ static void TestBinaries(SdaiModel ifcModel)
     ASSERT(0 == strcmp(argName, "RepeatT"));
 
     int_t argType;
-    engiGetAttrPrimitiveTypeByIndex(entityBlobTexture, 1, &argType);
+    engiGetAttrTypeByIndex(entityBlobTexture, 1, &argType);
     ASSERT(argType == sdaiBOOLEAN);
 
     auto entityPixelTexture = sdaiGetEntity(readModel, "IfcPixelTexture");
