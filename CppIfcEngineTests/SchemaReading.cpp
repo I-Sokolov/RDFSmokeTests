@@ -73,9 +73,36 @@ static void SchemaRuleByIterator(SdaiModel model)
     ASSERT(numRules[0] == 47 && numRules[1] == 0 && numRules[2] == 2);
 }
 
+static void IterateAllAttr()
+{
+    auto model = sdaiCreateModelBN("AP242");
+
+    int i = 0;
+    SchemaTypeIterator it = 0;
+    while (0 != (it = engiGetNextTypeDeclarationIterator(model, it))) {
+        
+        auto entity = engiGetTypeDeclarationFromIterator(model, it);
+
+        if (engiGetDeclarationType(entity) == enum_express_declaration::__ENTITY) {
+            SdaiAttr attr = 0;
+            while (0 != (attr = ::engiGetEntityAttributeByIterator(entity, attr))) {
+                //printf("#%d %s\n", i, engiGetAttrName(attr));
+                i++;
+            }
+
+        }
+    }
+    
+    ASSERT(i==9744);
+
+    sdaiCloseModel(model);
+}
+
 extern void SchemaReadingTests()
 {
     ENTER_TEST;
+    
+    IterateAllAttr();
 
     auto model = sdaiCreateModelBN("IFC4");
 
