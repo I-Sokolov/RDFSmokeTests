@@ -26,7 +26,7 @@ extern int main()
 #ifdef VLD_ON
         VLDReportLeaks();
 #endif
-        printf("---------- Finished ToolBoxEx enginde C++ tests.\n");
+        printf("---------- Finished ToolBoxEx engine C++ tests.\n");
 
         return 0;
     }
