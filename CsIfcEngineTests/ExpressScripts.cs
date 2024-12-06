@@ -103,7 +103,7 @@ namespace CsIfcEngineTests
 
             string logval;
             var r = ifcengine.engiEvaluateScriptExpression (model, pt, rule, ifcengine.sdaiLOGICAL, out logval);
-            ASSERT(r && logval == "T");
+            ASSERT(r != 0 && logval == "T");
         }
 
         static void TestEvaluateDerivedByScript(Int64 model)
@@ -133,7 +133,7 @@ namespace CsIfcEngineTests
 
             Int64 dim;
             var res = ifcengine.engiEvaluateScriptExpression(model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
-            ASSERT(res && dim != 0);
+            ASSERT(res != 0 && dim != 0);
 
             var ok = ifcengine.engiEnableDerivedAttributes(model, true);
             ASSERT(ok);
@@ -155,22 +155,22 @@ namespace CsIfcEngineTests
             ASSERT(derivedScript2 == derivedScript);
 
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiINSTANCE, out dim);
-            ASSERT(!res);
+            ASSERT(res == 0);
 
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiINTEGER, out dim);
-            ASSERT(res && dim == 3);
+            ASSERT(res != 0 && dim == 3);
 
             double v;
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiREAL, out v);
-            ASSERT(res && v == 3);
+            ASSERT(res != 0 && v == 3);
 
             bool b;
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiBOOLEAN, out b);
-            ASSERT(!res);
+            ASSERT(res == 0);
 
             string s;
             res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiSTRING, out s);
-            ASSERT(!res);
+            ASSERT(res == 0);
         }
 
         static void EnumerateGlobalScripts(Int64 model)
@@ -245,7 +245,7 @@ namespace CsIfcEngineTests
             var it = ifcengine.sdaiCreateIterator(units);
             ASSERT(it != 0);
 
-            while (ifcengine.sdaiNext(it) != 0)
+            while (ifcengine.sdaiNext(it))
             {
                 Int64 instance = 0;
 
