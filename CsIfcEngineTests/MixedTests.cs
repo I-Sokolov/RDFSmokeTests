@@ -32,7 +32,7 @@ namespace CsIfcEngineTests
             expectedOrigin[9] = 1.0;
             expectedOrigin[10] = 2.0;
             expectedOrigin[11] = 3.0;
-            ifcengine.setGlobalPlacement(model, ref expectedOrigin[0], 0);
+            ifcengine.setGlobalPlacement(model, ref expectedOrigin[0], false);
 
             //check, use second form 
             ifcengine.getGlobalPlacement(model, getOrigin);

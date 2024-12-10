@@ -7,7 +7,7 @@ static void TestADBBoolean(SdaiInstance inst, const char* attr)
 {
     //get $
     SdaiADB adb = nullptr;
-    void* ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    auto ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
     ASSERT(!ret && !adb);
 
     //variants
@@ -109,7 +109,7 @@ static void TestADBLogical(SdaiInstance inst, const char* attr)
     sdaiPutAttrBN(inst, attr, sdaiADB, adb);
     sdaiDeleteADB(adb);
     
-    void* ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
+    auto ret = sdaiGetAttrBN(inst, attr, sdaiADB, &adb);
     ASSERT(ret && adb);
 
     const char* logVal = NULL;
@@ -203,13 +203,13 @@ static void TestBinaries(SdaiModel ifcModel)
     ASSERT(N == 1);
     for (int_t i = 0; i < N; i++) {
         int_t inst = 0;
-        void* ret = sdaiGetAggrByIndex(blobTextureAggr, i, sdaiINSTANCE, &inst);
+        auto ret = sdaiGetAggrByIndex(blobTextureAggr, i, sdaiINSTANCE, &inst);
         ASSERT(ret && (SdaiInstance)ret == inst);
         auto code = IfcBlobTexture(inst).get_RasterCode();
         ASSERT(0 == strcmp(code, rasterCode));
     }
     int_t inst = 0;
-    void* ret = sdaiGetAggrByIndex(blobTextureAggr, N+1, sdaiINSTANCE, &inst);
+    auto ret = sdaiGetAggrByIndex(blobTextureAggr, N+1, sdaiINSTANCE, &inst);
     ASSERT(!ret && !inst);
 
     const char* argName = NULL;
@@ -756,7 +756,7 @@ static void GetAllInstancesTest(SdaiModel ifcModel, int_t expectedNum)
     ASSERT(nInst == expectedNum);
 
     SdaiInstance inst = 0;
-    void* ret = sdaiGetAggrByIndex(aggrAll, expectedNum, sdaiINSTANCE, &inst);
+    auto ret = sdaiGetAggrByIndex(aggrAll, expectedNum, sdaiINSTANCE, &inst);
     ASSERT(ret == 0 && inst == 0);
     ret = sdaiGetAggrByIndex(aggrAll, -1, sdaiINSTANCE, &inst);
     ASSERT(ret == 0 && inst == 0);

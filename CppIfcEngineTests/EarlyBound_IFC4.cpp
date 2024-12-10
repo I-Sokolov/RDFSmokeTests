@@ -56,7 +56,7 @@ extern void EarlyBound_IFC4_test()
     auto wall = IfcWall::Create(ifcModel);
 
     SdaiAggr aggrRelDefined = 0;
-    void* ret = sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggrRelDefined);
+    auto ret = sdaiGetAttrBN(wall, "IsDefinedBy", sdaiAGGR, &aggrRelDefined);
     //expected null? ASSERT(!ret && !aggrRelDefined);
     ASSERT(ret && (SdaiAggr) ret == aggrRelDefined);
 
@@ -637,7 +637,7 @@ extern void EarlyBound_IFC4_test()
     for (i = 0; i < N_rels; i++) {
 
         int_t rel = 0;
-        void* ret = sdaiGetAggrByIndex(rels, i, sdaiINSTANCE, &rel);
+        auto ret = sdaiGetAggrByIndex(rels, i, sdaiINSTANCE, &rel);
         ASSERT(ret && (SdaiInstance)ret == rel);
 
         auto get = IfcRelDefinesByProperties(rel).get_RelatingPropertyDefinition();

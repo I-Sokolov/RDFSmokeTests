@@ -36,7 +36,7 @@ static void* Value2Ptr(SdaiPrimitiveType valueType, va_list value)
 }
 
 
-void sdaiAdd(
+void sdaiAdd_(
     const SdaiAggr			aggregate,
     SdaiPrimitiveType		valueType,
     ...
@@ -734,14 +734,14 @@ static void Add()
     double dval = 10.0;
     SdaiADB adbval = sdaiCreateADB(sdaiREAL, &dval);
 
-    sdaiAdd(pt1, sdaiREAL, dval);
-    sdaiAdd(pt1, sdaiADB, adbval);
+    sdaiAdd_(pt1, sdaiREAL, dval);
+    sdaiAdd_(pt1, sdaiADB, adbval);
 
     for (int i = 0; i < 5; i++) {
         SdaiAggr pt2 = sdaiCreateNestedAggr(coordList);
-        sdaiAdd(pt2, sdaiADB, adbval);
+        sdaiAdd_(pt2, sdaiADB, adbval);
         dval = (i + 2) * 10;
-        sdaiAdd(pt2, sdaiREAL, dval);
+        sdaiAdd_(pt2, sdaiREAL, dval);
     }
 
     // shared aggregation
@@ -753,15 +753,15 @@ static void Add()
     sdaiPutAttrBN(person2, "MiddleNames", sdaiAGGR, aggrNames);
     sdaiPutAttrBN(person3, "MiddleNames", sdaiAGGR, aggrNames);
 
-    sdaiAdd(aggrNames, sdaiSTRING, "Name");
+    sdaiAdd_(aggrNames, sdaiSTRING, "Name");
     
     SdaiAggr aggrNames2 = NULL;
     sdaiGetAttrBN(person2, "MiddleNames", sdaiAGGR, &aggrNames2);
     sdaiPutAttrBN(person2, "MiddleNames", sdaiAGGR, aggrNames2);//self-put
     sdaiPutAttrBN(person4, "MiddleNames", sdaiAGGR, aggrNames2);
 
-    sdaiAdd(aggrNames, sdaiSTRING, "Name");
-    sdaiAdd(aggrNames2, sdaiSTRING, "Name");
+    sdaiAdd_(aggrNames, sdaiSTRING, "Name");
+    sdaiAdd_(aggrNames2, sdaiSTRING, "Name");
 
     //array of ADB of array
     auto poly = IFC4::IfcIndexedPolyCurve::Create(model);
@@ -769,17 +769,17 @@ static void Add()
     SdaiAggr segments = sdaiCreateAggrBN(poly, "Segments");
 
     SdaiAggr indecies = sdaiCreateAggr(poly, NULL);
-    sdaiAdd(indecies, sdaiINTEGER, 2);
+    sdaiAdd_(indecies, sdaiINTEGER, 2);
 
     SdaiADB adb = sdaiCreateADB(sdaiAGGR, indecies);
 
     sdaiPutADBTypePath(adb, 1, "IFCLINEINDEX");
-    sdaiAdd(segments, sdaiADB, adb);
+    sdaiAdd_(segments, sdaiADB, adb);
 
     sdaiPutADBTypePath(adb, 1, "IFCARCINDEX");
-    sdaiAdd(segments, sdaiADB, adb);
+    sdaiAdd_(segments, sdaiADB, adb);
 
-    sdaiAdd(indecies, sdaiINTEGER, 4);
+    sdaiAdd_(indecies, sdaiINTEGER, 4);
 
     SdaiInteger ival = 0;
     sdaiInsertByIndex(indecies, 0, sdaiINTEGER, &ival);
@@ -801,8 +801,8 @@ static void Add()
     sdaiPutADBTypePath(adb, 1, "IFCLINEINDEX");
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
-    sdaiAdd(indecies, sdaiINTEGER, 2);
-    sdaiAdd(indecies, sdaiINTEGER, 4);
+    sdaiAdd_(indecies, sdaiINTEGER, 2);
+    sdaiAdd_(indecies, sdaiINTEGER, 4);
     
     SdaiIterator iter = sdaiCreateIterator(indecies);
     sdaiNext(iter);
@@ -828,7 +828,7 @@ static void Add()
 
     indecies = sdaiCreateNestedAggrADB(segments, adb);
     for (int i = 0; i < 6; i++) {
-        sdaiAdd(indecies, sdaiINTEGER, 9999);
+        sdaiAdd_(indecies, sdaiINTEGER, 9999);
     }
     iter = sdaiCreateIterator(indecies);
     for (SdaiInteger i = 0; i < 2; i++) {
@@ -897,8 +897,8 @@ static SdaiInstance TestCreateNestedArgByIndex_0(SdaiModel model)
     //works like add for new index
     for (int i = 0; i < 5; i++) {
         auto coords = sdaiCreateNestedAggrByIndex(coordList, i);
-        sdaiAdd(coords, sdaiREAL, double(i));
-        sdaiAdd(coords, sdaiREAL, double(i));
+        sdaiAdd_(coords, sdaiREAL, double(i));
+        sdaiAdd_(coords, sdaiREAL, double(i));
     }
 
     return ptlst;
@@ -913,16 +913,16 @@ static SdaiInstance TestCreateNestedArgByIndex(SdaiModel model)
     //works like add for new index
     for (int i = 0; i < 5; i++) {
         auto coords = sdaiCreateNestedAggrByIndex(coordList, i);
-        sdaiAdd(coords, sdaiREAL, 2.0);
-        sdaiAdd(coords, sdaiREAL, 2.0);
+        sdaiAdd_(coords, sdaiREAL, 2.0);
+        sdaiAdd_(coords, sdaiREAL, 2.0);
     }
 
     //works as replace for existing instances
     for (int i = 0; i < 5; i++) {
         if (i != 2) {
             auto coords = sdaiCreateNestedAggrByIndex(coordList, i);
-            sdaiAdd(coords, sdaiREAL, double(i));
-            sdaiAdd(coords, sdaiREAL, double(i));
+            sdaiAdd_(coords, sdaiREAL, double(i));
+            sdaiAdd_(coords, sdaiREAL, double(i));
         }
     }
 
@@ -938,8 +938,8 @@ static SdaiInstance TestCreateNestedArgByItr(SdaiModel model)
     //works like add for new index
     for (int i = 0; i < 5; i++) {
         auto coords = sdaiCreateNestedAggrByIndex(coordList, i);
-        sdaiAdd(coords, sdaiREAL, 2.0);
-        sdaiAdd(coords, sdaiREAL, 2.0);
+        sdaiAdd_(coords, sdaiREAL, 2.0);
+        sdaiAdd_(coords, sdaiREAL, 2.0);
     }
 
     //works as replace for existing instances
@@ -947,8 +947,8 @@ static SdaiInstance TestCreateNestedArgByItr(SdaiModel model)
     for (int i = 0; sdaiNext(iter); i++) {
         if (i != 2) {
             auto coords = sdaiCreateNestedAggrByItr(iter);
-            sdaiAdd(coords, sdaiREAL, double(i));
-            sdaiAdd(coords, sdaiREAL, double(i));
+            sdaiAdd_(coords, sdaiREAL, double(i));
+            sdaiAdd_(coords, sdaiREAL, double(i));
         }
     }
     sdaiDeleteIterator(iter);
@@ -963,8 +963,8 @@ static SdaiInstance TestInsertBeforeAfter(SdaiModel model)
     auto coordList = sdaiCreateAggrBN(ptlst, "CoordList");
 
     auto coords = sdaiCreateNestedAggr(coordList);
-    sdaiAdd(coords, sdaiREAL, 2.0);
-    sdaiAdd(coords, sdaiREAL, 2.0);
+    sdaiAdd_(coords, sdaiREAL, 2.0);
+    sdaiAdd_(coords, sdaiREAL, 2.0);
 
     //works as replace for existing instances
     SdaiIterator iter = sdaiCreateIterator(coordList);
@@ -972,12 +972,12 @@ static SdaiInstance TestInsertBeforeAfter(SdaiModel model)
 
     for (int i = 0; i < 2; i++) {
         coords = sdaiInsertNestedAggrBefore(iter);
-        sdaiAdd(coords, sdaiREAL, double(i));
-        sdaiAdd(coords, sdaiREAL, double(i));
+        sdaiAdd_(coords, sdaiREAL, double(i));
+        sdaiAdd_(coords, sdaiREAL, double(i));
 
         coords = sdaiInsertNestedAggrAfter(iter);
-        sdaiAdd(coords, sdaiREAL, 4.0 - i);
-        sdaiAdd(coords, sdaiREAL, 4.0 - i);
+        sdaiAdd_(coords, sdaiREAL, 4.0 - i);
+        sdaiAdd_(coords, sdaiREAL, 4.0 - i);
     }
 
     sdaiDeleteIterator(iter);
@@ -993,8 +993,8 @@ static SdaiInstance TestInsertByIndex(SdaiModel model)
     auto coordList = sdaiCreateAggrBN(ptlst, "CoordList");
 
     auto coords = sdaiCreateNestedAggr(coordList);
-    sdaiAdd(coords, sdaiREAL, 3.0);
-    sdaiAdd(coords, sdaiREAL, 3.0);
+    sdaiAdd_(coords, sdaiREAL, 3.0);
+    sdaiAdd_(coords, sdaiREAL, 3.0);
 
     //works as replace for existing instances
     SdaiIterator iter = sdaiCreateIterator(coordList);
@@ -1002,14 +1002,14 @@ static SdaiInstance TestInsertByIndex(SdaiModel model)
 
     for (int i = 0; i < 2; i++) {
         coords = sdaiInsertNestedAggrByIndex(coordList, 0);
-        sdaiAdd(coords, sdaiREAL, 1. - i);
-        sdaiAdd(coords, sdaiREAL, 1. - i);
+        sdaiAdd_(coords, sdaiREAL, 1. - i);
+        sdaiAdd_(coords, sdaiREAL, 1. - i);
     }
 
     for (int i = 2; i < 5; i += 2) {
         coords = sdaiInsertNestedAggrByIndex(coordList, i);
-        sdaiAdd(coords, sdaiREAL, double(i));
-        sdaiAdd(coords, sdaiREAL, double(i));
+        sdaiAdd_(coords, sdaiREAL, double(i));
+        sdaiAdd_(coords, sdaiREAL, double(i));
     }
 
     sdaiDeleteIterator(iter);
@@ -1021,7 +1021,7 @@ static SdaiInstance TestInsertByIndex(SdaiModel model)
 static void AddIndecies(SdaiAggr inds, SdaiInteger v)
 {
     for (int i = 0; i < 5; i++) {
-        sdaiAdd(inds, sdaiINTEGER, v);
+        sdaiAdd_(inds, sdaiINTEGER, v);
     }
 }
 
@@ -1551,11 +1551,11 @@ static void TestNullsAndResize()
     auto inst = IFC4::IfcMaterialProfileWithOffsets::Create(model);
     auto aggr = sdaiCreateAggrBN(inst, "OffsetValues");
 
-    sdaiAdd(aggr, sdaiREAL, 1.0);
-    sdaiAdd(aggr, 0, NULL);
-    sdaiAdd(aggr, sdaiREAL, 1.0);
-    sdaiAdd(aggr, sdaiREAL, 1.0);
-    sdaiAdd(aggr, sdaiREAL, 1.0);
+    sdaiAdd_(aggr, sdaiREAL, 1.0);
+    sdaiAdd_(aggr, 0, NULL);
+    sdaiAdd_(aggr, sdaiREAL, 1.0);
+    sdaiAdd_(aggr, sdaiREAL, 1.0);
+    sdaiAdd_(aggr, sdaiREAL, 1.0);
 
     auto it = sdaiCreateIterator(aggr);
     sdaiEnd(it);
@@ -1645,7 +1645,7 @@ static void UpdateCounters()
     SdaiIterator itPsets = sdaiCreateIterator(aggrPsets);
 
     auto prop2 = IFC4::IfcPropertySingleValue::Create(model);
-    sdaiAdd(aggrProps, sdaiINSTANCE, (SdaiInstance)prop2);
+    sdaiAdd_(aggrProps, sdaiINSTANCE, (SdaiInstance)prop2);
 
     //
     sdaiBeginning(itProps);
@@ -1655,7 +1655,7 @@ static void UpdateCounters()
     ASSERT(!sdaiNext(itPsets));
 
     //
-    sdaiAdd(aggrProps, sdaiINSTANCE, (SdaiInstance)prop);
+    sdaiAdd_(aggrProps, sdaiINSTANCE, (SdaiInstance)prop);
 
     //
     sdaiBeginning(itProps);

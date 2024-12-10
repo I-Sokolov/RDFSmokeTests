@@ -5,14 +5,14 @@ static void ReadUniqueRules(SdaiModel model)
     auto app = sdaiGetEntity(model, "IfcApplication");
     ASSERT(app);
     
-    UniqueRule uniq = engiGetEntityUniqueRuleByIterator(app, 0, nullptr);
+    UniqueRule uniq = engiGetEntityUniqueRuleByIterator(app, 0);
     ASSERT(uniq);
 
     SdaiString label;
     uniq = engiGetEntityUniqueRuleByIterator(app, uniq, &label);
     ASSERT(uniq);
 
-    uniq = engiGetEntityUniqueRuleByIterator(app, uniq, nullptr);
+    uniq = engiGetEntityUniqueRuleByIterator(app, uniq);
     ASSERT(!uniq);
 }
 
@@ -21,7 +21,7 @@ static void ReadWhereRules(SdaiModel model)
     auto angle = sdaiGetEntity(model, "IfcCompoundPlaneAngleMeasure");
     ASSERT(angle);
 
-    ExpressScript rule = engiGetEntityWhereRuleByIterator(angle, 0, NULL);
+    ExpressScript rule = engiGetEntityWhereRuleByIterator(angle, 0);
     ASSERT(rule);
     ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
 
@@ -38,15 +38,15 @@ static void ReadWhereRules(SdaiModel model)
     engiGetScriptText(rule, &name, &body);
     ASSERT(!strcmp(name, "SecondsInRange") && !strcmp(body, "ABS(SELF[3]) < 60;"));
 
-    rule = engiGetEntityWhereRuleByIterator(angle, rule, NULL);
+    rule = engiGetEntityWhereRuleByIterator(angle, rule);
     ASSERT(rule);
     ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
 
-    rule = engiGetEntityWhereRuleByIterator(angle, rule, NULL);
+    rule = engiGetEntityWhereRuleByIterator(angle, rule);
     ASSERT(rule);
     ASSERT(engiGetDeclarationType(rule) == enum_express_declaration::__WHERE_RULE);
 
-    rule = engiGetEntityWhereRuleByIterator(angle, rule, NULL);
+    rule = engiGetEntityWhereRuleByIterator(angle, rule);
     ASSERT(!rule);
 }
 
