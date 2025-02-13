@@ -77,7 +77,7 @@ extern void MetaPropertiesTest()
     SetGetObjecttypeProp(internalClass, "MyObjectPropery", inst);
 
     auto customClass = CreateClass(model, "ClassA");
-    SetClassParent(customClass, internalClass, 1);
+    SetClassParent(customClass, internalClass);
 
     SetGetDatatypeProp(customClass, "length", 2.4);
     SetGetDatatypeProp(customClass, "MyPropery", "my valye");

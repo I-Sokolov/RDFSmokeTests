@@ -248,14 +248,14 @@ static void ClassParentTest(int64_t box)
 	ASSERT(gen == 0);
 	gen = IsClassAncestor(collectionClass, newClass);
 	ASSERT(gen == 0);
-	gen = SetClassParent(newClass, collectionClass, 1);
-	ASSERT(gen == 1);
-	gen = SetClassParent(collectionClass, newClass, 1);
+	gen = SetClassParent(newClass, collectionClass);
+	ASSERT(gen == newClass);
+	gen = SetClassParent(collectionClass, newClass);
 	ASSERT(gen == 0);
-	gen = SetClassParent(newClass, item, 1); 
-	ASSERT(gen > 1);
+	gen = SetClassParent(newClass, item); 
+	ASSERT(gen == 0); //already a parent
 	gen = IsClassAncestor(newClass, item);
 	ASSERT(gen > 1);
-	gen = SetClassParent(newClass, collectionClass, 0);
-	ASSERT(gen == 1);
+	gen = UnsetClassParent(newClass, collectionClass);
+	ASSERT(gen == newClass);
 }

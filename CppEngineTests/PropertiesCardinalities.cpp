@@ -90,7 +90,7 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
     auto classB = CreateClass(model, "ClassB");
 
     if (earlySetParent) {
-        SetClassParent(classB, classA, 1);
+        SetClassParent(classB, classA);
     }
 
     auto propEnanced = CreateProperty(model, type, "Enhanced");
@@ -135,7 +135,7 @@ static void SubclassChangesCardianlity(bool earlySetParent, int64_t type)
     auto instanceB1 = CreateInstance(classB);
 
     if (!earlySetParent) {
-        SetClassParent(classB, classA, 1);
+        SetClassParent(classB, classA);
     }
 
     auto instance = CreateInstance(classB);
@@ -163,8 +163,8 @@ static void MultiParentsCardinalityAndInstanceName(int64_t type)
     auto classA3 = CreateClass(model, "ClassA3");
 
     auto classB = CreateClass(model, "classB");
-    SetClassParent(classB, classA1, 1);
-    SetClassParent(classB, classA2, 1);
+    SetClassParent(classB, classA1);
+    SetClassParent(classB, classA2);
 
     auto instance1 = CreateInstance(classB, "instance1");
 
@@ -212,7 +212,7 @@ static void MultiParentsCardinalityAndInstanceName(int64_t type)
     //
     auto instance2 = CreateInstanceW(classB, L"instance2");
 
-    SetClassParent(classB, classA3, 1);
+    SetClassParent(classB, classA3);
 
     auto instance3 = CreateInstance(classB, "instance3");
 
