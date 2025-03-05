@@ -13,6 +13,7 @@
 #include <stdarg.h>
 #include <vector>
 #include <iostream>
+#include <map>
 
 #include "ifcengine.h"
 #include "IFC4.h"

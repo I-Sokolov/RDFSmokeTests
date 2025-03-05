@@ -1,0 +1,25 @@
+--
+-- Test schema for RDF engine
+--
+
+SCHEMA SMOKE_TEST;
+
+ENTITY DiamondBase
+	AttrBase : STRING;
+END_ENTITY;
+
+ENTITY DiamondLeft SUBTYPE OF (DiamondBase);
+	AttrCommonName : STRING;
+END_ENTITY;
+
+ENTITY DiamondRight SUBTYPE OF (DiamondBase);
+	AttrCommonName : STRING;
+END_ENTITY;
+
+ENTITY DiamondRight2 SUBTYPE OF (DiamondRight);
+	AttrRight : STRING;
+END_ENTITY;
+
+ENTITY Diamond SUBTYPE OF (DiamondLeft, DiamondRight2);
+	AttrChild : STRING;
+END_ENTITY;
