@@ -167,6 +167,8 @@ static void CheckDiamond(SdaiInstance inst,
     av["AttrChild"] = valAttrChild;
     av["Diamond.AttrChild"] = valAttrChild;
 
+    //TODO add test with getting attr from supertype
+
     CheckInst(inst, "Diamond", av);
 }
 
@@ -175,6 +177,7 @@ static void SmokeTestModelPopulate(SdaiModel model)
     auto diamondEntity = sdaiGetEntity(model, "Diamond");
     ASSERT(diamondEntity);
 
+    //--------------------------------------------------------------------------
     //diamond1
     auto inst = sdaiCreateInstance(model, diamondEntity);
     sdaiPutAttrBN(inst, "AttrBase", sdaiSTRING, "Diamond1-AttrBase");
@@ -201,6 +204,29 @@ static void SmokeTestModelPopulate(SdaiModel model)
     sdaiPutAttrBN(inst, "AttrRight", sdaiSTRING, "d3-AR");
 
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
+
+    //----------------------------------------------------------------------------------------
+    // get complex entities
+    //
+    const char* strParentAndChild[] = { "Parent", "Child", "Person"};
+    const char* strPersonAndDiamond[] = { "Person", "Diamond" };
+    const char* strPersonAndDiamondBase[] = { "Person", "Diamond", "DiamondBase"};
+
+    auto entityParenyAndChild = sdaiGetComplexEntityBN(model, _countof(strParentAndChild), strParentAndChild);
+    auto entityPersonAndDiamond = sdaiGetComplexEntityBN(model, _countof(strPersonAndDiamond), strPersonAndDiamond);
+    auto entityPersonAndDiamondBase = sdaiGetComplexEntityBN(model, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
+    ASSERT(entityParenyAndChild != entityPersonAndDiamond);
+    ASSERT(entityParenyAndChild != entityPersonAndDiamondBase);
+    ASSERT(entityPersonAndDiamondBase != entityPersonAndDiamond);
+
+    auto entity = sdaiGetComplexEntityBN(model, _countof(strParentAndChild), strParentAndChild);
+    ASSERT(entity == entityParenyAndChild);
+
+    entity = sdaiGetComplexEntityBN(model, _countof(strPersonAndDiamond), strPersonAndDiamond);
+    ASSERT(entity == entityPersonAndDiamond);
+
+    entity = sdaiGetComplexEntityBN(model, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
+    ASSERT(entity == entityPersonAndDiamondBase);
 
     //TODO - derived attribute with qualified name
 
@@ -251,3 +277,16 @@ extern void ComplexInstance()
     CheckComplex();
     SmokeTestSchema();
 }
+
+#if 0
+if (auto list = sdaiCreateNPL__internal()) {
+    for (int_t i = 0; i < nameNumber; i++) {
+        if (auto entity = sdaiGetEntity__UNICODE__internal(session, nameVector[i])) {
+            SdaiInteger val = (SdaiInteger)entity;
+            sdaiAppend__internal(list, sdaiINTEGER, &val);
+        }
+        else {
+            return NULL;
+        }
+    }
+#endif

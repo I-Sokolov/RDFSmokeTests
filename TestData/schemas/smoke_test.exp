@@ -4,6 +4,8 @@
 
 SCHEMA SMOKE_TEST;
 
+--- Diamond inheritance and repeated attributes
+
 ENTITY DiamondBase
 	AttrBase : STRING;
 END_ENTITY;
@@ -22,4 +24,18 @@ END_ENTITY;
 
 ENTITY Diamond SUBTYPE OF (DiamondLeft, DiamondRight2);
 	AttrChild : STRING;
+END_ENTITY;
+
+--- ANDOR subtypes
+
+ENTITY Person
+	Name : STRING;
+END_ENTITY;
+
+ENTITY Child SUBTYPE OF (Person)
+	ParentName : STRING;
+END_ENTITY;
+
+ENTITY Parent SUBTYPE OF (Person)
+	ChildName : STRING;
 END_ENTITY;
