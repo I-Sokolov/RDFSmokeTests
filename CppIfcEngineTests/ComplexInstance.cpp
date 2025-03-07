@@ -172,6 +172,33 @@ static void CheckDiamond(SdaiInstance inst,
     CheckInst(inst, "Diamond", av);
 }
 
+static void CheckComplexEntity(SdaiEntity entity, int_t numComponents, SdaiString* components)
+{
+    auto model = engiGetEntityModel(entity);
+
+    auto getentity = sdaiGetComplexEntityBN(model, numComponents, components);
+    ASSERT(entity == getentity);
+
+    //
+    auto list = sdaiCreateNPL();
+    for (int i = 0; i < numComponents; i++) {
+        if (i % 2) {
+            sdaiAppend(list, sdaiSTRING, components[i]);
+        }
+        else {
+            auto e = sdaiGetEntity(model, components[i]);
+            ASSERT(e);
+            SdaiInteger ival = e;
+            sdaiAppend(list, sdaiINTEGER, &ival);
+        }
+    }
+
+    getentity = sdaiGetComplexEntity(model, list);
+    ASSERT(entity == getentity);
+
+    sdaiDeleteNPL(list);
+}
+
 static void SmokeTestModelPopulate(SdaiModel model)
 {
     auto diamondEntity = sdaiGetEntity(model, "Diamond");
@@ -219,14 +246,9 @@ static void SmokeTestModelPopulate(SdaiModel model)
     ASSERT(entityParenyAndChild != entityPersonAndDiamondBase);
     ASSERT(entityPersonAndDiamondBase != entityPersonAndDiamond);
 
-    auto entity = sdaiGetComplexEntityBN(model, _countof(strParentAndChild), strParentAndChild);
-    ASSERT(entity == entityParenyAndChild);
-
-    entity = sdaiGetComplexEntityBN(model, _countof(strPersonAndDiamond), strPersonAndDiamond);
-    ASSERT(entity == entityPersonAndDiamond);
-
-    entity = sdaiGetComplexEntityBN(model, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
-    ASSERT(entity == entityPersonAndDiamondBase);
+    CheckComplexEntity (entityParenyAndChild, _countof(strParentAndChild), strParentAndChild);
+    CheckComplexEntity (entityPersonAndDiamond, _countof(strPersonAndDiamond), strPersonAndDiamond);
+    CheckComplexEntity(entityPersonAndDiamondBase, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
 
     //TODO - derived attribute with qualified name
 
