@@ -167,9 +167,29 @@ static void CheckDiamond(SdaiInstance inst,
     av["AttrChild"] = valAttrChild;
     av["Diamond.AttrChild"] = valAttrChild;
 
-    //TODO add test with getting attr from supertype
-
     CheckInst(inst, "Diamond", av);
+
+    //
+    auto model = sdaiGetInstanceModel(inst);
+
+    auto left = sdaiGetEntity(model, "DiamondLeft");
+    auto attrLeft = sdaiGetAttrDefinition(left, "AttrCommonName");
+    ASSERT(attrLeft);
+
+    SdaiString val = NULL;;
+    auto ret = sdaiGetAttr(inst, attrLeft, sdaiSTRING, &val);
+    ASSERT_STR_VAL(val, valAttrCommonNameLeft);
+    ASSERT((ret != NULL) == (val != NULL));
+
+    auto right = sdaiGetEntity(model, "DiamondRight");
+    auto attrRight = sdaiGetAttrDefinition(right, "AttrCommonName");
+    ASSERT(attrRight);
+
+    val = NULL;;
+    ret = sdaiGetAttr(inst, attrRight, sdaiSTRING, &val);
+    ASSERT_STR_VAL(val, valAttrCommonNameRight);
+    ASSERT((ret != NULL) == (val != NULL));
+
 }
 
 static void CheckComplexEntity(SdaiEntity entity, int_t numComponents, SdaiString* components)
