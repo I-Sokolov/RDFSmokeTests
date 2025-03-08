@@ -86,14 +86,14 @@ static void CheckComplex()
     ENTER_TEST;
 
     Instance inst1[] = {
-        {"Set of Entity Instances", 0},
+        {"SET OF ENTITY INSTANCES", 0},
         {"NAMED_UNIT", 1},
         {"SI_UNIT", 2},
         {"SOLID_ANGLE_UNIT", 0}
     };
 
     Instance inst2[] = {
-        {"Set of Entity Instances", 0},
+        {"SET OF ENTITY INSTANCES", 0},
         {"PART", 2},
         {"PART_PRISMATIC", 0},
         {"PART_PRISMATIC_SIMPLE", 4},
@@ -192,15 +192,10 @@ static void CheckDiamond(SdaiInstance inst,
 
 }
 
-static void CheckComplexEntity(SdaiEntity entity, int_t numComponents, SdaiString* components)
+static SdaiNPL CreateEntitiesList(SdaiModel model, int_t numComponents, SdaiString* components)
 {
-    auto model = engiGetEntityModel(entity);
-
-    auto getentity = sdaiGetComplexEntityBN(model, numComponents, components);
-    ASSERT(entity == getentity);
-
-    //
     auto list = sdaiCreateNPL();
+
     for (int i = 0; i < numComponents; i++) {
         if (i % 2) {
             sdaiAppend(list, sdaiSTRING, components[i]);
@@ -212,6 +207,19 @@ static void CheckComplexEntity(SdaiEntity entity, int_t numComponents, SdaiStrin
             sdaiAppend(list, sdaiINTEGER, &ival);
         }
     }
+
+    return list;
+}
+
+static void CheckComplexEntity(SdaiEntity entity, int_t numComponents, SdaiString* components)
+{
+    auto model = engiGetEntityModel(entity);
+
+    auto getentity = sdaiGetComplexEntityBN(model, numComponents, components);
+    ASSERT(entity == getentity);
+
+    //
+    auto list = CreateEntitiesList(model, numComponents, components);
 
     getentity = sdaiGetComplexEntity(model, list);
     ASSERT(entity == getentity);
@@ -252,6 +260,10 @@ static void SmokeTestModelPopulate(SdaiModel model)
 
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 
+    //TODO - derived attribute with qualified name
+
+    //TODO - qualified inverse attributes
+
     //----------------------------------------------------------------------------------------
     // get complex entities
     //
@@ -270,9 +282,15 @@ static void SmokeTestModelPopulate(SdaiModel model)
     CheckComplexEntity (entityPersonAndDiamond, _countof(strPersonAndDiamond), strPersonAndDiamond);
     CheckComplexEntity(entityPersonAndDiamondBase, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
 
-    //TODO - derived attribute with qualified name
+    //---------------------------------------------------------------------------------------------
+    // creare complex instances
+    inst = sdaiCreateInstance(model, entityParenyAndChild);
 
-    //TODO - qualified inverse attributes
+    inst = sdaiCreateComplexInstanceBN(model, _countof(strPersonAndDiamond), strPersonAndDiamond);
+    
+    auto list = CreateEntitiesList(model, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
+    inst = sdaiCreateComplexInstance(model, list);
+    sdaiDeleteNPL(list);
 }
 
 static void SmokeTestModelCheckContent(SdaiModel model)
