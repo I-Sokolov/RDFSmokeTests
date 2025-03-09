@@ -227,6 +227,30 @@ static void CheckComplexEntity(SdaiEntity entity, int_t numComponents, SdaiStrin
     sdaiDeleteNPL(list);
 }
 
+static void PutSet1(SdaiInstance inst)
+{
+    sdaiPutAttrBN(inst, "AttrBase", sdaiSTRING, "Diamond1-AttrBase");
+    sdaiPutAttrBN(inst, "AttrCommonName", sdaiSTRING, "Diamond1-ValueCommonName");
+    sdaiPutAttrBN(inst, "AttrChild", sdaiSTRING, "Diamond1-ValueAttrChild");
+}
+
+static void PutSet2(SdaiInstance inst)
+{
+    sdaiPutAttrBN(inst, "DiamondBase.AttrBase", sdaiSTRING, "d2-AttrBase");
+    sdaiPutAttrBN(inst, "DiamondLeft.AttrCommonName", sdaiSTRING, "d2-L-CN");
+    sdaiPutAttrBN(inst, "DiamondRight.AttrCommonName", sdaiSTRING, "d2-R-CN");
+    sdaiPutAttrBN(inst, "DiamondRight2.AttrRight", sdaiSTRING, "d2-AR");
+    sdaiPutAttrBN(inst, "Diamond.AttrChild", sdaiSTRING, "d2-Ch");
+}
+
+static void PutSet3(SdaiInstance inst)
+{
+    sdaiPutAttrBN(inst, "DiamondRight.AttrBase", sdaiSTRING, "d3-AttrBase");
+    sdaiPutAttrBN(inst, "DiamondLeft.AttrCommonName", sdaiSTRING, "d3-L-CN");
+    sdaiPutAttrBN(inst, "DiamondRight2.AttrCommonName", sdaiSTRING, "d3-R-CN");
+    sdaiPutAttrBN(inst, "AttrRight", sdaiSTRING, "d3-AR");
+}
+
 static void SmokeTestModelPopulate(SdaiModel model)
 {
     auto diamondEntity = sdaiGetEntity(model, "Diamond");
@@ -235,29 +259,17 @@ static void SmokeTestModelPopulate(SdaiModel model)
     //--------------------------------------------------------------------------
     //diamond1
     auto inst = sdaiCreateInstance(model, diamondEntity);
-    sdaiPutAttrBN(inst, "AttrBase", sdaiSTRING, "Diamond1-AttrBase");
-    sdaiPutAttrBN(inst, "AttrCommonName", sdaiSTRING, "Diamond1-ValueCommonName");
-    sdaiPutAttrBN(inst, "AttrChild", sdaiSTRING, "Diamond1-ValueAttrChild");
-
+    PutSet1(inst);
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
     //diamond2
     inst = sdaiCreateInstance(model, diamondEntity);
-    sdaiPutAttrBN(inst, "DiamondBase.AttrBase", sdaiSTRING, "d2-AttrBase");
-    sdaiPutAttrBN(inst, "DiamondLeft.AttrCommonName", sdaiSTRING, "d2-L-CN");
-    sdaiPutAttrBN(inst, "DiamondRight.AttrCommonName", sdaiSTRING, "d2-R-CN");
-    sdaiPutAttrBN(inst, "DiamondRight2.AttrRight", sdaiSTRING, "d2-AR");
-    sdaiPutAttrBN(inst, "Diamond.AttrChild", sdaiSTRING, "d2-Ch");
-
+    PutSet2(inst);
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
 
     //diamond3
     inst = sdaiCreateInstance(model, diamondEntity);
-    sdaiPutAttrBN(inst, "DiamondRight.AttrBase", sdaiSTRING, "d3-AttrBase");
-    sdaiPutAttrBN(inst, "DiamondLeft.AttrCommonName", sdaiSTRING, "d3-L-CN");
-    sdaiPutAttrBN(inst, "DiamondRight2.AttrCommonName", sdaiSTRING, "d3-R-CN");
-    sdaiPutAttrBN(inst, "AttrRight", sdaiSTRING, "d3-AR");
-
+    PutSet3(inst);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 
     //TODO - derived attribute with qualified name
@@ -269,28 +281,35 @@ static void SmokeTestModelPopulate(SdaiModel model)
     //
     const char* strParentAndChild[] = { "Parent", "Child", "Person"};
     const char* strPersonAndDiamond[] = { "Person", "Diamond" };
-    const char* strPersonAndDiamondBase[] = { "Person", "Diamond", "DiamondBase"};
+    const char* strTest[] = { "Person", "Diamond", "DiamondBase", "DiamondLeft", "DiamondRight", "DiamondRight2"};
 
     auto entityParenyAndChild = sdaiGetComplexEntityBN(model, _countof(strParentAndChild), strParentAndChild);
     auto entityPersonAndDiamond = sdaiGetComplexEntityBN(model, _countof(strPersonAndDiamond), strPersonAndDiamond);
-    auto entityPersonAndDiamondBase = sdaiGetComplexEntityBN(model, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
+    auto entityTest = sdaiGetComplexEntityBN(model, _countof(strTest), strTest);
     ASSERT(entityParenyAndChild != entityPersonAndDiamond);
-    ASSERT(entityParenyAndChild != entityPersonAndDiamondBase);
-    ASSERT(entityPersonAndDiamondBase != entityPersonAndDiamond);
+    ASSERT(entityParenyAndChild != entityTest);
+    ASSERT(entityTest != entityPersonAndDiamond);
 
     CheckComplexEntity (entityParenyAndChild, _countof(strParentAndChild), strParentAndChild);
     CheckComplexEntity (entityPersonAndDiamond, _countof(strPersonAndDiamond), strPersonAndDiamond);
-    CheckComplexEntity(entityPersonAndDiamondBase, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
+    CheckComplexEntity(entityTest, _countof(strTest), strTest);
 
     //---------------------------------------------------------------------------------------------
     // creare complex instances
-    inst = sdaiCreateInstance(model, entityParenyAndChild);
+    inst = sdaiCreateInstance(model, entityTest);
+    PutSet1(inst);
+    CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
-    inst = sdaiCreateComplexInstanceBN(model, _countof(strPersonAndDiamond), strPersonAndDiamond);
-    
-    auto list = CreateEntitiesList(model, _countof(strPersonAndDiamondBase), strPersonAndDiamondBase);
+    inst = sdaiCreateComplexInstanceBN(model, _countof(strTest), strTest);
+    PutSet2(inst);
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
+
+    auto list = CreateEntitiesList(model, _countof(strTest), strTest);
     inst = sdaiCreateComplexInstance(model, list);
     sdaiDeleteNPL(list);
+
+    PutSet3(inst);
+    CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 }
 
 static void SmokeTestModelCheckContent(SdaiModel model)
