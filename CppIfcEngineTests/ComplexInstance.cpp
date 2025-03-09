@@ -243,12 +243,30 @@ static void PutSet2(SdaiInstance inst)
     sdaiPutAttrBN(inst, "Diamond.AttrChild", sdaiSTRING, "d2-Ch");
 }
 
+static void PutByAttr(SdaiInstance inst, const char* entityName, const char* attrName, const char* value)
+{
+    SdaiEntity entity = NULL;
+    if (entityName) {
+        auto model = sdaiGetInstanceModel(inst);
+        entity = sdaiGetEntity(model, entityName);
+    }
+    else {
+        entity = sdaiGetInstanceType(inst);
+    }
+    ASSERT(entity);
+
+    auto attr = sdaiGetAttrDefinition(entity, attrName);
+    ASSERT(attr);
+
+    sdaiPutAttr(inst, attr, sdaiSTRING, value);
+}
+
 static void PutSet3(SdaiInstance inst)
 {
-    sdaiPutAttrBN(inst, "DiamondRight.AttrBase", sdaiSTRING, "d3-AttrBase");
-    sdaiPutAttrBN(inst, "DiamondLeft.AttrCommonName", sdaiSTRING, "d3-L-CN");
-    sdaiPutAttrBN(inst, "DiamondRight2.AttrCommonName", sdaiSTRING, "d3-R-CN");
-    sdaiPutAttrBN(inst, "AttrRight", sdaiSTRING, "d3-AR");
+    PutByAttr(inst, "DiamondRight", "AttrBase", "d3-AttrBase");
+    PutByAttr(inst, "DiamondLeft", "AttrCommonName", "d3-L-CN");
+    PutByAttr(inst, "DiamondRight2", "AttrCommonName", "d3-R-CN");
+    PutByAttr(inst, NULL, "AttrRight", "d3-AR");
 }
 
 static void SmokeTestModelPopulate(SdaiModel model)
