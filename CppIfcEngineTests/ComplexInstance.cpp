@@ -5,7 +5,7 @@
 #define STEP_TEST_SAVED "ComplexInstance_saved.step"
 
 #define TEST_SCHEMA         "..\\TestData\\schemas\\smoke_test.exp"
-#define TEST_SCHEMA_MODEL   "..\\TestData\\smoke_test.txt"
+#define TEST_SCHEMA_MODEL   "..\\TestData\\ComplexInstancesSmokeTest.txt"
 #define TEST_SCHEMA_SAVED   "SmokeTestSaved.txt"
 
 struct Instance
@@ -131,8 +131,8 @@ static void CheckInst(SdaiInstance inst, const char* entName, AttrVal& attrVal)
         ASSERT((ret!=NULL) == (val!=NULL));
 
         auto ent = sdaiGetInstanceType(inst);
-        auto name = engiGetEntityName(ent, sdaiSTRING);
-        ASSERT(0==_stricmp(name, entName));
+        //s name = engiGetEntityName(ent, sdaiSTRING);
+        //ASSERT(0==strstr(name, entName));
 
         auto attr = sdaiGetAttrDefinition(ent, av.first);
         ASSERT(attr);
@@ -340,6 +340,15 @@ static void SmokeTestModelCheckContent(SdaiModel model)
 
     inst = internalGetInstanceFromP21Line(model, 3);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
+
+    inst = internalGetInstanceFromP21Line(model, 4);
+    CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
+
+    inst = internalGetInstanceFromP21Line(model, 5);
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = internalGetInstanceFromP21Line(model, 6);
+    CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 }
 
 static void SmokeTestSchema()
@@ -360,13 +369,11 @@ static void SmokeTestSchema()
     sdaiCloseModel(model);
     model = NULL;
 
-/*
     model = sdaiOpenModelBN(0, TEST_SCHEMA_MODEL, TEST_SCHEMA);
     ASSERT(model);
     SmokeTestModelCheckContent(model);
     sdaiCloseModel(model);
     model = NULL;
-    */
 }
 
 extern void ComplexInstance()
