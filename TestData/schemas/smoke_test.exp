@@ -14,15 +14,16 @@ ENTITY DiamondLeft SUBTYPE OF (DiamondBase);
 	AttrCommonName : STRING;
 END_ENTITY;
 
-ENTITY DiamondRight SUBTYPE OF (DiamondBase);
-	AttrCommonName : STRING;
-END_ENTITY;
-
-ENTITY DiamondRight2 SUBTYPE OF (DiamondRight);
+ENTITY DiamondRight2 SUBTYPE OF (DiamondBase);
 	AttrRight : STRING;
 END_ENTITY;
 
-ENTITY Diamond SUBTYPE OF (DiamondLeft, DiamondRight2);
+ENTITY DiamondRight SUBTYPE OF (DiamondRight2);
+	NotFirst	   : STRING;
+	AttrCommonName : STRING;
+END_ENTITY;
+
+ENTITY Diamond SUBTYPE OF (DiamondLeft, DiamondRight);
 	AttrChild : STRING;
 END_ENTITY;
 

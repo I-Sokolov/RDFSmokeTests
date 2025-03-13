@@ -160,8 +160,8 @@ static void CheckDiamond(SdaiInstance inst,
     av["Diamond.AttrCommonName"] = valAttrCommonNameLeft;
     av["DiamondLeft.AttrCommonName"] = valAttrCommonNameLeft;
     av["DiamondRight.AttrCommonName"] = valAttrCommonNameRight;
-    av["DiamondRight2.AttrCommonName"] = valAttrCommonNameRight;
     av["AttrRight"] = valAttrRight;
+    av["DiamondRight.AttrRight"] = valAttrRight;
     av["DiamondRight2.AttrRight"] = valAttrRight;
     av["Diamond.AttrRight"] = valAttrRight;
     av["AttrChild"] = valAttrChild;
@@ -265,7 +265,7 @@ static void PutSet3(SdaiInstance inst)
 {
     PutByAttr(inst, "DiamondRight", "AttrBase", "d3-AttrBase");
     PutByAttr(inst, "DiamondLeft", "AttrCommonName", "d3-L-CN");
-    PutByAttr(inst, "DiamondRight2", "AttrCommonName", "d3-R-CN");
+    PutByAttr(inst, "DiamondRight", "AttrCommonName", "d3-R-CN");
     PutByAttr(inst, NULL, "AttrRight", "d3-AR");
 }
 
