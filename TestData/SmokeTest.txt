@@ -1,7 +1,7 @@
 ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION ((), '2;1');
-FILE_NAME ($, '2025-03-12T15:51:29', (), (), 'IFC Engine Library, revision 2058, 2025-03-04T19:20:00', $, 'none');
+FILE_NAME ($, '2025-03-13T03:58:27', (), (), 'IFC Engine Library, revision 2058, 2025-03-04T19:20:00', $, 'none');
 FILE_SCHEMA (('SMOKE_TEST'));
 ENDSEC;
 DATA;
@@ -31,6 +31,33 @@ DIAMONDBASE('d3-AttrBase')
 DIAMONDLEFT('d3-L-CN')
 DIAMONDRIGHT('d3-R-CN')
 DIAMONDRIGHT2('d3-AR')
+);
+#7 = DIAMOND('d2-AttrBase', $, 'd2-R-CN', 'd2-AR', 'd2-Ch');
+#8 = DIAMOND('d2-AttrBase', $, 'd2-R-CN', 'd2-AR', 'd2-Ch');
+#9 = DIAMOND('d2-AttrBase', 'd2-L-CN', $, 'd2-AR', 'd2-Ch');
+#10 = (
+PERSON($)
+DIAMOND('d2-Ch')
+DIAMONDBASE('d2-AttrBase')
+DIAMONDLEFT($)
+DIAMONDRIGHT('d2-R-CN')
+DIAMONDRIGHT2('d2-AR')
+);
+#11 = (
+PERSON($)
+DIAMOND('d2-Ch')
+DIAMONDBASE('d2-AttrBase')
+DIAMONDLEFT($)
+DIAMONDRIGHT('d2-R-CN')
+DIAMONDRIGHT2('d2-AR')
+);
+#12 = (
+PERSON($)
+DIAMOND('d2-Ch')
+DIAMONDBASE('d2-AttrBase')
+DIAMONDLEFT('d2-L-CN')
+DIAMONDRIGHT($)
+DIAMONDRIGHT2('d2-AR')
 );
 ENDSEC;
 END-ISO-10303-21;

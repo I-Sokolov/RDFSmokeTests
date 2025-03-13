@@ -5,8 +5,8 @@
 #define STEP_TEST_SAVED "ComplexInstance_saved.step"
 
 #define TEST_SCHEMA         "..\\TestData\\schemas\\smoke_test.exp"
-#define TEST_SCHEMA_MODEL   "..\\TestData\\ComplexInstancesSmokeTest.txt"
-#define TEST_SCHEMA_SAVED   "SmokeTestSaved.txt"
+#define TEST_MODEL_SAVED    "SmokeTest.txt"
+#define TEST_MODEL          "..\\TestData\\" TEST_MODEL_SAVED
 
 struct Instance
 {
@@ -328,27 +328,85 @@ static void SmokeTestModelPopulate(SdaiModel model)
 
     PutSet3(inst);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
+
+    //---------------------------------------------------------------------------------------------
+    // diamond sdaiUnsetAttr
+    inst = sdaiCreateInstance(model, diamondEntity);
+    PutSet2(inst);
+    sdaiUnsetAttrBN(inst, "AttrCommonName");
+    CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = sdaiCreateInstance(model, diamondEntity);
+    PutSet2(inst);
+    sdaiUnsetAttrBN(inst, "DiamondLeft.AttrCommonName");
+    CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = sdaiCreateInstance(model, diamondEntity);
+    PutSet2(inst);
+    sdaiUnsetAttrBN(inst, "DiamondRight.AttrCommonName");
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
+
+    //---------------------------------------------------------------------------------------------
+    // compplex instance unset sdaiUnsetAttr
+    inst = sdaiCreateInstance(model, entityTest);
+    PutSet2(inst);
+    sdaiUnsetAttrBN(inst, "AttrCommonName");
+    CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = sdaiCreateInstance(model, entityTest);
+    PutSet2(inst);
+    sdaiUnsetAttrBN(inst, "DiamondLeft.AttrCommonName");
+    CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = sdaiCreateInstance(model, entityTest);
+    PutSet2(inst);
+    sdaiUnsetAttrBN(inst, "DiamondRight.AttrCommonName");
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
 }
 
 static void SmokeTestModelCheckContent(SdaiModel model)
 {
-    auto inst = internalGetInstanceFromP21Line(model, 1);
+    int_t i = 1;
+
+    //diamond
+    auto inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
-    inst = internalGetInstanceFromP21Line(model, 2);
+    inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
 
-    inst = internalGetInstanceFromP21Line(model, 3);
+    inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 
-    inst = internalGetInstanceFromP21Line(model, 4);
+    //complex instance
+    inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
-    inst = internalGetInstanceFromP21Line(model, 5);
+    inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
 
-    inst = internalGetInstanceFromP21Line(model, 6);
+    inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
+
+    //diamond unset
+    inst = internalGetInstanceFromP21Line(model, i++);
+    CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = internalGetInstanceFromP21Line(model, i++);
+    CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = internalGetInstanceFromP21Line(model, i++);
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
+
+    //complex unset
+    inst = internalGetInstanceFromP21Line(model, i++);
+    CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = internalGetInstanceFromP21Line(model, i++);
+    CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = internalGetInstanceFromP21Line(model, i++);
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
 }
 
 static void SmokeTestSchema()
@@ -359,17 +417,17 @@ static void SmokeTestSchema()
     ASSERT(model);
     SmokeTestModelPopulate(model);
     SmokeTestModelCheckContent(model);
-    sdaiSaveModelBN(model, TEST_SCHEMA_SAVED);
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);
     sdaiCloseModel(model);
     model = NULL;
 
-    model = sdaiOpenModelBN(0, TEST_SCHEMA_SAVED, TEST_SCHEMA);
+    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, TEST_SCHEMA);
     ASSERT(model);
     SmokeTestModelCheckContent(model);
     sdaiCloseModel(model);
     model = NULL;
 
-    model = sdaiOpenModelBN(0, TEST_SCHEMA_MODEL, TEST_SCHEMA);
+    model = sdaiOpenModelBN(0, TEST_MODEL, TEST_SCHEMA);
     ASSERT(model);
     SmokeTestModelCheckContent(model);
     sdaiCloseModel(model);
