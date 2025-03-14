@@ -46,9 +46,9 @@ extern int main()
         int i = 0;
         do
             {
+            ComplexInstance();
             SchemaReadingTests();
             DeriveAttrTests();
-            ComplexInstance();
             Encodings();
             AggregationTests();
             ADBtests();

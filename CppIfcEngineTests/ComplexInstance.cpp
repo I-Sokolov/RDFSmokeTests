@@ -271,24 +271,9 @@ static void PutSet3(SdaiInstance inst)
 
 static void SmokeTestModelPopulate(SdaiModel model)
 {
-    auto diamondEntity = sdaiGetEntity(model, "Diamond");
-    ASSERT(diamondEntity);
-
-    //--------------------------------------------------------------------------
-    //diamond1
-    auto inst = sdaiCreateInstance(model, diamondEntity);
-    PutSet1(inst);
-    CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
-
-    //diamond2
-    inst = sdaiCreateInstance(model, diamondEntity);
-    PutSet2(inst);
-    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
-
-    //diamond3
-    inst = sdaiCreateInstance(model, diamondEntity);
-    PutSet3(inst);
-    CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
+    sdaiCreateInstanceBN(model, "DiamondBase");
+    sdaiCreateInstanceBN(model, "DiamondLeft");
+    sdaiCreateInstanceBN(model, "DiamondRight");
 
     //TODO - derived attribute with qualified name
 
@@ -314,7 +299,7 @@ static void SmokeTestModelPopulate(SdaiModel model)
 
     //---------------------------------------------------------------------------------------------
     // creare complex instances
-    inst = sdaiCreateInstance(model, entityTest);
+    auto inst = sdaiCreateInstance(model, entityTest);
     PutSet1(inst);
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
@@ -326,6 +311,23 @@ static void SmokeTestModelPopulate(SdaiModel model)
     inst = sdaiCreateComplexInstance(model, list);
     sdaiDeleteNPL(list);
 
+    PutSet3(inst);
+    CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
+
+    //--------------------------------------------------------------------------
+    // diamond inheritance
+    auto diamondEntity = sdaiGetEntity(model, "Diamond");
+    ASSERT(diamondEntity);
+
+    inst = sdaiCreateInstance(model, diamondEntity);
+    PutSet1(inst);
+    CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
+
+    inst = sdaiCreateInstance(model, diamondEntity);
+    PutSet2(inst);
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
+
+    inst = sdaiCreateInstance(model, diamondEntity);
     PutSet3(inst);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 
@@ -362,13 +364,20 @@ static void SmokeTestModelPopulate(SdaiModel model)
     PutSet2(inst);
     sdaiUnsetAttrBN(inst, "DiamondRight.AttrCommonName");
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
+
+    //    
+    sdaiCreateInstance(model, entityParenyAndChild);
+    sdaiCreateInstanceBN(model, "DiamondRight");
+    sdaiCreateInstanceBN(model, "DiamondLeft");
+    sdaiCreateInstanceBN(model, "DiamondBase");
+
 }
 
 static void SmokeTestModelCheckContent(SdaiModel model)
 {
-    int_t i = 1;
+    int_t i = 4;
 
-    //diamond
+    //complex instance
     auto inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
@@ -378,7 +387,7 @@ static void SmokeTestModelCheckContent(SdaiModel model)
     inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 
-    //complex instance
+    //diamond
     inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
