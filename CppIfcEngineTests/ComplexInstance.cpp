@@ -416,6 +416,16 @@ static void SmokeTestModelCheckContent(SdaiModel model)
 
     inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
+
+    //
+    ExpressID ids[] = { 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18 };
+    auto extent = xxxxGetEntityAndSubTypesExtentBN(model, "DIAMONDLEFT");
+    auto N = sdaiGetMemberCount(extent);
+    ASSERT(N == _countof(ids));
+    for (SdaiAggrIndex i = 0; sdaiGetAggrByIndex(extent, i, &inst); i++) {
+        auto id = internalGetP21Line(inst);
+        ASSERT(id == ids[i]);
+    }
 }
 
 static void SmokeTestSchema()
