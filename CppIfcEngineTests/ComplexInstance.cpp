@@ -119,7 +119,7 @@ static void ASSERT_STR_VAL(const char* v1, const char* v2)
     }
 }
 
-static void CheckInst(SdaiInstance inst, const char* entName, AttrVal& attrVal)
+static void CheckDiamondAttrs(SdaiInstance inst, AttrVal& attrVal)
 {
     ASSERT(inst);
 
@@ -131,8 +131,8 @@ static void CheckInst(SdaiInstance inst, const char* entName, AttrVal& attrVal)
         ASSERT((ret!=NULL) == (val!=NULL));
 
         auto ent = sdaiGetInstanceType(inst);
-        //s name = engiGetEntityName(ent, sdaiSTRING);
-        //ASSERT(0==strstr(name, entName));
+        auto name = engiGetEntityName(ent, sdaiSTRING);
+        ASSERT(0==strcmp(name, "Diamond") || NULL != strstr(name, "+DIAMOND"));
 
         auto attr = sdaiGetAttrDefinition(ent, av.first);
         ASSERT(attr);
@@ -166,30 +166,43 @@ static void CheckDiamond(SdaiInstance inst,
     av["Diamond.AttrRight"] = valAttrRight;
     av["AttrChild"] = valAttrChild;
     av["Diamond.AttrChild"] = valAttrChild;
+    
+    av["Drv"] = "Derived_DiamondLeft";
+    av["DiamondLeft.Drv"] = "Derived_DiamondLeft";
+    av["DiamondRight.Drv"] = "Derived_DiamondRight";
 
-    CheckInst(inst, "Diamond", av);
+    CheckDiamondAttrs(inst, av);
 
     //
     auto model = sdaiGetInstanceModel(inst);
 
     auto left = sdaiGetEntity(model, "DiamondLeft");
     auto attrLeft = sdaiGetAttrDefinition(left, "AttrCommonName");
-    ASSERT(attrLeft);
+    auto attrDrvLeft = sdaiGetAttrDefinition(left, "Drv");
+    ASSERT(attrLeft && attrDrvLeft);
 
     SdaiString val = NULL;;
     auto ret = sdaiGetAttr(inst, attrLeft, sdaiSTRING, &val);
     ASSERT_STR_VAL(val, valAttrCommonNameLeft);
     ASSERT((ret != NULL) == (val != NULL));
 
+    val = NULL;
+    ret = sdaiGetAttr(inst, attrDrvLeft, sdaiSTRING, &val);
+    ASSERT(ret && !strcmp(val, "Derived_DiamondLeft"));
+
     auto right = sdaiGetEntity(model, "DiamondRight");
     auto attrRight = sdaiGetAttrDefinition(right, "AttrCommonName");
-    ASSERT(attrRight);
+    auto attrDrvRight = sdaiGetAttrDefinition(right, "Drv");
+    ASSERT(attrRight && attrDrvRight);
 
-    val = NULL;;
+    val = NULL;
     ret = sdaiGetAttr(inst, attrRight, sdaiSTRING, &val);
     ASSERT_STR_VAL(val, valAttrCommonNameRight);
     ASSERT((ret != NULL) == (val != NULL));
 
+    val = NULL;
+    ret = sdaiGetAttr(inst, attrDrvRight, sdaiSTRING, &val);
+    ASSERT(ret && !strcmp(val, "Derived_DiamondRight"));
 }
 
 static SdaiNPL CreateEntitiesList(SdaiModel model, int_t numComponents, SdaiString* components)
@@ -274,10 +287,6 @@ static void SmokeTestModelPopulate(SdaiModel model)
     sdaiCreateInstanceBN(model, "DiamondBase");
     sdaiCreateInstanceBN(model, "DiamondLeft");
     sdaiCreateInstanceBN(model, "DiamondRight");
-
-    //TODO - derived attribute with qualified name
-
-    //TODO - qualified inverse attributes
 
     //----------------------------------------------------------------------------------------
     // get complex entities
@@ -434,6 +443,7 @@ static void SmokeTestSchema()
 
     auto model = sdaiCreateModelBN(TEST_SCHEMA);
     ASSERT(model);
+    engiEnableDerivedAttributes(model, sdaiTRUE);
     SmokeTestModelPopulate(model);
     SmokeTestModelCheckContent(model);
     sdaiSaveModelBN(model, TEST_MODEL_SAVED);
@@ -442,12 +452,14 @@ static void SmokeTestSchema()
 
     model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, TEST_SCHEMA);
     ASSERT(model);
+    engiEnableDerivedAttributes(model, sdaiTRUE);
     SmokeTestModelCheckContent(model);
     sdaiCloseModel(model);
     model = NULL;
 
     model = sdaiOpenModelBN(0, TEST_MODEL, TEST_SCHEMA);
     ASSERT(model);
+    engiEnableDerivedAttributes(model, sdaiTRUE);
     SmokeTestModelCheckContent(model);
     sdaiCloseModel(model);
     model = NULL;

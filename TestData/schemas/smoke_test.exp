@@ -12,15 +12,23 @@ END_ENTITY;
 
 ENTITY DiamondLeft SUBTYPE OF (DiamondBase);
 	AttrCommonName : STRING;
+INVERSE
+	Inv		  : SET [0:1] OF Child FOR LDiamond;
+DERIVE
+	Drv : STRING := 'Derived_DiamondLeft';
 END_ENTITY;
 
 ENTITY DiamondRight2 SUBTYPE OF (DiamondBase);
 	AttrRight : STRING;
+INVERSE
+	Inv		  : SET [0:1] OF Parent FOR RDiamond;
 END_ENTITY;
 
 ENTITY DiamondRight SUBTYPE OF (DiamondRight2);
-	NotFirst	   : STRING;
+	Owner		   : Person;
 	AttrCommonName : STRING;
+DERIVE
+	Drv : STRING := 'Derived_DiamondRight';
 END_ENTITY;
 
 ENTITY Diamond SUBTYPE OF (DiamondLeft, DiamondRight);
@@ -31,12 +39,16 @@ END_ENTITY;
 
 ENTITY Person
 	Name : STRING;
+INVERSE
+	HasDiamonds : SET [0:?] OF DiamondRight FOR Owner;
 END_ENTITY;
 
 ENTITY Child SUBTYPE OF (Person)
-	ParentName : STRING;
+	ParentName	: STRING;
+	LDiamond	: DiamondLeft;
 END_ENTITY;
 
 ENTITY Parent SUBTYPE OF (Person)
 	ChildName : STRING;
+	RDiamond  : DiamondRight2;
 END_ENTITY;
