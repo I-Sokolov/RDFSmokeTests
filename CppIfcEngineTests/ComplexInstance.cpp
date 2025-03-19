@@ -147,7 +147,9 @@ static void CheckDiamondAttrs(SdaiInstance inst, AttrVal& attrVal)
 static void CheckDiamond(SdaiInstance inst,
     const char* valAttrBase,
     const char* valAttrCommonNameLeft, const char* valAttrCommonNameRight,
-    const char* valAttrRight, const char* valAttrChild)
+    const char* valAttrRight, const char* valAttrChild,
+    bool hasOwner = false
+    )
 {
     AttrVal av;
     av["AttrBase"] = valAttrBase;
@@ -193,7 +195,8 @@ static void CheckDiamond(SdaiInstance inst,
     auto right = sdaiGetEntity(model, "DiamondRight");
     auto attrRight = sdaiGetAttrDefinition(right, "AttrCommonName");
     auto attrDrvRight = sdaiGetAttrDefinition(right, "Drv");
-    ASSERT(attrRight && attrDrvRight);
+    auto attrOwner = sdaiGetAttrDefinition(right, "Owner");
+    ASSERT(attrRight && attrDrvRight && attrOwner);
 
     val = NULL;
     ret = sdaiGetAttr(inst, attrRight, sdaiSTRING, &val);
@@ -203,6 +206,24 @@ static void CheckDiamond(SdaiInstance inst,
     val = NULL;
     ret = sdaiGetAttr(inst, attrDrvRight, sdaiSTRING, &val);
     ASSERT(ret && !strcmp(val, "Derived_DiamondRight"));
+
+    //
+    SdaiInstance owner = NULL;
+    ret = sdaiGetAttrBN(inst, "Owner", sdaiINSTANCE, &owner);
+    if (hasOwner) {
+        ASSERT(ret && owner);
+        ASSERT(internalGetP21Line(owner) == 1);
+    }
+    else {
+        ASSERT(!ret && !owner);
+    }
+
+    SdaiInstance owner2 = NULL;
+    auto ret2 = sdaiGetAttrBN(inst, "DiamondRight.Owner", sdaiINSTANCE, &owner2);
+    ASSERT(owner2 == owner && ret2 == ret);
+    owner2 = NULL;
+    ret2 = sdaiGetAttr(inst, attrOwner, sdaiINSTANCE, &owner2);
+    ASSERT(owner2 == owner && ret2 == ret);
 }
 
 static SdaiNPL CreateEntitiesList(SdaiModel model, int_t numComponents, SdaiString* components)
@@ -247,13 +268,21 @@ static void PutSet1(SdaiInstance inst)
     sdaiPutAttrBN(inst, "AttrChild", sdaiSTRING, "Diamond1-ValueAttrChild");
 }
 
-static void PutSet2(SdaiInstance inst)
+static void PutSet2(SdaiInstance inst, SdaiInstance owner)
 {
     sdaiPutAttrBN(inst, "DiamondBase.AttrBase", sdaiSTRING, "d2-AttrBase");
     sdaiPutAttrBN(inst, "DiamondLeft.AttrCommonName", sdaiSTRING, "d2-L-CN");
     sdaiPutAttrBN(inst, "DiamondRight.AttrCommonName", sdaiSTRING, "d2-R-CN");
     sdaiPutAttrBN(inst, "DiamondRight2.AttrRight", sdaiSTRING, "d2-AR");
     sdaiPutAttrBN(inst, "Diamond.AttrChild", sdaiSTRING, "d2-Ch");
+
+    if (owner) {
+        sdaiPutAttrBN(inst, "Owner", owner);
+
+        SdaiAggr aggr = NULL;
+        sdaiGetAttrBN(owner, "HasDiamonds", sdaiAGGR, &aggr);
+        auto N = sdaiGetMemberCount(aggr);
+    }
 }
 
 static void PutByAttr(SdaiInstance inst, const char* entityName, const char* attrName, const char* value)
@@ -284,7 +313,7 @@ static void PutSet3(SdaiInstance inst)
 
 static void SmokeTestModelPopulate(SdaiModel model)
 {
-    sdaiCreateInstanceBN(model, "DiamondBase");
+    auto owner = sdaiCreateInstanceBN(model, "Person");
     sdaiCreateInstanceBN(model, "DiamondLeft");
     sdaiCreateInstanceBN(model, "DiamondRight");
 
@@ -313,8 +342,8 @@ static void SmokeTestModelPopulate(SdaiModel model)
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
     inst = sdaiCreateComplexInstanceBN(model, _countof(strTest), strTest);
-    PutSet2(inst);
-    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
+    PutSet2(inst, owner);
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch", true);
 
     auto list = CreateEntitiesList(model, _countof(strTest), strTest);
     inst = sdaiCreateComplexInstance(model, list);
@@ -333,8 +362,8 @@ static void SmokeTestModelPopulate(SdaiModel model)
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
     inst = sdaiCreateInstance(model, diamondEntity);
-    PutSet2(inst);
-    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
+    PutSet2(inst, owner);
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch", true);
 
     inst = sdaiCreateInstance(model, diamondEntity);
     PutSet3(inst);
@@ -343,35 +372,40 @@ static void SmokeTestModelPopulate(SdaiModel model)
     //---------------------------------------------------------------------------------------------
     // diamond sdaiUnsetAttr
     inst = sdaiCreateInstance(model, diamondEntity);
-    PutSet2(inst);
+    PutSet2(inst, NULL);
     sdaiUnsetAttrBN(inst, "AttrCommonName");
     CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
 
     inst = sdaiCreateInstance(model, diamondEntity);
-    PutSet2(inst);
+    PutSet2(inst, owner);
     sdaiUnsetAttrBN(inst, "DiamondLeft.AttrCommonName");
+    sdaiUnsetAttrBN(inst, "Owner");
     CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
 
     inst = sdaiCreateInstance(model, diamondEntity);
-    PutSet2(inst);
+    PutSet2(inst, owner);
     sdaiUnsetAttrBN(inst, "DiamondRight.AttrCommonName");
+    sdaiUnsetAttrBN(inst, "DiamondRight.Owner");
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
 
     //---------------------------------------------------------------------------------------------
     // compplex instance unset sdaiUnsetAttr
     inst = sdaiCreateInstance(model, entityTest);
-    PutSet2(inst);
+    PutSet2(inst, owner);
     sdaiUnsetAttrBN(inst, "AttrCommonName");
+    sdaiUnsetAttrBN(inst, "Owner");
     CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
 
     inst = sdaiCreateInstance(model, entityTest);
-    PutSet2(inst);
+    PutSet2(inst, owner);
     sdaiUnsetAttrBN(inst, "DiamondLeft.AttrCommonName");
+    sdaiUnsetAttrBN(inst, "DiamondRight.Owner");
     CheckDiamond(inst, "d2-AttrBase", NULL, "d2-R-CN", "d2-AR", "d2-Ch");
 
     inst = sdaiCreateInstance(model, entityTest);
-    PutSet2(inst);
+    PutSet2(inst, owner);
     sdaiUnsetAttrBN(inst, "DiamondRight.AttrCommonName");
+    sdaiUnsetAttrBN(inst, "DiamondRight.Owner");
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
 
     //    
@@ -391,7 +425,7 @@ static void SmokeTestModelCheckContent(SdaiModel model)
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
     inst = internalGetInstanceFromP21Line(model, i++);
-    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch", true);
 
     inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
@@ -401,7 +435,7 @@ static void SmokeTestModelCheckContent(SdaiModel model)
     CheckDiamond(inst, "Diamond1-AttrBase", "Diamond1-ValueCommonName", NULL, NULL, "Diamond1-ValueAttrChild");
 
     inst = internalGetInstanceFromP21Line(model, i++);
-    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch");
+    CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch", true);
 
     inst = internalGetInstanceFromP21Line(model, i++);
     CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
@@ -431,10 +465,27 @@ static void SmokeTestModelCheckContent(SdaiModel model)
     auto extent = xxxxGetEntityAndSubTypesExtentBN(model, "DIAMONDLEFT");
     auto N = sdaiGetMemberCount(extent);
     ASSERT(N == _countof(ids));
-    for (SdaiAggrIndex i = 0; sdaiGetAggrByIndex(extent, i, &inst); i++) {
+    for (SdaiAggrIndex i = 0; i < N; i++) {
+        sdaiGetAggrByIndex(extent, i, &inst);
         auto id = internalGetP21Line(inst);
         ASSERT(id == ids[i]);
     }
+
+    //inverse to complex/diamond
+#if 0 //TODO
+    ExpressID ids2[] = { 5,8 };
+    auto owner = internalGetInstanceFromP21Line(model, 1);
+    SdaiAggr aggr = NULL;
+    auto ret = sdaiGetAttrBN(owner, "HasDiamonds", sdaiAGGR, &aggr);
+    ASSERT(ret && aggr && ret == aggr);
+    N = sdaiGetMemberCount(aggr);
+    ASSERT(N == _countof(ids2));
+    for (SdaiAggrIndex i = 0; i < N; i++) {
+        sdaiGetAggrByIndex(aggr, i, &inst);
+        auto id = internalGetP21Line(inst);
+        ASSERT(id == ids2[i]);
+    }
+#endif
 }
 
 static void SmokeTestSchema()

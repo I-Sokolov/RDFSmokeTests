@@ -1,11 +1,11 @@
 ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION ((), '2;1');
-FILE_NAME ($, '2025-03-14T04:30:03', (), (), 'IFC Engine Library, revision 2058, 2025-03-04T19:20:00', $, 'none');
+FILE_NAME ($, '2025-03-15T11:05:25', (), (), 'IFC Engine Library, revision 2058, 2025-03-04T19:20:00', $, 'none');
 FILE_SCHEMA (('SMOKE_TEST'));
 ENDSEC;
 DATA;
-#1 = DIAMONDBASE($);
+#1 = PERSON($);
 #2 = DIAMONDLEFT($, $);
 #3 = DIAMONDRIGHT($, $, $, $);
 #4 = (
@@ -21,7 +21,7 @@ PERSON($)
 DIAMOND('d2-Ch')
 DIAMONDBASE('d2-AttrBase')
 DIAMONDLEFT('d2-L-CN')
-DIAMONDRIGHT($, 'd2-R-CN')
+DIAMONDRIGHT(#1, 'd2-R-CN')
 DIAMONDRIGHT2('d2-AR')
 );
 #6 = (
@@ -33,7 +33,7 @@ DIAMONDRIGHT($, 'd3-R-CN')
 DIAMONDRIGHT2('d3-AR')
 );
 #7 = DIAMOND('Diamond1-AttrBase', 'Diamond1-ValueCommonName', $, $, $, 'Diamond1-ValueAttrChild');
-#8 = DIAMOND('d2-AttrBase', 'd2-L-CN', 'd2-AR', $, 'd2-R-CN', 'd2-Ch');
+#8 = DIAMOND('d2-AttrBase', 'd2-L-CN', 'd2-AR', #1, 'd2-R-CN', 'd2-Ch');
 #9 = DIAMOND('d3-AttrBase', 'd3-L-CN', 'd3-AR', $, 'd3-R-CN', $);
 #10 = DIAMOND('d2-AttrBase', $, 'd2-AR', $, 'd2-R-CN', 'd2-Ch');
 #11 = DIAMOND('d2-AttrBase', $, 'd2-AR', $, 'd2-R-CN', 'd2-Ch');
@@ -63,8 +63,8 @@ DIAMONDRIGHT($, $)
 DIAMONDRIGHT2('d2-AR')
 );
 #16 = (
-PARENT($)
-CHILD($)
+PARENT($, $)
+CHILD($, $)
 PERSON($)
 );
 #17 = DIAMONDRIGHT($, $, $, $);
