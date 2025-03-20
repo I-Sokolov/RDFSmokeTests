@@ -1,7 +1,7 @@
 ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION ((), '2;1');
-FILE_NAME ($, '2025-03-15T11:05:25', (), (), 'IFC Engine Library, revision 2058, 2025-03-04T19:20:00', $, 'none');
+FILE_NAME ($, '2025-03-20T06:47:44', (), (), 'IFC Engine Library, revision 2058, 2025-03-04T19:20:00', $, 'none');
 FILE_SCHEMA (('SMOKE_TEST'));
 ENDSEC;
 DATA;
@@ -70,5 +70,19 @@ PERSON($)
 #17 = DIAMONDRIGHT($, $, $, $);
 #18 = DIAMONDLEFT($, $);
 #19 = DIAMONDBASE($);
+#20 = CHILD($, $, #6);
+#21 = CHILD($, $, #9);
+#22 = PARENT($, $, #6);
+#23 = PARENT($, $, #9);
+#24 = (
+PARENT($, #6)
+CHILD($, #6)
+PERSON($)
+);
+#25 = (
+PARENT($, #9)
+CHILD($, #9)
+PERSON($)
+);
 ENDSEC;
 END-ISO-10303-21;

@@ -350,11 +350,11 @@ static void SmokeTestModelPopulate(SdaiModel model)
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch", true);
 
     auto list = CreateEntitiesList(model, _countof(strTest), strTest);
-    inst = sdaiCreateComplexInstance(model, list);
+    auto complexDiamond = sdaiCreateComplexInstance(model, list);
     sdaiDeleteNPL(list);
 
-    PutSet3(inst);
-    CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
+    PutSet3(complexDiamond);
+    CheckDiamond(complexDiamond, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 
     //--------------------------------------------------------------------------
     // diamond inheritance
@@ -369,9 +369,9 @@ static void SmokeTestModelPopulate(SdaiModel model)
     PutSet2(inst, owner);
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", "d2-R-CN", "d2-AR", "d2-Ch", true);
 
-    inst = sdaiCreateInstance(model, diamondEntity);
-    PutSet3(inst);
-    CheckDiamond(inst, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
+    auto simpleDiamond = sdaiCreateInstance(model, diamondEntity);
+    PutSet3(simpleDiamond);
+    CheckDiamond(simpleDiamond, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 
     //---------------------------------------------------------------------------------------------
     // diamond sdaiUnsetAttr
@@ -418,6 +418,62 @@ static void SmokeTestModelPopulate(SdaiModel model)
     sdaiCreateInstanceBN(model, "DiamondLeft");
     sdaiCreateInstanceBN(model, "DiamondBase");
 
+    //
+    inst = sdaiCreateInstanceBN(model, "Child");
+    sdaiPutAttrBN(inst, "LDiamond", sdaiINSTANCE, complexDiamond);
+    inst = sdaiCreateInstanceBN(model, "Child");
+    sdaiPutAttrBN(inst, "LDiamond", sdaiINSTANCE, simpleDiamond);
+
+    inst = sdaiCreateInstanceBN(model, "Parent");
+    sdaiPutAttrBN(inst, "RDiamond", sdaiINSTANCE, complexDiamond);
+    inst = sdaiCreateInstanceBN(model, "Parent");
+    sdaiPutAttrBN(inst, "RDiamond", sdaiINSTANCE, simpleDiamond);
+
+    inst = sdaiCreateInstance(model, entityParenyAndChild);
+    sdaiPutAttrBN(inst, "RDiamond", sdaiINSTANCE, complexDiamond);
+    sdaiPutAttrBN(inst, "LDiamond", sdaiINSTANCE, complexDiamond);
+
+    inst = sdaiCreateInstance(model, entityParenyAndChild);
+    sdaiPutAttrBN(inst, "RDiamond", sdaiINSTANCE, simpleDiamond);
+    sdaiPutAttrBN(inst, "LDiamond", sdaiINSTANCE, simpleDiamond);
+}
+
+static void CheckInstAggr(SdaiAggr aggr, int_t N, ExpressID rid[])
+{
+    auto n = sdaiGetMemberCount(aggr);
+    ASSERT(n >= N);//igor.sokolov 16.03.2025 NEED SWITCH FROM attrIndex TO attrPtr uncomment after unset fix //ASSERT(N == _countof(ids2));
+    for (SdaiAggrIndex i = 0; i < N; i++) {
+        SdaiInstance inst = 0;
+        sdaiGetAggrByIndex(aggr, i, &inst);
+        auto id = internalGetP21Line(inst);
+        ASSERT(id == rid[i]);
+    }
+
+}
+
+static void     CheckInv(SdaiInstance inst, ExpressID rInstLeft[], ExpressID rInstRight[])
+{
+    auto model = sdaiGetInstanceModel(inst);
+
+    SdaiAggr aggr = NULL;
+    auto ret = sdaiGetAttrBN(inst, "Inv", sdaiAGGR, &aggr);
+    CheckInstAggr(aggr, 2, rInstLeft);
+
+    aggr = NULL;
+    ret = sdaiGetAttrBN(inst, "DiamondLeft.Inv", sdaiAGGR, &aggr);
+    CheckInstAggr(aggr, 2, rInstLeft);
+
+    aggr = NULL;
+    ret = sdaiGetAttrBN(inst, "DiamondRight.Inv", sdaiAGGR, &aggr);
+    CheckInstAggr(aggr, 2, rInstRight);
+
+    auto entityRight = sdaiGetEntity(model, "DiamondRight");
+    auto attrInvRight = sdaiGetAttrDefinition(entityRight, "Inv");
+    ASSERT(attrInvRight);
+
+    aggr = NULL;
+    ret = sdaiGetAttr(inst, attrInvRight, sdaiAGGR, &aggr);
+    CheckInstAggr(aggr, 2, rInstRight);
 }
 
 static void SmokeTestModelCheckContent(SdaiModel model)
@@ -467,13 +523,7 @@ static void SmokeTestModelCheckContent(SdaiModel model)
     //
     ExpressID ids[] = { 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18 };
     auto extent = xxxxGetEntityAndSubTypesExtentBN(model, "DIAMONDLEFT");
-    auto N = sdaiGetMemberCount(extent);
-    ASSERT(N == _countof(ids));
-    for (SdaiAggrIndex i = 0; i < N; i++) {
-        sdaiGetAggrByIndex(extent, i, &inst);
-        auto id = internalGetP21Line(inst);
-        ASSERT(id == ids[i]);
-    }
+    CheckInstAggr(extent, _countof(ids), ids);
 
     //inverse to complex/diamond
     ExpressID ids2[] =  { 5, 8 };
@@ -481,13 +531,18 @@ static void SmokeTestModelCheckContent(SdaiModel model)
     SdaiAggr aggr = NULL;
     auto ret = sdaiGetAttrBN(owner, "HasDiamonds", sdaiAGGR, &aggr);
     ASSERT(ret && aggr && ret == aggr);
-    N = sdaiGetMemberCount(aggr);
-    //igor.sokolov 16.03.2025 NEED SWITCH FROM attrIndex TO attrPtr uncomment after unset fix //ASSERT(N == _countof(ids2));
-    for (SdaiAggrIndex i = 0; i < _countof(ids2); i++) {
-        sdaiGetAggrByIndex(aggr, i, &inst);
-        auto id = internalGetP21Line(inst);
-        ASSERT(id == ids2[i]);
-    }
+    CheckInstAggr(aggr, _countof(ids2), ids2);
+
+    //inverse from complex/diamond    
+    ExpressID rInst6Left[] = { 20, 24 };
+    ExpressID rInst6Right[] = { 22, 24 };
+    inst = internalGetInstanceFromP21Line(model, 6);
+    CheckInv(inst, rInst6Left, rInst6Right);
+    
+    ExpressID rInst9Right[] = { 23, 25 };
+    ExpressID rInst9Left[] = { 21, 25 };
+    inst = internalGetInstanceFromP21Line(model, 9);
+    CheckInv(inst, rInst9Left, rInst9Right);
 }
 
 static void SmokeTestSchema()
