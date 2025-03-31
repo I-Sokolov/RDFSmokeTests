@@ -1,8 +1,9 @@
 
 #include "pch.h"
 
-#define TEST_FILE_DEL "..\\TestData\\Walls.ifc"
-#define TEST_FILE_AGGR "..\\TestData\\AggregationTest.ifc"
+#define TEST_FILE_DEL   "..\\TestData\\Walls.ifc"
+#define TEST_FILE_AGGR  "..\\TestData\\AggregationTest.ifc"
+#define TEST_SAVE       "AggregationTest.ifc"
 
 
 static void* Value2Ptr(SdaiPrimitiveType valueType, va_list value)
@@ -55,6 +56,8 @@ static void DeleteWalls(bool subtypes)
 {
     SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_DEL, "");
 
+    sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
+
     int cnt = 0;
 
     SdaiAggr entityAggr = 0;
@@ -87,6 +90,7 @@ static void DeleteWalls(bool subtypes)
         if (ifcInstance) {
             sdaiDeleteInstance(ifcInstance);
             cnt++;
+            sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
         }
         else {
             break;
@@ -95,7 +99,6 @@ static void DeleteWalls(bool subtypes)
 
     ASSERT(cnt == 14);
 
-    //sdaiSaveModelBN(model, "Walls_del.ifc");
     sdaiCloseModel(model);
 }
 
@@ -116,12 +119,12 @@ static void DeleteWallsByIndex(bool subtypes)
     SdaiInstance    ifcInstance = 0;
     while (engiGetAggrElement(entityAggr, 0, sdaiINSTANCE, &ifcInstance)) {
         sdaiDeleteInstance(ifcInstance);
+        sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
         cnt++;
     }
 
     ASSERT(cnt == 14);
 
-    //sdaiSaveModelBN(model, "Walls_del.ifc");
     sdaiCloseModel(model);
 }
 
@@ -169,6 +172,8 @@ static void DeleteAttrAggrByIndex()
 
     CheckAggrElem(unitAssmt, "Units", 2, 951);
 
+    sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
+
     SdaiInteger last = sdaiGetMemberCount(units) - 1;
 
     CheckAggrElem(unitAssmt, "Units", last, 858);
@@ -179,7 +184,8 @@ static void DeleteAttrAggrByIndex()
 
     CheckAggrElem(unitAssmt, "Units", last-1, 857);
 
-    //sdaiSaveModelBN(model, "Walls_del.ifc");
+    sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
+
     sdaiCloseModel(model);
 }
 
@@ -1647,6 +1653,8 @@ static void UpdateCounters()
     auto prop2 = IFC4::IfcPropertySingleValue::Create(model);
     sdaiAdd_(aggrProps, sdaiINSTANCE, (SdaiInstance)prop2);
 
+    sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
+    
     //
     sdaiBeginning(itProps);
     ASSERT(sdaiNext(itProps));
@@ -1664,9 +1672,13 @@ static void UpdateCounters()
     sdaiBeginning(itPsets);
     ASSERT(sdaiNext(itPsets));
 
+    sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
+
     //
     sdaiRemoveByIndex(aggrProps, 0);
     sdaiRemoveByIndex(aggrProps, 0);
+
+    sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
 
     //
     sdaiBeginning(itProps);
@@ -1678,6 +1690,8 @@ static void UpdateCounters()
     sdaiDeleteInstance(prop);
     sdaiDeleteInstance(prop2);
     sdaiDeleteInstance(pset);
+
+    sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
 
     //
     sdaiBeginning(itAll);
