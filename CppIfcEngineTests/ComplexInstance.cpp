@@ -373,6 +373,8 @@ static void SmokeTestModelPopulate(SdaiModel model)
     PutSet3(simpleDiamond);
     CheckDiamond(simpleDiamond, "d3-AttrBase", "d3-L-CN", "d3-R-CN", "d3-AR", NULL);
 
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);//to check backlinks consistency
+
     //---------------------------------------------------------------------------------------------
     // diamond sdaiUnsetAttr
     inst = sdaiCreateInstance(model, diamondEntity);
@@ -391,6 +393,8 @@ static void SmokeTestModelPopulate(SdaiModel model)
     sdaiUnsetAttrBN(inst, "DiamondRight.AttrCommonName");
     sdaiUnsetAttrBN(inst, "DiamondRight.Owner");
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
+
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);//to check backlinks consistency
 
     //---------------------------------------------------------------------------------------------
     // compplex instance unset sdaiUnsetAttr
@@ -411,6 +415,8 @@ static void SmokeTestModelPopulate(SdaiModel model)
     sdaiUnsetAttrBN(inst, "DiamondRight.AttrCommonName");
     sdaiUnsetAttrBN(inst, "DiamondRight.Owner");
     CheckDiamond(inst, "d2-AttrBase", "d2-L-CN", NULL, "d2-AR", "d2-Ch");
+
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);//to check backlinks consistency
 
     //    
     sdaiCreateInstance(model, entityParenyAndChild);
@@ -441,7 +447,7 @@ static void SmokeTestModelPopulate(SdaiModel model)
 static void CheckInstAggr(SdaiAggr aggr, int_t N, ExpressID rid[])
 {
     auto n = sdaiGetMemberCount(aggr);
-    ASSERT(n >= N);//igor.sokolov 16.03.2025 NEED SWITCH FROM attrIndex TO attrPtr uncomment after unset fix //ASSERT(N == _countof(ids2));
+    ASSERT(n == N);
     for (SdaiAggrIndex i = 0; i < N; i++) {
         SdaiInstance inst = 0;
         sdaiGetAggrByIndex(aggr, i, &inst);
