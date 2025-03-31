@@ -573,21 +573,24 @@ static void SmokeTestSchema()
     model = NULL;
 }
 
+static void ReadWithoutSchema()
+{
+/*
+    auto model = sdaiOpenModelBN(0, TEST_MODEL, NULL);
+    ASSERT(model);
+
+    Instance inst11[] = { {"DIAMOND", 6} };
+    CheckComplex(model, 11, inst11, 1);
+
+    sdaiCloseModel(model);
+    */
+}
+
 extern void ComplexInstance()
 {
     CheckComplex();
     SmokeTestSchema();
+    ReadWithoutSchema();
 }
 
-#if 0
-if (auto list = sdaiCreateNPL__internal()) {
-    for (int_t i = 0; i < nameNumber; i++) {
-        if (auto entity = sdaiGetEntity__UNICODE__internal(session, nameVector[i])) {
-            SdaiInteger val = (SdaiInteger)entity;
-            sdaiAppend__internal(list, sdaiINTEGER, &val);
-        }
-        else {
-            return NULL;
-        }
-    }
-#endif
+
