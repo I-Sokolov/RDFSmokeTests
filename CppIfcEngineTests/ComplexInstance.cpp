@@ -545,6 +545,14 @@ static void SmokeTestModelCheckContent(SdaiModel model)
     CheckInv(inst, rInst9Left, rInst9Right);
 }
 
+static void DeleteInstance(SdaiModel model, ExpressID id)
+{
+    auto inst = internalGetInstanceFromP21Line(model, id);
+    ASSERT(inst);
+
+    sdaiDeleteInstance(inst);
+}
+
 static void SmokeTestSchema()
 {
     ENTER_TEST;
@@ -569,6 +577,13 @@ static void SmokeTestSchema()
     ASSERT(model);
     engiEnableDerivedAttributes(model, sdaiTRUE);
     SmokeTestModelCheckContent(model);
+
+    //backlinks consistency after removing instaces
+    DeleteInstance(model, 5);
+    DeleteInstance(model, 9);
+    DeleteInstance(model, 6);
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);//to check backlinks consistency
+
     sdaiCloseModel(model);
     model = NULL;
 }
