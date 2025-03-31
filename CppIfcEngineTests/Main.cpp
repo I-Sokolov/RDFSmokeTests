@@ -46,11 +46,11 @@ extern int main()
         int i = 0;
         do
             {
+            AggregationTests();
             ComplexInstance();
             SchemaReadingTests();
             DeriveAttrTests();
             Encodings();
-            AggregationTests();
             ADBtests();
             EngineTests();
             EarlyBound_IFC4_test();

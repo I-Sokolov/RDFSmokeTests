@@ -5,6 +5,10 @@
 #define TEST_FILE_AGGR  "..\\TestData\\AggregationTest.ifc"
 #define TEST_SAVE       "AggregationTest.ifc"
 
+#define TEST_SCHEMA         "..\\TestData\\schemas\\smoke_test.exp"
+#define TEST_MODEL_SAVED    "AggrSmokeTest.txt"
+#define TEST_MODEL          "..\\TestData\\" TEST_MODEL_SAVED
+
 
 static void* Value2Ptr(SdaiPrimitiveType valueType, va_list value)
 {
@@ -1707,10 +1711,114 @@ static void UpdateCounters()
     sdaiCloseModel(model);
 }
 
+static void PopulateNestedAggr(SdaiModel model)
+{
+    auto referencedEntity = sdaiGetEntity(model, "Referenced");
+    
+    SdaiInstance referencedInstance[10];
+    for (int i = 0; i < 10; i++) {
+        referencedInstance[i] = sdaiCreateInstance(model, referencedEntity);
+    }
+
+    for (int i = 0; i < 2; i++) {
+        auto inst = sdaiCreateInstanceBN(model, "Referencing");
+        SdaiAggr a1 = sdaiCreateAggrBN(inst, "refs");
+        for (int j = 0; j < 2; j++) {
+            SdaiAggr a2 = sdaiCreateNestedAggr(a1);
+            for (int k = 0; k < 2; k++) {
+                sdaiAppend(a2, referencedInstance[i * 4 + j * 2 + k]);
+            }
+        }
+    }
+}
+
+static void UnsetNestedAggr(SdaiModel model)
+{
+    auto inst = internalGetInstanceFromP21Line(model, 11);
+    ASSERT(inst);
+
+    SdaiAggr a1 = NULL;
+    sdaiGetAttrBN(inst, "refs", sdaiAGGR, &a1);
+    ASSERT(a1);
+
+    SdaiAggr a2 = NULL;
+    sdaiGetAggrByIndex(a1, 0, sdaiAGGR, &a2);
+    ASSERT(a2);
+
+    sdaiUnsetArrayByIndex(a2, 1);
+    sdaiUnsetArrayByIndex(a1, 1);
+
+    //
+    inst = internalGetInstanceFromP21Line(model, 12);
+    ASSERT(inst);
+
+    sdaiUnsetAttrBN(inst, "refs");
+}
+
+static void CheckNestedInverse(SdaiModel model, ExpressID id, ExpressID idRef)
+{
+    auto inst = internalGetInstanceFromP21Line(model, id);
+    ASSERT(inst);
+
+    SdaiInstance instRef = NULL;
+    sdaiGetAttrBN(inst, "referencedBy", sdaiINSTANCE, &instRef);
+
+    if (idRef) {
+        ASSERT(instRef);
+        auto idRef_ = internalGetP21Line(inst);
+        ASSERT(idRef_ == idRef);
+    }
+    else {
+        ASSERT(!instRef);
+    }
+}
+
+static void CheckNestedAggr(SdaiModel model, bool unset)
+{
+    int N1 = 4;
+    int N2 = unset ? 5 : 8;
+
+    int i = 1;
+    for (; i <= N1; i++) {
+        CheckNestedInverse(model, i, 11);
+    }
+
+    for (; i <= N2; i++) {
+        CheckNestedInverse(model, i, 12);
+    }
+
+    for (; i <= 10; i++) {
+        CheckNestedInverse(model, i, 0);
+    }
+}
+
+static void NestedInstanceAggr()
+{
+    auto model = sdaiCreateModelBN(TEST_SCHEMA);
+    ASSERT(model);
+    PopulateNestedAggr(model);
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);
+    CheckNestedAggr(model, false);
+    sdaiCloseModel(model);
+
+    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, TEST_SCHEMA);
+    CheckNestedAggr(model, false);
+    UnsetNestedAggr(model);
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);
+    CheckNestedAggr(model, true);
+    sdaiCloseModel(model);
+
+    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, TEST_SCHEMA);
+    CheckNestedAggr(model, true);
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);
+    sdaiCloseModel(model);
+}
+
 extern void AggregationTests()
 {
     ENTER_TEST;
 
+    //NestedInstanceAggr();
     UpdateCounters();
     Add();
     CreateNested();

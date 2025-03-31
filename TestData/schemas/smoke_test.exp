@@ -56,3 +56,14 @@ ENTITY Parent SUBTYPE OF (Person)
 	ChildName : STRING;
 	RDiamond  : DiamondRight2;
 END_ENTITY;
+
+--- backlink to nested aggregation
+
+ENTITY Referenced
+INVERSE
+	referencedBy : refs FOR Referencing;
+END_ENTITY;
+
+ENTITY Referencing
+	refs : ARRAY OF ARRAY OF Referenced;
+END_ENTITY;
