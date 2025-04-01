@@ -1765,7 +1765,7 @@ static void CheckNestedInverse(SdaiModel model, ExpressID id, ExpressID idRef)
 
     if (idRef) {
         ASSERT(instRef);
-        auto idRef_ = internalGetP21Line(inst);
+        auto idRef_ = internalGetP21Line(instRef);
         ASSERT(idRef_ == idRef);
     }
     else {
@@ -1775,8 +1775,8 @@ static void CheckNestedInverse(SdaiModel model, ExpressID id, ExpressID idRef)
 
 static void CheckNestedAggr(SdaiModel model, bool unset)
 {
-    int N1 = 4;
-    int N2 = unset ? 5 : 8;
+    int N1 = unset ? 1 : 4;
+    int N2 = unset ? 1 : 8;
 
     int i = 1;
     for (; i <= N1; i++) {
@@ -1802,6 +1802,7 @@ static void NestedInstanceAggr()
     sdaiCloseModel(model);
 
     model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, TEST_SCHEMA);
+    sdaiSaveModelBN(model, TEST_MODEL_SAVED);
     CheckNestedAggr(model, false);
     UnsetNestedAggr(model);
     sdaiSaveModelBN(model, TEST_MODEL_SAVED);
@@ -1818,7 +1819,7 @@ extern void AggregationTests()
 {
     ENTER_TEST;
 
-    //NestedInstanceAggr();
+    NestedInstanceAggr();
     UpdateCounters();
     Add();
     CreateNested();

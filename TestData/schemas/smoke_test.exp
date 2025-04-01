@@ -61,7 +61,7 @@ END_ENTITY;
 
 ENTITY Referenced
 INVERSE
-	referencedBy : refs FOR Referencing;
+	referencedBy : Referencing FOR refs;
 END_ENTITY;
 
 ENTITY Referencing
