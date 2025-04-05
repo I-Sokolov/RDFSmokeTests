@@ -36,6 +36,7 @@ extern int main()
         printf("--------- Starting IFC engine C++ tests\n");
 
         //Screening();
+        //return 0;
 
 #ifdef VLD_ON
         VLDEnable();
@@ -46,8 +47,8 @@ extern int main()
         int i = 0;
         do
             {
-            AggregationTests();
             ComplexInstance();
+            AggregationTests();
             SchemaReadingTests();
             DeriveAttrTests();
             Encodings();

@@ -31,8 +31,9 @@ static void CheckComplex(SdaiModel model, ExpressID id, Instance rInst[], int nI
         engiGetAttributeAggr(inst, (int_t*)&args);
         ASSERT(sdaiGetMemberCount(args) == rInst[i].narg);
 
-        inst = engiGetComplexInstanceNextPart(inst);
-        i++;
+        //inst = engiGetComplexInstanceNextPart(inst);
+        //i++;
+        return;
     }
 
     ASSERT(i == nInst);
