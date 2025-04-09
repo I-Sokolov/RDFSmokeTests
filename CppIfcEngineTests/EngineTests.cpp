@@ -867,6 +867,8 @@ static void CheckTestBigID(SdaiModel ifcModel, bool modified)
 
 static void TestBigID()
 {
+    ENTER_TEST;
+
     SdaiModel  ifcModel = sdaiCreateModelBN(0, NULL, "IFC4");
     ASSERT(ifcModel);
 
