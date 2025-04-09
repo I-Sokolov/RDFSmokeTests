@@ -1,4 +1,3 @@
-
 #include "pch.h"
 
 using namespace IFC4;
@@ -808,6 +807,119 @@ static void PrecisionTest(SdaiModel ifcModel)
     ASSERT(!strcmp(str, "0.333333333333333"));
 }
 
+static ExpressID bigID = 2945825;
+
+static void CheckPsetArray(std::vector<IFC4::IfcPropertySet>& psets, int n, ExpressID id1, ExpressID id2, ExpressID id3)
+{
+    std::vector<ExpressID> ids;
+    for (auto inst : psets) {
+        ids.push_back(internalGetP21Line(inst));
+    }
+
+    ASSERT(psets.size() == n);
+    if (n > 0)
+        ASSERT(ids[0] == id1);
+    if (n > 1)
+        ASSERT(ids[1] == id2);
+    if (n > 2)
+        ASSERT(ids[2] == id3);
+}
+
+static void CheckTestBigID(SdaiModel ifcModel, bool modified)
+{
+    auto id1 = bigID + 6;
+    auto id2 = bigID + 7;
+    auto id3 = bigID + 8;
+
+    auto props = sdaiGetEntityExtentBN(ifcModel, "IfcPropertySingleValue");
+    SdaiInteger Nprops = sdaiGetMemberCount(props);
+    ASSERT(Nprops == (modified ? 4 : 5));
+    for (SdaiInteger i = 0; i < Nprops; i++) {
+        IFC4::IfcProperty prop = sdaiGetAggrByIndex(props, i);
+        ASSERT(prop);
+
+        auto id = internalGetP21Line(prop);
+        ASSERT(id == bigID + i + (modified ? 2 : 1));
+
+        std::vector<IFC4::IfcPropertySet> psets;
+        prop.get_PartOfPset(psets);
+
+        if (modified) {
+            switch (i+1) {
+            case 1: CheckPsetArray(psets, 2, id2, id3, 0); break;
+            case 2: CheckPsetArray(psets, 1, id3, 0, 0); break;
+            case 3: CheckPsetArray(psets, 0, 0, 0, 0); break;
+            case 4: CheckPsetArray(psets, 1, id2, 0, 0); break;
+            default: ASSERT(0);
+            }
+        }
+        else {
+            if (i < 4) {
+                CheckPsetArray(psets, 3, id1, id2, id3);
+            }
+            else {
+                ASSERT(psets.size() == 0);
+            }
+        }
+
+    }
+}
+
+static void TestBigID()
+{
+    SdaiModel  ifcModel = sdaiCreateModelBN(0, NULL, "IFC4");
+    ASSERT(ifcModel);
+
+    auto ok = SmokeTest_SetLastUsedExpressID(ifcModel, bigID);
+    ASSERT(ok);
+
+    IFC4::IfcProperty prop[5];
+    for (int i = 0; i < 5; i++) {
+        prop[i] = IFC4::IfcPropertySingleValue::Create(ifcModel);
+    }
+    
+    IFC4::IfcPropertySet pset[3];
+    for (int i = 0; i < 3; i++) {
+        pset[i] = IFC4::IfcPropertySet::Create(ifcModel);
+        pset[i].put_HasProperties(prop, 4);
+    }
+
+    //
+    CheckTestBigID(ifcModel, false);
+
+    sdaiSaveModelBN(ifcModel, "TestBigId.ifc");
+
+    auto ifcModelRead = sdaiOpenModelBN(0, "TestBigId.ifc", "");
+    ASSERT(ifcModelRead);
+    CheckTestBigID(ifcModelRead, false);
+    sdaiCloseModel(ifcModelRead);
+
+    //
+    sdaiDeleteInstance(prop[0]);
+
+    sdaiUnsetAttrBN(pset[0], "HasProperties");
+    
+    SdaiAggr aggr = 0;
+    sdaiGetAttrBN(pset[1], "HasProperties", sdaiAGGR, &aggr);
+    sdaiRemoveByIndex(aggr, 1);
+    sdaiPutAggrByIndex(aggr, 1, sdaiINSTANCE, (SdaiInstance)prop[4]);
+
+    sdaiGetAttrBN(pset[2], "HasProperties", sdaiAGGR, &aggr);
+    sdaiUnsetArrayByIndex(aggr, 2);
+
+    //
+    CheckTestBigID(ifcModel, true);
+
+    sdaiSaveModelBN(ifcModel, "TestBigIdMod.ifc");
+    sdaiCloseModel(ifcModel);
+
+    ifcModelRead = sdaiOpenModelBN(0, "TestBigIdMod.ifc", "");
+    ASSERT(ifcModelRead);
+    CheckTestBigID(ifcModelRead, true);
+    sdaiCloseModel(ifcModelRead);
+}
+
+
 extern void EngineTests(void)
 {
     ENTER_TEST
@@ -841,5 +953,7 @@ extern void EngineTests(void)
     TestGetADBValue(ifcModel);
 
     sdaiCloseModel(ifcModel);
+
+    TestBigID();
 }
 

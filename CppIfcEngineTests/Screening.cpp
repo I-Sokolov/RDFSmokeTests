@@ -3,8 +3,6 @@
 #include <Windows.h>
 #include <chrono>
 
-#define ENABLE_SMOKE_TESTS
-#include "SmokeTests.h"
 
 #if 0
 

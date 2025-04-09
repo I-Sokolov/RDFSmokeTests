@@ -47,13 +47,13 @@ extern int main()
         int i = 0;
         do
             {
+            EngineTests();
             ComplexInstance();
             AggregationTests();
             SchemaReadingTests();
             DeriveAttrTests();
             Encodings();
             ADBtests();
-            EngineTests();
             EarlyBound_IFC4_test();
             EarlyBound_IFC4x4_test();
             EarlyBound_AP242_test();

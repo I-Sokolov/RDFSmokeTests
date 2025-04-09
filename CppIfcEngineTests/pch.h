@@ -23,6 +23,8 @@
 #include "CIS2.h"
 #include "AP242.h"
 
+#define ENABLE_SMOKE_TESTS
+#include "SmokeTests.h"
 
 #ifdef ASSERT
 #undef ASSERT
