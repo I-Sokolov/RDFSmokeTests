@@ -923,6 +923,33 @@ static void TestBigID()
 #endif
 }
 
+static void CheckUnknowns(SdaiModel model)
+{
+    //#33 used by #7000000001.null #7000000002.TheActor #7000000003.GlobalId
+    //#8000000 used by #7000000000.null #70000000000.null
+    //#70000000000 used by #9000000000.TheActor #9000000001.null
+    //#7000000002 used by #77.null
+}
+
+static void TestUnknonwEntities()
+{
+    ENTER_TEST;
+
+    auto model = sdaiOpenModelBN(0, "..\\TestData\\UnknownEntitiies.ifc", "");
+    ASSERT(model);
+    
+    CheckUnknowns(model);
+
+    sdaiSaveModelBN(model, "UnknownEntitiies_.ifc");
+    sdaiCloseModel(model);
+
+    model = sdaiOpenModelBN(0, "UnknownEntitiies_.ifc", "");
+    ASSERT(model);
+
+    CheckUnknowns(model);
+
+    sdaiCloseModel(model);
+}
 
 extern void EngineTests(void)
 {
@@ -959,5 +986,7 @@ extern void EngineTests(void)
     sdaiCloseModel(ifcModel);
 
     TestBigID();
+
+    TestUnknonwEntities();
 }
 

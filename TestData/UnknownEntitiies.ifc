@@ -1,0 +1,18 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION ((), $);
+FILE_NAME ($, $, (), (), $, $, $);
+FILE_SCHEMA (('IFC4'));
+ENDSEC;
+DATA;
+#7000000000 = IFCACTOR($, $, $, $, $, $, #8000000);
+#7000000001 = IFCACTOR($, $, $, $, $, $, #33);
+#7000000002 = IFCACTOR($, $, $, $, $, #33);
+#7000000003 = IFCACTOR(#33);
+#70000000000 = UNKNONW(#8000000);
+#8000000 = IFCPERSON('justApeson', $, $, ('Domingo', 'Felipe', 'Jacinto'), $, $, $, $);
+#9000000000 = IFCACTOR($, $, $, $, $, #70000000000);
+#9000000001 = IFCACTOR($, $, $, $, $, $, #70000000000);
+#77=(A(5) B(#7000000002));
+ENDSEC;
+END-ISO-10303-21;
