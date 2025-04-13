@@ -14,6 +14,7 @@
 #include <vector>
 #include <iostream>
 #include <map>
+#include <set>
 
 #include "ifcengine.h"
 #include "IFC4.h"

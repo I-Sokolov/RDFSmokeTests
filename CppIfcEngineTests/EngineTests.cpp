@@ -923,12 +923,126 @@ static void TestBigID()
 #endif
 }
 
-static void CheckUnknowns(SdaiModel model)
+static void CheckInstanceSet(SdaiModel model, SdaiNPL list, std::set<ExpressID> ids)
 {
-    //#33 used by #7000000001.null #7000000002.TheActor #7000000003.GlobalId
-    //#8000000 used by #7000000000.null #70000000000.null
-    //#70000000000 used by #9000000000.TheActor #9000000001.null
-    //#7000000002 used by #77.null
+    SdaiIterator it = sdaiCreateIterator(list);
+    sdaiBeginning(it);
+
+    while (sdaiNext(it)) {
+        SdaiInstance inst = sdaiGetAggrByIterator(it);
+        ASSERT(inst);
+        auto id = internalGetP21Line(inst);
+        ASSERT(ids.find(id) != ids.end());
+        ids.erase(id);
+    }
+
+    ASSERT(ids.empty());
+
+    sdaiDeleteIterator(it);
+}
+
+static void AddUser(SdaiModel model, SdaiEntity actor, ExpressID id, const char* attr,
+    std::set<ExpressID>& allUsers,
+    std::set<ExpressID>& actorUsers,
+    std::map<std::string, std::set<ExpressID>>& allByAttr,
+    std::map<std::string, std::set<ExpressID>>& actorByAttr
+)
+{
+    if (!id)
+        return;
+
+    allUsers.insert(id);
+    allByAttr[attr ? attr : ""].insert(id);
+
+    auto inst = internalGetInstanceFromP21Line(model, id);
+    ASSERT(id);
+
+    if (sdaiIsKindOf(inst, actor)) {
+        actorUsers.insert(id);
+        actorByAttr[attr ? attr : ""].insert(id);
+    }
+}
+
+static void CheckUsers(SdaiModel model, SdaiInstance instance, SdaiNPL domain, std::set<ExpressID>& users)
+{
+    SdaiNPL result = sdaiCreateNPL();
+    auto ret = sdaiFindInstanceUsers(instance, domain, result);
+    ASSERT(ret == result);
+    CheckInstanceSet(model, result, users);
+    sdaiDeleteNPL(result);
+}
+
+static void CheckUsedIn(SdaiModel model, SdaiInstance instance, SdaiNPL domain, const char* attrName, std::set<ExpressID>& users)
+{
+    SdaiNPL result = sdaiCreateNPL();
+
+    auto ret = sdaiFindInstanceUsedInBN(instance, *attrName ? attrName : NULL, domain, result);
+    ASSERT(ret == result);
+    CheckInstanceSet(model, result, users);
+
+    sdaiDeleteNPL(result);
+
+    SdaiAttr attr = NULL;
+    if (*attrName) {
+        auto entity = sdaiGetEntity(model, "IFCActor");
+        attr = sdaiGetAttrDefinition(entity, attrName);
+        ASSERT(attr);
+    }
+
+    result = sdaiCreateNPL();
+    ret = sdaiFindInstanceUsedIn(instance, attr, domain, result);
+    ASSERT(ret == result);
+    CheckInstanceSet(model, result, users);
+
+    sdaiDeleteNPL(result);
+}
+
+static void CheckUsed(SdaiModel model, ExpressID id, ExpressID user1, const char* attr1, ExpressID user2 = 0, const char* attr2 = 0, ExpressID user3 = 0, const char* attr3 = 0)
+{
+    SdaiEntity actor = sdaiGetEntity(model, "IfcActor");
+    ASSERT(actor);
+
+    std::set<ExpressID> allUsers;
+    std::set<ExpressID> actorUsers;
+    std::map<std::string, std::set<ExpressID>> allByAttr;
+    std::map<std::string, std::set<ExpressID>> actorByAttr;
+    AddUser(model, actor, user1, attr1, allUsers, actorUsers, allByAttr, actorByAttr);
+    AddUser(model, actor, user2, attr2, allUsers, actorUsers, allByAttr, actorByAttr);
+    AddUser(model, actor, user3, attr3, allUsers, actorUsers, allByAttr, actorByAttr);
+
+    SdaiInstance inst = internalGetInstanceFromP21Line(model, id);
+    ASSERT(inst);
+
+    SdaiNPL domainActor = sdaiCreateNPL();
+    sdaiAppend(domainActor, sdaiINTEGER, &actor); 
+
+    CheckUsers(model, inst, NULL, allUsers);
+    CheckUsers(model, inst, domainActor, actorUsers);
+
+    for (auto& p : allByAttr) {
+        CheckUsedIn(model, inst, NULL, p.first.c_str(), p.second);
+    }
+
+    for (auto& p : actorByAttr) {
+        CheckUsedIn(model, inst, domainActor, p.first.c_str(), p.second);
+    }
+
+    sdaiDeleteNPL(domainActor);
+}
+
+static void CheckUsage(SdaiModel model)
+{
+    //#33 used by #9000000001.null #9000000002.TheActor 
+    //missed referenve - not exposed CheckUsed(model, 33, 7000000001, NULL, 7000000002, "TheActoR");
+
+    //#6000000 used by #9000000000.null #10000000000.null
+    CheckUsed (model, 6000000, 9000000000, NULL, 10000000000, NULL);
+
+    //#10000000000 used by #9000000004.TheActor #9000000001.null 9000000003.GlobalId
+    CheckUsed(model, 10000000000, 9000000004, "TheACtor", 9000000001, NULL, 9000000003, "GlObalId");
+ 
+    //#9000000002 used by #77.null
+    CheckUsed(model, 9000000002, 77, NULL);
 }
 
 static void TestUnknonwEntities()
@@ -938,7 +1052,7 @@ static void TestUnknonwEntities()
     auto model = sdaiOpenModelBN(0, "..\\TestData\\UnknownEntitiies.ifc", "");
     ASSERT(model);
     
-    CheckUnknowns(model);
+    CheckUsage(model);
 
     sdaiSaveModelBN(model, "UnknownEntitiies_.ifc");
     sdaiCloseModel(model);
@@ -946,7 +1060,7 @@ static void TestUnknonwEntities()
     model = sdaiOpenModelBN(0, "UnknownEntitiies_.ifc", "");
     ASSERT(model);
 
-    CheckUnknowns(model);
+    CheckUsage(model);
 
     sdaiCloseModel(model);
 }
