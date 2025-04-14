@@ -1,10 +1,6 @@
 
 #include "pch.h"
 
-#define ENABLE_SMOKE_TESTS
-#include "SmokeTests.h"
-
-
 static bool FileEquals(std::string& file1, std::string& file2)
 {
     FILE* fp1 = NULL;
