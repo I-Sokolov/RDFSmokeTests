@@ -13,6 +13,8 @@ extern void Screening(void);
 extern void ComplexInstance();
 extern void DeriveAttrTests();
 extern void SchemaReadingTests();
+extern void DeepBoolean();
+
 
 static long HeapUsed()
 {
@@ -36,7 +38,8 @@ extern int main()
         printf("--------- Starting IFC engine C++ tests\n");
 
         //Screening();
-        //return 0;
+        DeepBoolean();
+        return 0;
 
 #ifdef VLD_ON
         VLDEnable();

@@ -16,6 +16,7 @@
 #include <map>
 #include <set>
 
+#include "engine.h"
 #include "ifcengine.h"
 #include "IFC4.h"
 #include "IFC2x3.h"
