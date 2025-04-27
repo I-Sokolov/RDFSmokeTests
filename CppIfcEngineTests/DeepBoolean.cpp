@@ -114,7 +114,7 @@ static IfcRepresentationItem CreateSolid(SdaiModel model, int mode)
     bool left = true;
     bool right = false;
 
-    int N = 2800;
+    int N = 28; // 00;
     for (int i = 0; i <= N; i++) {
 
         ASSERT(currentLevel.size());
@@ -255,18 +255,46 @@ static void CreateTreeModel(const char* fileName, int mode)
 
 static void CreateTreeModels()
 {
-    CreateTreeModel("LeftTree.ifc", -1);
-    CreateTreeModel("RightTree.ifc", 1);
-    CreateTreeModel("MiddleTree.ifc", 0);
-    CreateTreeModel("FullTree.ifc", 2);
-    CreateTreeModel("RandomTree.ifc", 3);
+    CreateTreeModel("SmallLeftTree.ifc", -1);
+    CreateTreeModel("SmallRightTree.ifc", 1);
+    CreateTreeModel("SmallMiddleTree.ifc", 0);
+    CreateTreeModel("SmallFullTree.ifc", 2);
+    CreateTreeModel("SmallRandomTree.ifc", 3);
+}
+
+static void CalculateModel(const char* ifcPath, const char* binPath)
+{
+    auto model = sdaiOpenModelBN(0, ifcPath, "");
+    ASSERT(model);
+
+    auto products = xxxxGetEntityAndSubTypesExtentBN(model, "IfcWall");
+    int i = 0;
+    while (auto prod = sdaiGetAggrByIndex(products, i++)) {
+        auto id = internalGetP21Line(prod);
+        CalculateInstance(prod);
+        SaveInstanceTree(prod, binPath);
+
+    }
+
+    sdaiCloseModel(model);
+}
+
+static void CalculateModels()
+{
+    //CalculateModel("W:\\DevArea\\RDF\\RightTree.ifc", "W:\\DevArea\\RDF\\Save_RightTree.bin");
+    //CalculateModel("W:\\DevArea\\RDF\\LeftTree.ifc", "W:\\DevArea\\RDF\\Save_LeftTree.bin");
+
+    CalculateModel("SmallLeftTree.ifc", "SmallLeftTree.bin");
+    CalculateModel("SmallRightTree.ifc", "SmallRightTree.bin");
+    CalculateModel("SmallMiddleTree.ifc", "SmallMiddleTree.bin");
+    CalculateModel("SmallFullTree.ifc", "SmallFullTree.bin");
+    CalculateModel("SmallRandomTree.ifc", "SmallRandomTree.bin");
 }
 
 extern void DeepBoolean()
 {
     //ExtractArchiCAD();
-    CreateTreeModels();
-
-    //CalculateExample("W:\\DevArea\\RDF\\Left2708.ifc");
+    //CreateTreeModels();
+    CalculateModels();
 
 }
