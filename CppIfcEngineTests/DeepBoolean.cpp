@@ -214,9 +214,9 @@ static void SetupContainment(int_t model, IfcSpatialStructureElement spatialElem
     contain.put_RelatedElements(products);
 }
 
-static void CreateTreeModel(const char* fileName, int mode)
+static void CreateTreeModel(const char* fileName, int mode, const char* schema)
 {
-    SdaiModel model = sdaiCreateModelBN("IFC2x3");
+    SdaiModel model = sdaiCreateModelBN(schema);
     ASSERT(model);
 
     //spatial structure
@@ -249,17 +249,20 @@ static void CreateTreeModel(const char* fileName, int mode)
 
     SetupContainment(model, ifcStory, wall);
 
-    sdaiSaveModelBN(model, fileName);
+    char saveName[256];
+    sprintf_s(saveName, "%s_%s", schema, fileName);
+
+    sdaiSaveModelBN(model, saveName);
     sdaiCloseModel(model);
 }
 
-static void CreateTreeModels()
+static void CreateTreeModels(const char* schema)
 {
-    CreateTreeModel("SmallLeftTree.ifc", -1);
-    CreateTreeModel("SmallRightTree.ifc", 1);
-    CreateTreeModel("SmallMiddleTree.ifc", 0);
-    CreateTreeModel("SmallFullTree.ifc", 2);
-    CreateTreeModel("SmallRandomTree.ifc", 3);
+    CreateTreeModel("SmallLeftTree.ifc", -1, schema);
+    CreateTreeModel("SmallRightTree.ifc", 1, schema);
+    CreateTreeModel("SmallMiddleTree.ifc", 0, schema);
+    CreateTreeModel("SmallFullTree.ifc", 2, schema);
+    CreateTreeModel("SmallRandomTree.ifc", 3, schema);
 }
 
 static void CalculateModel(const char* ifcPath, const char* binPath)
@@ -284,17 +287,19 @@ static void CalculateModels()
     //CalculateModel("W:\\DevArea\\RDF\\RightTree.ifc", "W:\\DevArea\\RDF\\Save_RightTree.bin");
     //CalculateModel("W:\\DevArea\\RDF\\LeftTree.ifc", "W:\\DevArea\\RDF\\Save_LeftTree.bin");
 
-    CalculateModel("SmallLeftTree.ifc", "SmallLeftTree.bin");
-    CalculateModel("SmallRightTree.ifc", "SmallRightTree.bin");
-    CalculateModel("SmallMiddleTree.ifc", "SmallMiddleTree.bin");
-    CalculateModel("SmallFullTree.ifc", "SmallFullTree.bin");
-    CalculateModel("SmallRandomTree.ifc", "SmallRandomTree.bin");
+    CalculateModel("IFC4_SmallLeftTree.ifc", "SmallLeftTree.bin");
+    CalculateModel("IFC4_SmallRightTree.ifc", "SmallRightTree.bin");
+    CalculateModel("IFC4_SmallMiddleTree.ifc", "SmallMiddleTree.bin");
+    CalculateModel("IFC4_SmallFullTree.ifc", "SmallFullTree.bin");
+    CalculateModel("IFC4_SmallRandomTree.ifc", "SmallRandomTree.bin");
 }
 
 extern void DeepBoolean()
 {
     //ExtractArchiCAD();
-    //CreateTreeModels();
+    //CreateTreeModels("IFC2x3");
+    //CreateTreeModels("IFC4");
+
     CalculateModels();
 
 }
