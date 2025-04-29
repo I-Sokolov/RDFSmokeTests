@@ -106,7 +106,9 @@ static IfcBooleanResult CreateNode(SdaiModel model, double x, double y, double z
     return list.back().inst;
 }
 
-static IfcRepresentationItem CreateSolid(SdaiModel model, int mode)
+const int TREE_LEVELS = 5; // 28; // 2800;
+
+static IfcRepresentationItem CreateUnionCubes(SdaiModel model, int mode)
 {
     NodeList currentLevel;
     auto outer = CreateNode(model, step, step, step, currentLevel);
@@ -114,8 +116,7 @@ static IfcRepresentationItem CreateSolid(SdaiModel model, int mode)
     bool left = true;
     bool right = false;
 
-    int N = 28; // 00;
-    for (int i = 0; i <= N; i++) {
+    for (int i = 0; i <= TREE_LEVELS; i++) {
 
         ASSERT(currentLevel.size());
 
@@ -123,7 +124,7 @@ static IfcRepresentationItem CreateSolid(SdaiModel model, int mode)
 
         for (auto current : currentLevel) {
 
-            if (i < N && nextLevel.size() < 5) {
+            if (i < TREE_LEVELS && nextLevel.size() < 5) {
                 switch (mode) {
                 case -1: left = true; right = false; break;
                 case 1: left = false; right = true;  break;
@@ -172,6 +173,66 @@ static IfcRepresentationItem CreateSolid(SdaiModel model, int mode)
     return outer;
 }
 
+static IfcHalfSpaceSolid CreateHalfSpaceSolid(SdaiModel model, double angle)
+{
+    double components[3] = { sin(angle), cos(angle), 0 };
+
+    auto normal = IfcDirection::Create(model);
+    normal.put_DirectionRatios(components, 3);
+
+    components[0] *= 50;
+    components[1] *= 50;
+
+    auto location = IfcCartesianPoint::Create(model);
+    location.put_Coordinates(components, 3);
+
+    auto position = IfcAxis2Placement3D::Create(model);
+    position.put_Axis(normal);
+    position.put_Location(location);
+
+    auto plane = IfcPlane::Create(model);
+    plane.put_Position(position);
+
+    auto solid = IfcHalfSpaceSolid::Create(model);
+    solid.put_BaseSurface(plane);
+    solid.put_AgreementFlag(false);
+
+    return solid;
+}
+
+static IfcRepresentationItem CreateDeepClip(SdaiModel model, int mode)
+{
+    auto block = CreateCube(model, 100, 100, 100);
+
+    auto clip = IfcBooleanClippingResult::Create(model);
+    clip.put_FirstOperand().put_IfcCsgPrimitive3D(block);;
+
+    auto plane = CreateHalfSpaceSolid(model, 0);
+    clip.put_SecondOperand().put_IfcHalfSpaceSolid(plane);
+
+    double PI2 = 3.1415 / 2;
+    double step = PI2 / TREE_LEVELS;
+    for (double angle = step; angle < PI2; angle += step) {
+
+        auto next = IfcBooleanClippingResult::Create(model);
+        next.put_FirstOperand().put_IfcBooleanResult(clip);
+
+        auto plane = CreateHalfSpaceSolid(model, angle);
+        next.put_SecondOperand().put_IfcHalfSpaceSolid(plane);
+
+        clip = next;
+    }
+
+    return clip;
+}
+
+static IfcRepresentationItem CreateSolid(SdaiModel model, int mode)
+{
+    if (mode < 4)
+        return CreateUnionCubes(model, mode);
+    else
+        return CreateDeepClip(model, mode);
+}
 
 static void CreateGeometry(int_t model, IfcWall wall, int mode)
 {
@@ -182,7 +243,7 @@ static void CreateGeometry(int_t model, IfcWall wall, int mode)
 
     auto shapeRepr = IfcShapeRepresentation::Create(model);
     shapeRepr.put_RepresentationIdentifier("Body");
-    shapeRepr.put_RepresentationType("SweptSolid");
+    shapeRepr.put_RepresentationType("CSG");
     shapeRepr.put_Items(lstReprItems);
 
     ListOfIfcRepresentation lstRepr;
@@ -263,6 +324,7 @@ static void CreateTreeModels(const char* schema)
     CreateTreeModel("SmallMiddleTree.ifc", 0, schema);
     CreateTreeModel("SmallFullTree.ifc", 2, schema);
     CreateTreeModel("SmallRandomTree.ifc", 3, schema);
+    CreateTreeModel("SmallMultiClip.ifc", 4, schema);
 }
 
 static void CalculateModel(const char* ifcPath, const char* binPath)
@@ -287,6 +349,7 @@ static void CalculateModels()
     //CalculateModel("W:\\DevArea\\RDF\\RightTree.ifc", "W:\\DevArea\\RDF\\Save_RightTree.bin");
     //CalculateModel("W:\\DevArea\\RDF\\LeftTree.ifc", "W:\\DevArea\\RDF\\Save_LeftTree.bin");
 
+    CalculateModel("IFC4_SmallMultiClip.ifc", "SmallMultiClip.bin");
     CalculateModel("IFC4_SmallLeftTree.ifc", "SmallLeftTree.bin");
     CalculateModel("IFC4_SmallRightTree.ifc", "SmallRightTree.bin");
     CalculateModel("IFC4_SmallMiddleTree.ifc", "SmallMiddleTree.bin");
