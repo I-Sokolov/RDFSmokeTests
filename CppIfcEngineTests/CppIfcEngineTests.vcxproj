@@ -193,7 +193,7 @@
     </ClCompile>
     <ClCompile Include="SchemaReading.cpp" />
     <ClCompile Include="Screening.cpp" />
-    <ClCompile Include="DeepBoolean.cpp" />
+    <ClCompile Include="Boolean.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

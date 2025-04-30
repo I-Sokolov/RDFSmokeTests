@@ -3,6 +3,9 @@
 
 using namespace IFC2x3;
 
+const int TREE_LEVELS = 4; // 2800;
+
+
 static void DeleteEntities(SdaiModel model, const char* entity)
 {
     auto aggr = xxxxGetEntityAndSubTypesExtentBN(model, entity);
@@ -105,8 +108,6 @@ static IfcBooleanResult CreateNode(SdaiModel model, double x, double y, double z
     list.back().inst.put_Operator(IfcBooleanOperator::UNION);
     return list.back().inst;
 }
-
-const int TREE_LEVELS = 5; // 28; // 2800;
 
 static IfcRepresentationItem CreateUnionCubes(SdaiModel model, int mode)
 {
@@ -311,7 +312,7 @@ static void CreateTreeModel(const char* fileName, int mode, const char* schema)
     SetupContainment(model, ifcStory, wall);
 
     char saveName[256];
-    sprintf_s(saveName, "%s_%s", schema, fileName);
+    sprintf_s(saveName, "%s_%s_%s", TREE_LEVELS < 10 ? "Short" : "Deep", schema, fileName);
 
     sdaiSaveModelBN(model, saveName);
     sdaiCloseModel(model);
@@ -319,12 +320,12 @@ static void CreateTreeModel(const char* fileName, int mode, const char* schema)
 
 static void CreateTreeModels(const char* schema)
 {
-    CreateTreeModel("SmallLeftTree.ifc", -1, schema);
-    CreateTreeModel("SmallRightTree.ifc", 1, schema);
-    CreateTreeModel("SmallMiddleTree.ifc", 0, schema);
-    CreateTreeModel("SmallFullTree.ifc", 2, schema);
-    CreateTreeModel("SmallRandomTree.ifc", 3, schema);
-    CreateTreeModel("SmallMultiClip.ifc", 4, schema);
+    CreateTreeModel("LeftTree.ifc", -1, schema);
+    CreateTreeModel("RightTree.ifc", 1, schema);
+    CreateTreeModel("MiddleTree.ifc", 0, schema);
+    CreateTreeModel("FullTree.ifc", 2, schema);
+    CreateTreeModel("RandomTree.ifc", 3, schema);
+    CreateTreeModel("MultiClip.ifc", 4, schema);
 }
 
 static void CalculateModel(const char* ifcPath, const char* binPath)
@@ -346,22 +347,45 @@ static void CalculateModel(const char* ifcPath, const char* binPath)
 
 static void CalculateModels()
 {
-    //CalculateModel("W:\\DevArea\\RDF\\RightTree.ifc", "W:\\DevArea\\RDF\\Save_RightTree.bin");
-    //CalculateModel("W:\\DevArea\\RDF\\LeftTree.ifc", "W:\\DevArea\\RDF\\Save_LeftTree.bin");
+    if (TREE_LEVELS < 10) {
+        CalculateModel("Short_IFC2x3_MultiClip.ifc", "IFC2x3_SmallMultiClip.bin");
+        CalculateModel("Short_IFC2x3_LeftTree.ifc", "IFC2x3_SmallLeftTree.bin");
+        CalculateModel("Short_IFC2x3_RightTree.ifc", "IFC2x3_SmallRightTree.bin");
+        CalculateModel("Short_IFC2x3_MiddleTree.ifc", "IFC2x3_SmallMiddleTree.bin");
+        CalculateModel("Short_IFC2x3_FullTree.ifc", "IFC2x3_SmallFullTree.bin");
+        CalculateModel("Short_IFC2x3_RandomTree.ifc", "IFC2x3_SmallRandomTree.bin");
 
-    CalculateModel("IFC4_SmallMultiClip.ifc", "SmallMultiClip.bin");
-    CalculateModel("IFC4_SmallLeftTree.ifc", "SmallLeftTree.bin");
-    CalculateModel("IFC4_SmallRightTree.ifc", "SmallRightTree.bin");
-    CalculateModel("IFC4_SmallMiddleTree.ifc", "SmallMiddleTree.bin");
-    CalculateModel("IFC4_SmallFullTree.ifc", "SmallFullTree.bin");
-    CalculateModel("IFC4_SmallRandomTree.ifc", "SmallRandomTree.bin");
+        CalculateModel("Short_IFC4_MultiClip.ifc", "IFC4_SmallMultiClip.bin");
+        CalculateModel("Short_IFC4_LeftTree.ifc", "IFC4_SmallLeftTree.bin");
+        CalculateModel("Short_IFC4_RightTree.ifc", "IFC4_SmallRightTree.bin");
+        CalculateModel("Short_IFC4_MiddleTree.ifc", "IFC4_SmallMiddleTree.bin");
+        CalculateModel("Short_IFC4_FullTree.ifc", "IFC4_SmallFullTree.bin");
+        CalculateModel("Short_IFC4_RandomTree.ifc", "IFC4_SmallRandomTree.bin");
+    }
+    else {
+        CalculateModel("IFC2x3_DeepMultiClip.ifc", "IFC2x3_DeepMultiClip.bin");
+        CalculateModel("IFC2x3_DeepLeftTree.ifc", "IFC2x3_DeepLeftTree.bin");
+        CalculateModel("IFC2x3_DeepRightTree.ifc", "IFC2x3_DeepRightTree.bin");
+        CalculateModel("IFC2x3_DeepMiddleTree.ifc", "IFC2x3_DeepMiddleTree.bin");
+        CalculateModel("IFC2x3_DeepFullTree.ifc", "IFC2x3_DeepFullTree.bin");
+        CalculateModel("IFC2x3_DeepRandomTree.ifc", "IFC2x3_DeepRandomTree.bin");
+
+        CalculateModel("IFC4_DeepMultiClip.ifc", "IFC4_DeepMultiClip.bin");
+        CalculateModel("IFC4_DeepLeftTree.ifc", "IFC4_DeepLeftTree.bin");
+        CalculateModel("IFC4_DeepRightTree.ifc", "IFC4_DeepRightTree.bin");
+        CalculateModel("IFC4_DeepMiddleTree.ifc", "IFC4_DeepMiddleTree.bin");
+        CalculateModel("IFC4_DeepFullTree.ifc", "IFC4_DeepFullTree.bin");
+        CalculateModel("IFC4_DeepRandomTree.ifc", "IFC4_DeepRandomTree.bin");
+    }
 }
 
-extern void DeepBoolean()
+extern void BooleanTest()
 {
+    ENTER_TEST;
+
     //ExtractArchiCAD();
-    //CreateTreeModels("IFC2x3");
-    //CreateTreeModels("IFC4");
+    CreateTreeModels("IFC2x3");
+    CreateTreeModels("IFC4");
 
     CalculateModels();
 

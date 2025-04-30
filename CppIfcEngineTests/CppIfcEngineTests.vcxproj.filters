@@ -60,7 +60,7 @@
     <ClCompile Include="SchemaReading.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DeepBoolean.cpp">
+    <ClCompile Include="Boolean.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
