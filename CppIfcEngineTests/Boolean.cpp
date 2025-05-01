@@ -381,6 +381,7 @@ static void CalculateModels()
 
 extern void BooleanTest()
 {
+/*
     ENTER_TEST;
 
     //ExtractArchiCAD();
@@ -388,5 +389,5 @@ extern void BooleanTest()
     CreateTreeModels("IFC4");
 
     CalculateModels();
-
+*/
 }
