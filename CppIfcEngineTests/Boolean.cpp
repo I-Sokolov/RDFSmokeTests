@@ -66,10 +66,10 @@ static void CalculateExample(const char* filePath)
 
 const int step = 100;
 
-static IfcBlock CreateCube(SdaiModel model, double x, double y, double z)
+static IfcBlock CreateCuboid(SdaiModel model, double x, double y, double z, double posx = 0)
 {
     double xyz[3];
-    xyz[0] = 0;
+    xyz[0] = posx;
     xyz[1] = 0;
     xyz[2] = 0;
 
@@ -151,7 +151,7 @@ static IfcRepresentationItem CreateUnionCubes(SdaiModel model, int mode)
                 current.inst.put_FirstOperand().put_IfcBooleanResult(operand);
             }
             else {
-                auto operand = CreateCube(model, current.x + step, current.y, current.z);
+                auto operand = CreateCuboid(model, current.x + step, current.y, current.z);
                 current.inst.put_FirstOperand().put_IfcCsgPrimitive3D(operand);
             }
 
@@ -160,7 +160,7 @@ static IfcRepresentationItem CreateUnionCubes(SdaiModel model, int mode)
                 current.inst.put_SecondOperand().put_IfcBooleanResult(operand);
             }
             else {
-                auto operand = CreateCube(model, current.x, current.y + step, current.z);
+                auto operand = CreateCuboid(model, current.x, current.y + step, current.z);
                 current.inst.put_SecondOperand().put_IfcCsgPrimitive3D(operand);
             }
 
@@ -203,7 +203,7 @@ static IfcHalfSpaceSolid CreateHalfSpaceSolid(SdaiModel model, double angle)
 
 static IfcRepresentationItem CreateDeepClip(SdaiModel model, int mode)
 {
-    auto block = CreateCube(model, 100, 100, 100);
+    auto block = CreateCuboid(model, 100, 100, 100);
 
     auto clip = IfcBooleanClippingResult::Create(model);
     clip.put_FirstOperand().put_IfcCsgPrimitive3D(block);;
@@ -227,7 +227,7 @@ static IfcRepresentationItem CreateDeepClip(SdaiModel model, int mode)
     return clip;
 }
 
-static IfcRepresentationItem CreateSolid(SdaiModel model, int mode)
+static IfcRepresentationItem CreateBooleanSolid(SdaiModel model, int mode)
 {
     if (mode < 4)
         return CreateUnionCubes(model, mode);
@@ -235,12 +235,10 @@ static IfcRepresentationItem CreateSolid(SdaiModel model, int mode)
         return CreateDeepClip(model, mode);
 }
 
-static void CreateGeometry(int_t model, IfcWall wall, int mode)
+static void CreateRepresentation(SdaiModel model, IfcWall wall, IfcRepresentationItem body)
 {
-    auto solid = CreateSolid(model, mode);
-
     SetOfIfcRepresentationItem lstReprItems;
-    lstReprItems.push_back(solid);
+    lstReprItems.push_back(body);
 
     auto shapeRepr = IfcShapeRepresentation::Create(model);
     shapeRepr.put_RepresentationIdentifier("Body");
@@ -276,11 +274,8 @@ static void SetupContainment(int_t model, IfcSpatialStructureElement spatialElem
     contain.put_RelatedElements(products);
 }
 
-static void CreateTreeModel(const char* fileName, int mode, const char* schema)
+static IfcBuildingStorey CreateSpatialStructure(SdaiModel model)
 {
-    SdaiModel model = sdaiCreateModelBN(schema);
-    ASSERT(model);
-
     //spatial structure
     //
     auto project = IfcProject::Create(model);
@@ -300,16 +295,30 @@ static void CreateTreeModel(const char* fileName, int mode, const char* schema)
     ifcStory.put_Name("My first storey");
     SetupAggregation(model, ifcBuilding, ifcStory);
 
-    //wall
-    //
+    return ifcStory;
+}
+
+static void CreateWall(SdaiModel model, IfcBuildingStorey storey, IfcRepresentationItem body)
+{
     auto wall = IfcWall::Create(model);
     wall.put_GlobalId("2o1ykWxGT4ZxPjHNe4gayR");
     wall.put_Name("My wall");
     wall.put_Description("My wall description");
 
-    CreateGeometry(model, wall, mode);
+    CreateRepresentation(model, wall, body);
 
-    SetupContainment(model, ifcStory, wall);
+    SetupContainment(model, storey, wall);
+}
+
+static void CreateTreeModel(const char* fileName, int mode, const char* schema)
+{
+    SdaiModel model = sdaiCreateModelBN(schema);
+    ASSERT(model);
+
+    auto story = CreateSpatialStructure(model);
+    auto solid = CreateBooleanSolid(model, mode);
+
+    CreateWall(model, story, solid);
 
     char saveName[256];
     sprintf_s(saveName, "%s_%s_%s", TREE_LEVELS < 10 ? "Short" : "Deep", schema, fileName);
@@ -338,8 +347,7 @@ static void CalculateModel(const char* ifcPath, const char* binPath)
     while (auto prod = sdaiGetAggrByIndex(products, i++)) {
         auto id = internalGetP21Line(prod);
         CalculateInstance(prod);
-        SaveInstanceTree(prod, binPath);
-
+        //SaveInstanceTree(prod, binPath);
     }
 
     sdaiCloseModel(model);
@@ -379,15 +387,186 @@ static void CalculateModels()
     }
 }
 
+static void CreateCyclic(SdaiModel model, IfcBuildingStorey storey, IfcBooleanOperator op2, double pos)
+{
+    auto bool1 = IfcBooleanResult::Create(model);
+    auto bool2 = IfcBooleanResult::Create(model);
+    auto block1 = CreateCuboid(model, 100, 100, 100, pos);
+    auto block2 = CreateCuboid(model, 110, 110, 110, pos);
+
+    bool1.put_FirstOperand().put_IfcBooleanResult(bool2);
+    bool1.put_SecondOperand().put_IfcCsgPrimitive3D(block1);
+    bool1.put_Operator(IfcBooleanOperator::INTERSECTION);
+
+    bool2.put_FirstOperand().put_IfcCsgPrimitive3D(block2);
+    bool2.put_SecondOperand().put_IfcBooleanResult(bool1);
+    bool2.put_Operator(op2);
+
+    CreateWall(model, storey, bool1);
+}
+
+static void CreateNull1(SdaiModel model, IfcBuildingStorey storey, IfcBooleanOperator oper, double pos)
+{
+    auto bool1 = IfcBooleanResult::Create(model);
+    auto block1 = CreateCuboid(model, 100, 100, 100, pos);
+
+    bool1.put_SecondOperand().put_IfcCsgPrimitive3D(block1);
+    bool1.put_Operator(oper);
+
+    CreateWall(model, storey, bool1);
+}
+
+static void CreateNullDeep(SdaiModel model, IfcBuildingStorey storey, IfcBooleanOperator oper, double pos, bool left = true)
+{
+    auto bool2 = IfcBooleanResult::Create(model);
+    bool2.put_Operator(oper);
+
+    if (pos > 0) {
+        auto block1 = CreateCuboid(model, 100, 100, 100, pos);
+        auto block2 = CreateCuboid(model, 110, 110, 110, pos);
+        bool2.put_FirstOperand().put_IfcCsgPrimitive3D(block1);
+        bool2.put_SecondOperand().put_IfcCsgPrimitive3D(block2);
+    }
+
+    auto bool1 = IfcBooleanResult::Create(model);
+    bool1.put_Operator(oper);
+    if (left) {
+        bool1.put_SecondOperand().put_IfcBooleanResult(bool2);
+    }
+    else {
+        bool1.put_FirstOperand().put_IfcBooleanResult(bool2);
+    }
+
+    CreateWall(model, storey, bool1);
+}
+
+
+static void CreateInvalidBooleans()
+{
+    SdaiModel model = sdaiCreateModelBN("IFC2x3");
+    ASSERT(model);
+
+    auto storey = CreateSpatialStructure(model);
+
+    //cyclic
+    CreateCyclic(model, storey, IfcBooleanOperator::DIFFERENCE, 0);
+    CreateCyclic(model, storey, IfcBooleanOperator::INTERSECTION, 200);
+
+    //null operand 1
+    CreateNull1(model, storey, IfcBooleanOperator::UNION, 300);
+    CreateNull1(model, storey, IfcBooleanOperator::INTERSECTION, 400);
+
+    //
+    auto b = IfcBooleanClippingResult::Create(model);
+    b.put_Operator(IfcBooleanOperator::UNION);
+    CreateWall(model, storey, b);
+
+    //
+    CreateNullDeep(model, storey, IfcBooleanOperator::UNION, 500);
+    CreateNullDeep(model, storey, IfcBooleanOperator::INTERSECTION, 600);
+    CreateNullDeep(model, storey, IfcBooleanOperator::UNION, -1);
+    CreateNullDeep(model, storey, IfcBooleanOperator::INTERSECTION, -1);
+
+    //
+    CreateNullDeep(model, storey, IfcBooleanOperator::UNION, 700, false);
+    CreateNullDeep(model, storey, IfcBooleanOperator::INTERSECTION, 800, false);
+
+    //
+    sdaiSaveModelBN(model, "InvalidBooleans.ifc");
+    sdaiCloseModel(model);
+}
+
+
+static void CaluclateInvalidBooleans()
+{
+    auto model = sdaiOpenModelBN(0, "InvalidBooleans.ifc", "");
+    ASSERT(model);
+
+    auto walls = sdaiGetEntityExtentBN(model, "IfcWall");
+
+    //
+    auto wall = sdaiGetAggrByIndex(walls, 0);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    double boxm[3];
+    double boxM[3];
+    auto res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(res);
+
+    wall = sdaiGetAggrByIndex(walls, 1);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(!res);
+
+    wall = sdaiGetAggrByIndex(walls, 2);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(res);
+
+    wall = sdaiGetAggrByIndex(walls, 3);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(!res);
+
+    wall = sdaiGetAggrByIndex(walls, 4);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(!res);
+
+    wall = sdaiGetAggrByIndex(walls, 5);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(res);
+
+    wall = sdaiGetAggrByIndex(walls, 6);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(!res);
+
+    wall = sdaiGetAggrByIndex(walls, 7);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(!res);
+
+    wall = sdaiGetAggrByIndex(walls, 8);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(!res);
+
+    wall = sdaiGetAggrByIndex(walls, 9);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(res);
+
+    wall = sdaiGetAggrByIndex(walls, 10);
+    ASSERT(wall);
+    CalculateInstance(wall);
+    res = GetBoundingBox(wall, boxm, boxM);
+    ASSERT(!res);
+
+    sdaiCloseModel(model);
+}
+
+
 extern void BooleanTest()
 {
-/*
     ENTER_TEST;
-
+ /*
     //ExtractArchiCAD();
     CreateTreeModels("IFC2x3");
     CreateTreeModels("IFC4");
 
     CalculateModels();
 */
+    CreateInvalidBooleans();
+    CaluclateInvalidBooleans();
 }
