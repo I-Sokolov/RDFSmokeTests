@@ -242,6 +242,8 @@ static void MultiParentsCardinalityAndInstanceName(int64_t type)
 /// </summary>
 static void WriteReadTest()
 {
+    ENTER_TEST;
+
     //
     //
     auto model = OpenModel((const char*)NULL);

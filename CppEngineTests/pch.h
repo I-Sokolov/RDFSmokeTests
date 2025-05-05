@@ -18,6 +18,8 @@
 #include <string>
 #include <map>
 #include <set>
+#include <bitset>
+#include <vector>
 
 #include "engine.h"
 #include "geom.h"
@@ -27,7 +29,15 @@
 #undef ASSERT
 #endif
 
-#define ASSERT_AT(c,file,line) { if (!(c)) { printf ("ASSERT failed at line %d file %s\n", line, file); throw (int) 13;}}
+static void AssertAt(bool c, const char* file, int line)
+{
+    if (!(c)) {
+        printf("ASSERT failed at line %d file %s\n", line, file);
+        throw (int)13;
+    }
+}
+
+#define ASSERT_AT(c,file,line) AssertAt(c, file, line);
 
 #define ASSERT(c) { ASSERT_AT((c),__FILE__,__LINE__); }
 
@@ -38,3 +48,4 @@
 #define ENTER_TEST ENTER_TEST_EX("")
 
 #define ASSERT_ARR_EQ(r1,r2,N)  	for (int i=0; i<N; i++) { ASSERT_AT((fabs ((double)r1[i]-(double)r2[i]) < 1e-9), /*#r1 "!=" #r2,*/ __FILE__, __LINE__);}
+

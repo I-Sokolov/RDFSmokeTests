@@ -5,6 +5,7 @@ extern void InstancePropertiesTests();
 extern void EarlyBindingTests();
 extern void MetaPropertiesTest();
 extern void ExtAppMemTest();
+extern void TriangulationTest();
 
 extern int main()
 {
@@ -15,8 +16,9 @@ extern int main()
         VLDEnable();
 #endif
 
-        InstancePropertiesTests();
+        TriangulationTest();
         EarlyBindingTests();
+        InstancePropertiesTests();
         MetaPropertiesTest();
         ExtAppMemTest();
 
