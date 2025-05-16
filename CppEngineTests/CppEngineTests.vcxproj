@@ -169,7 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="TriangulationTest.cpp" />
+    <ClCompile Include="EntitiesTest.cpp" />
     <ClCompile Include="ExtAppMem.cpp" />
     <ClCompile Include="MetaProperties.cpp" />
     <ClCompile Include="PropertiesCardinalities.cpp" />

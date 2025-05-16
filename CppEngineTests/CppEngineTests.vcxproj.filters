@@ -33,7 +33,7 @@
     <ClCompile Include="ExtAppMem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TriangulationTest.cpp">
+    <ClCompile Include="EntitiesTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
