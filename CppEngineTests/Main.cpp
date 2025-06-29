@@ -6,6 +6,7 @@ extern void EarlyBindingTests();
 extern void MetaPropertiesTest();
 extern void ExtAppMemTest();
 extern void EntitiesTests();
+extern void RDFGeom();
 
 extern int main()
 {
@@ -16,6 +17,7 @@ extern int main()
         VLDEnable();
 #endif
 
+        RDFGeom();
         EntitiesTests();
         EarlyBindingTests();
         InstancePropertiesTests();

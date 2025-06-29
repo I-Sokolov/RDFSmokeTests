@@ -171,6 +171,7 @@
   <ItemGroup>
     <ClCompile Include="EntitiesTest.cpp" />
     <ClCompile Include="ExtAppMem.cpp" />
+    <ClCompile Include="RDFGeom.cpp" />
     <ClCompile Include="MetaProperties.cpp" />
     <ClCompile Include="PropertiesCardinalities.cpp" />
     <ClCompile Include="EarlyBinding.cpp" />
