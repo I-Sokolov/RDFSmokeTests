@@ -4,7 +4,7 @@
 
 /// <summary>
 /// Example: get B-Rep of an instance
-/// The example gets shell of instance, print it and returns some information
+/// The example gets shell of instance, print it and returns some statistic information
 /// </summary>
 struct SomeStatistic
 {
@@ -114,7 +114,7 @@ static void ExamplePrintConceptualFace(CONCEPTUAL_FACE* cface, SomeStatistic& st
     }
 }
 
-static void ExamplePrintShell(OwlInstance inst, SomeStatistic& stat)
+extern void ExamplePrintShell(OwlInstance inst, SomeStatistic& stat)
 {
     //This example prints B-Rep of the inst
 
@@ -183,7 +183,7 @@ static void ExamplePrintShell(OwlInstance inst, SomeStatistic& stat)
 /// <summary>
 /// 
 /// </summary>
-static void GetShellTest()
+extern void Test_Example_RDFGeomGet()
 {
     ENTER_TEST;
 
@@ -209,9 +209,4 @@ static void GetShellTest()
     }
 
     CloseModel(model);
-}
-
-extern void RDFGeom()
-{
-    GetShellTest();
 }

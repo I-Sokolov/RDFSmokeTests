@@ -6,7 +6,7 @@ extern void EarlyBindingTests();
 extern void MetaPropertiesTest();
 extern void ExtAppMemTest();
 extern void EntitiesTests();
-extern void RDFGeom();
+extern void Test_Example_RDFGeomGet();
 
 extern int main()
 {
@@ -17,12 +17,12 @@ extern int main()
         VLDEnable();
 #endif
 
-        RDFGeom();
         EntitiesTests();
         EarlyBindingTests();
         InstancePropertiesTests();
         MetaPropertiesTest();
         ExtAppMemTest();
+        Test_Example_RDFGeomGet();
 
 #ifdef VLD_ON
         VLDReportLeaks();
