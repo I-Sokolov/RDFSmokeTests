@@ -7,6 +7,7 @@ extern void MetaPropertiesTest();
 extern void ExtAppMemTest();
 extern void EntitiesTests();
 extern void Test_Example_RDFGeomGet();
+extern void Test_Example_RDFGeomDefine();
 
 extern int main()
 {
@@ -23,6 +24,7 @@ extern int main()
         MetaPropertiesTest();
         ExtAppMemTest();
         Test_Example_RDFGeomGet();
+        Test_Example_RDFGeomDefine();
 
 #ifdef VLD_ON
         VLDReportLeaks();

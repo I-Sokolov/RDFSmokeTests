@@ -39,9 +39,15 @@
     <ClCompile Include="Example_RDFGeomGet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Example_RDFGeomDefine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Example_RDFGeomGet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

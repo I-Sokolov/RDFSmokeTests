@@ -1,32 +1,17 @@
 #include "pch.h"
 
 #include "rdfgeom.h"
+#include "Example_RDFGeomGet.h"
 
-/// <summary>
-/// Example: get B-Rep of an instance
-/// The example gets shell of instance, print it and returns some statistic information
-/// </summary>
-struct SomeStatistic
-{
-    int_t   numOfPoints;
-    int_t   numOfConceptualFaces;
-    int_t   numOfFaces;
-    int_t   numOfVertices;
-
-    VECTOR3 sumOfCoordinates;
-
-    void AddPoint(const VECTOR3& pt) { sumOfCoordinates.x += pt.x; sumOfCoordinates.y += pt.y; sumOfCoordinates.z += pt.z; }
-    void AddPoint(const VECTOR2& pt) { sumOfCoordinates.x += pt.u; sumOfCoordinates.y += pt.v; }
-};
 
 static void ExamplePrintVertex(CONCEPTUAL_FACE* cface, STRUCT_VERTEX* vertex, SomeStatistic& stat, int_t level, int_t i)
 {
     std::string offset(level * 2, ' ');
-    printf("%s[%d]: ", offset.c_str(), i);
+    printf("%s[%lld]: ", offset.c_str(), i);
     stat.numOfVertices++;
 
    int_t index = rdfgeom_vertex_GetPointIndex(vertex);
-   printf("index %d ", index);
+   printf("index %lld ", index);
    
    //this is index of point in the shell of conceptual face owner
    if (OwlInstance owner = rdfgeom_cface_GetInstance(cface)) {
@@ -114,7 +99,7 @@ static void ExamplePrintConceptualFace(CONCEPTUAL_FACE* cface, SomeStatistic& st
     }
 }
 
-extern void ExamplePrintShell(OwlInstance inst, SomeStatistic& stat)
+extern void Example_RDFGeomGet(OwlInstance inst, SomeStatistic& stat)
 {
     //This example prints B-Rep of the inst
 
@@ -136,7 +121,7 @@ extern void ExamplePrintShell(OwlInstance inst, SomeStatistic& stat)
             for (int_t i = 0; i < numOfPoints; i++) {
 
                 VECTOR3& pt = points[i];
-                printf(" P[%d]: %g, %g, %g\n", i, pt.x, pt.y, pt.z);
+                printf(" P[%lld]: %g, %g, %g\n", i, pt.x, pt.y, pt.z);
                 stat.AddPoint(pt);
             }
         }
@@ -147,7 +132,7 @@ extern void ExamplePrintShell(OwlInstance inst, SomeStatistic& stat)
             for (int_t i = 0; i < numOfPoints; i++) {
 
                 VECTOR3& n = normals[i];
-                printf(" N[%d]: %g, %g, %g\n", i, n.x, n.y, n.z);
+                printf(" N[%lld]: %g, %g, %g\n", i, n.x, n.y, n.z);
                 stat.AddPoint(n);
             }
         }
@@ -161,7 +146,7 @@ extern void ExamplePrintShell(OwlInstance inst, SomeStatistic& stat)
             for (int_t i = 0; i < numOfPoints; i++) {
 
                 VECTOR2& uv = textures[i];
-                printf(" t[%d]: %g, %g\n", i, uv.u, uv.v);
+                printf(" t[%lld]: %g, %g\n", i, uv.u, uv.v);
                 stat.AddPoint(uv);
             }
         }
@@ -181,7 +166,7 @@ extern void ExamplePrintShell(OwlInstance inst, SomeStatistic& stat)
 }
 
 /// <summary>
-/// 
+/// run the test
 /// </summary>
 extern void Test_Example_RDFGeomGet()
 {
@@ -201,7 +186,7 @@ extern void Test_Example_RDFGeomGet()
             SomeStatistic stat;
             memset(&stat, 0, sizeof(SomeStatistic));
 
-            ExamplePrintShell(inst, stat);
+            Example_RDFGeomGet(inst, stat);
 
             ASSERT(stat.numOfPoints == 8 && stat.numOfConceptualFaces == 6 && stat.numOfFaces == 6 && stat.numOfVertices == 30);
             ASSERT(stat.sumOfCoordinates.x == 28 && stat.sumOfCoordinates.y == 28 && stat.sumOfCoordinates.z == 28);
