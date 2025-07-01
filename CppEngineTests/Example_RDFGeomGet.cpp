@@ -1,9 +1,18 @@
+//
+// This example prints B-Rep of the instance with help of rdfgeom.h API
+// and collect simple statistic about the B-Rep.
+// See main function Example_RDFGeomGet
+//
+
+
 #include "pch.h"
 
 #include "rdfgeom.h"
 #include "Example_RDFGeomGet.h"
 
-
+/// <summary>
+/// Prints coordinates of a given vertex 
+/// </summary>
 static void ExamplePrintVertex(CONCEPTUAL_FACE* cface, STRUCT_VERTEX* vertex, SomeStatistic& stat, int_t level, int_t i)
 {
     std::string offset(level * 2, ' ');
@@ -37,6 +46,9 @@ static void ExamplePrintVertex(CONCEPTUAL_FACE* cface, STRUCT_VERTEX* vertex, So
    printf("\n");
 }
 
+/// <summary>
+/// Prints face boundary and openings 
+/// </summary>
 static void ExamplePrintFace(CONCEPTUAL_FACE* cface, STRUCT_FACE* face, SomeStatistic& stat, int_t level)
 {
     std::string offset(level * 2, ' ');
@@ -59,6 +71,9 @@ static void ExamplePrintFace(CONCEPTUAL_FACE* cface, STRUCT_FACE* face, SomeStat
     }
 }
 
+/// <summary>
+/// Prints conceptual face facets and separate points 
+/// </summary>
 static void ExamplePrintConceptualFace(CONCEPTUAL_FACE* cface, SomeStatistic& stat, int_t level)
 {
     std::string offset(level * 2, ' ');
@@ -99,10 +114,11 @@ static void ExamplePrintConceptualFace(CONCEPTUAL_FACE* cface, SomeStatistic& st
     }
 }
 
+/// <summary>
+/// The example dumps B-Rep geometry of an instance and collects simple statistic 
+/// </summary>
 extern void Example_RDFGeomGet(OwlInstance inst, SomeStatistic& stat)
 {
-    //This example prints B-Rep of the inst
-
     //instance must be calculated to prepare shell 
     CalculateInstance(inst);
 

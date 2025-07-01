@@ -1,15 +1,14 @@
+/// <summary>
+/// This example defines new subclass if GeometricItem, 
+/// which is 3 orthogonal isosceles right triangle from coordinate origin, controlled by length property.
+/// Main function is Example_RDFGeomDefine
+/// </summary>
 
 #include "pch.h"
 
 #include "rdfgeom.h"
 
 #include "Example_RDFGeomGet.h"
-
-/// <summary>
-/// This example defines new subclass if GeometricItem, 
-/// which is 3 orthogonal isosceles right triangle from coordinate origin, controlled by length property.
-/// Main function is Example_RDFGeomDefine
-/// </summary>
 
 #define CLS_NAME        "Isosceles Right Triangle"
 #define CLS_GEOMITEM    "GeometricItem"
