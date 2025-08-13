@@ -169,6 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BackLinks.cpp" />
     <ClCompile Include="EntitiesTest.cpp" />
     <ClCompile Include="Example_RDFGeomDefine.cpp" />
     <ClCompile Include="ExtAppMem.cpp" />
