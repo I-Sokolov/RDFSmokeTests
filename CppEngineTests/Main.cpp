@@ -6,7 +6,7 @@ extern void EarlyBindingTests();
 extern void MetaPropertiesTest();
 extern void ExtAppMemTest();
 extern void EntitiesTests();
-extern void BackLinksTests();
+extern void VariousTests();
 extern void Test_Example_RDFGeomGet();
 extern void Test_Example_RDFGeomDefine();
 
@@ -19,7 +19,7 @@ extern int main()
         VLDEnable();
 #endif
 
-        BackLinksTests();
+        VariousTests();
         EntitiesTests();
         EarlyBindingTests();
         InstancePropertiesTests();
