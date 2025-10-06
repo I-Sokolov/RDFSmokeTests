@@ -86,9 +86,48 @@ static void RemovePropertyTest()
     CloseModel(model);
 }
 
+static void AssertOneParent(OwlClass cls, const char* name)
+{
+    auto parent = GetClassParentsByIterator(cls, NULL);
+    ASSERT(parent);
+
+    auto n = GetNameOfClass(parent);
+    ASSERT(0 == strcmp(n, name));
+
+    parent = GetClassParentsByIterator(cls, parent);
+    ASSERT(!parent);
+}
+
+static void ThingIsParent(OwlClass cls)
+{
+    AssertOneParent(cls, "Thing");
+
+    auto box = GetClassByName(GetModel(cls), "Box");
+    SetClassParent(cls, box);
+    AssertOneParent(cls, "Box");
+
+    UnsetClassParent(cls, box);
+    AssertOneParent(cls, "Thing");
+}
+
+static void ThingIsParent()
+{
+    ENTER_TEST;
+
+    auto model = CreateModel();
+
+    auto cls = CreateClass(model);
+    ThingIsParent(cls);
+
+    cls = CreateClass(model, "MyClass");
+    ThingIsParent(cls);
+
+    CloseModel(model);
+}
+
 extern void VariousTests()
 {
+    ThingIsParent();
     SetParentUpdatesBackLinks();
-
     RemovePropertyTest();
 }
