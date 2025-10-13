@@ -66,7 +66,7 @@ namespace Configurator
             this.chkOnlyKernel.Name = "chkOnlyKernel";
             this.chkOnlyKernel.Size = new System.Drawing.Size(172, 24);
             this.chkOnlyKernel.TabIndex = 1;
-            this.chkOnlyKernel.Text = "Test Geometry Kernel";
+            this.chkOnlyKernel.Text = "Test Only Geometry Kernel";
             this.chkOnlyKernel.UseVisualStyleBackColor = true;
             this.chkOnlyKernel.CheckedChanged += new System.EventHandler(this.chkOnlyKernel_CheckedChanged);
             // 
