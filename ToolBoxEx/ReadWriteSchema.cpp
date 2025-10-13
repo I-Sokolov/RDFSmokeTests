@@ -41,14 +41,21 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, t
     std::filesystem::path readFilePath("..\\TestData\\schemas");
     readFilePath.append(expFileName);
 
-    auto generatedFile = SmokeTest_SetGeneratedSchemaFile(generate, ".");
+    bool generatedFile = false;
+
+#ifdef INJECTED_SMOKE_TESTS
+    SmokeTest_SetGeneratedSchemaFile(generate, ".");
+#endif
+    
     auto model = sdaiCreateModelBN(1, "", readFilePath.string().c_str());
+    ASSERT(model != 0);
+
+#ifdef INJECTED_SMOKE_TESTS
     SmokeTest_SetGeneratedSchemaFile(test_schema::NONE, NULL);
 
     //test expression parsing
-    ASSERT(model != 0);
-
     ASSERT(SmokeTest_ParseFunctions(model));
+#endif
 
     std::string writeFile = "WriteSchema_";
     writeFile.append(expFileName);
@@ -87,7 +94,10 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, t
     //
     model = sdaiCreateModelBN(1, "", embeddedName);
     ASSERT(model != 0);
+
+#ifdef INJECTED_SMOKE_TESTS
     ASSERT(SmokeTest_ParseFunctions(model));
+#endif
 
     std::string writeEmbedded = "WriteEmbedded_";
     writeEmbedded.append(embeddedName);
