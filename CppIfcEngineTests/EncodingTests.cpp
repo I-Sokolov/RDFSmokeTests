@@ -24,7 +24,7 @@ static const char* GREEK_STEP = R"(''\X2\03B103B203B3\X0\\\)";
 
 static const wchar_t* AGER_WCHAR = L"Ärge'r";
 static const char* AGER_STEP = R"(\S\Drge\'r)";
-static const char* AGER_WIN1251 = "\xC4rge'r"; //this is to support old behaviour
+static const char* AGER_WIN1251 = "\xC4rge'r"; //this is to support old behavior
 
 static const char* PS_STEP = R"(\PE\\S\*\S\U\S\b)";
 static const wchar_t* PS_WCHAR = L"Њет";
@@ -37,7 +37,7 @@ static const char* CAT_UTF8 = "\xF0\x9F\x98\xB8\xF0\x9F\x96\x96\xD1\x8F";
 
 static const wchar_t* MIX_WCHAR = L"潦o㼿ÿ";
 static const char* MIX_STEP = R"(\X2\6F66\X0\o\X2\3F3F\X0\\X\FF)";
-static const char* MIX_WIN1251 = "?o?я";  //this is to support old \X\ behaviour
+static const char* MIX_WIN1251 = "\x3F\x6F\x3F\xFF";  //"?o?я" - this is to support old \X\ behavior
 
 static void CheckRegionalChars(SdaiModel ifcModel, SdaiInteger stepId);
 
