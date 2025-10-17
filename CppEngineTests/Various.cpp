@@ -125,9 +125,88 @@ static void ThingIsParent()
     CloseModel(model);
 }
 
+static void Rotation90about111(GEOM::Matrix T)
+{
+    double inv_sqrt3 = 1.0 / sqrt(3.0);
+    double c = 0.0;  // cos(90°)
+    double s = 1.0;  // sin(90°)
+    double x = inv_sqrt3, y = inv_sqrt3, z = inv_sqrt3;
+
+    T.set__11( x * x * (1 - c) + c);
+    T.set__12( x * y * (1 - c) - z * s);
+    T.set__13( x * z * (1 - c) + y * s);
+
+    T.set__21(y * x * (1 - c) + z * s);
+    T.set__22(y * y * (1 - c) + c);
+    T.set__23(y * z * (1 - c) - x * s);
+
+    T.set__31(z * x * (1 - c) - y * s);
+    T.set__32(z * y * (1 - c) + x * s);
+    T.set__33(z * z * (1 - c) + c);
+}
+
+static void RotationZ30(GEOM::Matrix T)
+{
+    double angle = 3.1415 / 6.0;  // 30 degrees
+    double c = cos(angle);
+    double s = sin(angle);
+
+    double t[12] = {
+         c, -s, 0 ,
+         s,  c, 0 ,
+         0,  0, 1 ,
+         0,  0, 3
+    };
+
+    T.set_coordinates(t, 12);
+}
+
+static void RepetitionBBox()
+{
+    ENTER_TEST;
+
+    auto model = CreateModel();
+
+    auto cone = GEOM::Cone::Create(model);
+    cone.set_radius(3);
+    cone.set_height(5);
+
+    auto Tcone = GEOM::Matrix::Create(model);
+    Rotation90about111(Tcone);
+    Tcone.set__11(0.5 * *Tcone.get__11());
+    Tcone.set__12(0.5 * *Tcone.get__12());
+    Tcone.set__13(0.5 * *Tcone.get__13());
+    Tcone.set__41(10);
+
+    auto transform = GEOM::Transformation::Create(model);
+    transform.set_object(cone);
+    transform.set_matrix(Tcone);
+    
+    auto Trep = GEOM::Matrix::Create(model);
+    RotationZ30(Trep);
+
+    auto repitition = GEOM::Repetition::Create(model);
+    repitition.set_object(transform);
+    repitition.set_matrix(Trep);
+    repitition.set_count(16);
+
+    CalculateInstance(repitition);
+    
+    double box[6] = { 0,0,0,0,0,0 };
+    GetBoundingBox(repitition, box, box + 3);
+
+    double boxe[6] = { -13.231992010750275, -13.232021423358674, -2.0980762113533160, 13.232050807568879, 13.231962569743747, 48.764742878019980 };
+    ASSERT_ARR_EQ(box, boxe, 6);
+
+    //SaveModel(model, "..\\output\\Repit.bin");
+    CloseModel(model);
+}
+
+
 extern void VariousTests()
 {
     ThingIsParent();
     SetParentUpdatesBackLinks();
     RemovePropertyTest();
+    RepetitionBBox();
 }

@@ -22,7 +22,6 @@
 
 #include "ifcengine.h"
 
-#define COMPILE_SMOKE_TESTS
 #include "SmokeTests.h"
 
 #ifdef ASSERT
