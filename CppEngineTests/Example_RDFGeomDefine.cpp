@@ -48,14 +48,16 @@ static void ExpandRange(VECTOR3* startVector, VECTOR3* endVector, const VECTOR3&
 /// <summary>
 /// Callback gets bounding box of the triangle - this is square with 'length' size
 /// </summary>
-static bool CB_GetBoundingBox(OwlInstance inst, VECTOR3* startVector, VECTOR3* endVector, MATRIX* transform, void*)
+static bool CB_GetBoundingBox(OwlInstance inst, void*)
 {
-    if (transform) {
-        MatrixIdentity(transform);
-    }
+    VECTOR3 startVector;
+    VECTOR3 endVector;
+    MATRIX  transform;
 
-    startVector->x = startVector->y = startVector->z = DBL_MAX;
-    endVector->x = endVector->y = endVector->z = -DBL_MAX;
+    MatrixIdentity(&transform);
+
+    startVector.x = startVector.y = startVector.z = DBL_MAX;
+    endVector.x = endVector.y = endVector.z = -DBL_MAX;
 
     if (SHELL* shell = rdfgeom_GetBRep(inst)) {
         
@@ -65,7 +67,7 @@ static bool CB_GetBoundingBox(OwlInstance inst, VECTOR3* startVector, VECTOR3* e
         VECTOR3* rpt = rdfgeom_GetPoints(shell);
 
         for (int_t i = 0; i < Npoints; i++) {
-            ExpandRange(startVector, endVector, rpt[i]);
+            ExpandRange(&startVector, &endVector, rpt[i]);
         }
     }
     else {
@@ -74,11 +76,18 @@ static bool CB_GetBoundingBox(OwlInstance inst, VECTOR3* startVector, VECTOR3* e
         
         double length = GetLength(inst);
 
-        startVector->x = startVector->y = startVector->z = 0;
-        endVector->x = endVector->y = endVector->z = length;
+        startVector.x = startVector.y = startVector.z = 0;
+        endVector.x = endVector.y = endVector.z = length;
     }
 
-    return endVector->x >= startVector->x;
+    if (endVector.x >= startVector.x) {
+        rdfgeom_SetBoundingBox(inst, &startVector, &endVector, &transform);
+        return true;
+    }
+    else {
+        rdfgeom_SetBoundingBox(inst, 0,0,0);
+        return false;
+    }
 }
 
 /// <summary>
