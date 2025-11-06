@@ -202,9 +202,58 @@ static void RepetitionBBox()
     CloseModel(model);
 }
 
+static void CreateExternalRefs(OwlModel& model1, OwlModel& model2, OwlInstance& referenced)
+{
+    model1 = CreateModel();
+    model2 = CreateModel();
+
+    auto cube = GEOM::Cube::Create(model1);
+    referenced = cube;
+    cube.set_length(5);
+
+    auto matrix = GEOM::Matrix::Create(model1);
+    matrix.set__43(6);
+
+    auto transform = GEOM::Transformation::Create(model2);
+    transform.set_object(cube);
+    transform.set_matrix(matrix);
+
+    CalculateInstance(transform);
+
+    double boxe[6] = { 0,0,6,5,5,11 };
+    double box[6] = { 0,0,0,0,0,0 };
+    GetBoundingBox(transform, box, box + 3);
+    ASSERT_ARR_EQ(box, boxe, 6);
+}
+
+static void CrossModelReferences()
+{
+    ENTER_TEST;
+
+    OwlModel model1, model2;
+    OwlInstance referenced;
+    CreateExternalRefs(model1, model2, referenced);
+
+    auto removed = RemoveInstance(referenced);
+    ASSERT(removed == 99);
+
+    CloseModel(model2);
+
+    removed = RemoveInstance(referenced);
+    ASSERT(removed == 0);
+
+    CloseModel(model1);
+
+    //close reverse order
+    CreateExternalRefs(model1, model2, referenced);
+    CloseModel(model1);
+    CloseModel(model2);
+}
+
 
 extern void VariousTests()
 {
+    CrossModelReferences();
     ThingIsParent();
     SetParentUpdatesBackLinks();
     RemovePropertyTest();
