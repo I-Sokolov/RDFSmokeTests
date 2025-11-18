@@ -80,7 +80,7 @@ static void ExamplePrintConceptualFace(CONCEPTUAL_FACE* cface, SomeStatistic& st
     printf("%sConceptual face:\n", offset.c_str()); 
     stat.numOfConceptualFaces++;
 
-    MATRIX* T = rdfgeom_cface_GetLocalTranformation(cface);
+    MATRIX* T = rdfgeom_cface_GetLocalTransformation(cface);
     if (T) {
         printf("%s Local transform\n", offset.c_str());
         printf("%s  %g  %g  %g  %g\n", offset.c_str(), T->_11, T->_21, T->_31, T->_41);
