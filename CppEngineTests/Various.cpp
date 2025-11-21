@@ -250,7 +250,7 @@ static void CrossModelReferences()
     CloseModel(model2);
 }
 
-static void TestUpToDatePropChange()
+static void TestUpToDate()
 {
     ENTER_TEST;
 
@@ -262,6 +262,11 @@ static void TestUpToDatePropChange()
     auto trans = GEOM::Transformation::Create(model);
     trans.set_object(box);
 
+    auto boxClass = GetInstanceClass(box);
+    auto boxClassParent = GetClassParentsByIterator(boxClass, NULL);
+
+    auto classMark = GetClassModificationMark(boxClass);
+
     ASSERT(!IsUpToDate(trans));
     ASSERT(!IsUpToDate(box));
 
@@ -270,17 +275,84 @@ static void TestUpToDatePropChange()
     ASSERT(IsUpToDate(trans));
     ASSERT(IsUpToDate(box));
 
+    //
+    // property change should invalidate
+    //
+
     box.set_length(1);
+
+    auto classMark1 = GetClassModificationMark(boxClass);
+    ASSERT(classMark1 == classMark);
+    classMark = classMark1; 
 
     ASSERT(!IsUpToDate(trans));
     ASSERT(!IsUpToDate(box));
+
+    CalculateInstance(trans);
+
+    ASSERT(IsUpToDate(trans));
+    ASSERT(IsUpToDate(box));
+
+    //
+    // class parent change should invalidate
+    //
+    auto extraClass = CreateClass(model, "ExtraClass");
+
+    SetClassParent(boxClassParent, extraClass);
+
+    classMark1 = GetClassModificationMark(boxClass);
+    ASSERT(classMark1 > classMark);
+    classMark = classMark1;
+
+    ASSERT(!IsUpToDate(trans));
+    ASSERT(!IsUpToDate(box));
+
+    CalculateInstance(trans);
+
+    ASSERT(IsUpToDate(trans));
+    ASSERT(IsUpToDate(box));
+
+    //
+    //remove class parent should invalidate
+    //
+    UnsetClassParent(boxClassParent, extraClass);
+
+    classMark1 = GetClassModificationMark(boxClass);
+    ASSERT(classMark1 > classMark);
+    classMark = classMark1;
+
+    ASSERT(!IsUpToDate(trans));
+    ASSERT(!IsUpToDate(box));
+
+    CalculateInstance(trans);
+
+    ASSERT(IsUpToDate(trans));
+    ASSERT(IsUpToDate(box));
+
+    //
+    // class property change should invalidate
+    //
+
+    SetDatatypeProperty(boxClassParent, GetPropertyByName(model, "length"), 6.0);
+
+    classMark1 = GetClassModificationMark(boxClass);
+    ASSERT(classMark1 > classMark);
+    classMark = classMark1;
+
+    ASSERT(!IsUpToDate(trans));
+    ASSERT(!IsUpToDate(box));
+
+    CalculateInstance(trans);
+
+    ASSERT(IsUpToDate(trans));
+    ASSERT(IsUpToDate(box));
 
     CloseModel(model);
 }
 
 extern void VariousTests()
 {
-    TestUpToDatePropChange();
+    TestUpToDate();
     CrossModelReferences();
     ThingIsParent();
     SetParentUpdatesBackLinks();
