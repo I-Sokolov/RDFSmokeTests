@@ -250,9 +250,37 @@ static void CrossModelReferences()
     CloseModel(model2);
 }
 
+static void TestUpToDatePropChange()
+{
+    ENTER_TEST;
+
+    auto model = CreateModel();
+
+    auto box = GEOM::Cube::Create(model);
+    box.set_length(5);
+
+    auto trans = GEOM::Transformation::Create(model);
+    trans.set_object(box);
+
+    ASSERT(!IsUpToDate(trans));
+    ASSERT(!IsUpToDate(box));
+
+    CalculateInstance(trans);
+
+    ASSERT(IsUpToDate(trans));
+    ASSERT(IsUpToDate(box));
+
+    box.set_length(1);
+
+    ASSERT(!IsUpToDate(trans));
+    ASSERT(!IsUpToDate(box));
+
+    CloseModel(model);
+}
 
 extern void VariousTests()
 {
+    TestUpToDatePropChange();
     CrossModelReferences();
     ThingIsParent();
     SetParentUpdatesBackLinks();
