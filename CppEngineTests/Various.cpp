@@ -250,6 +250,48 @@ static void CrossModelReferences()
     CloseModel(model2);
 }
 
+static void TestChangedOnSetParentWithoutProps()
+{
+    ENTER_TEST;
+
+    auto model = CreateModel();
+    auto box = GEOM::Cube::Create(model);
+
+    auto boxClass = GetInstanceClass(box);
+    auto boxClassParent = GetClassParentsByIterator(boxClass, NULL);
+
+    auto extraClass = CreateClass(model, "ExtraClass");
+
+    //
+    auto classMark = GetClassModificationMark(boxClass);
+    
+    ASSERT(!IsUpToDate(box));
+    CalculateInstance(box);
+    ASSERT(IsUpToDate(box));
+
+    SetClassParent(boxClassParent, extraClass);
+
+    //
+    auto classMark1 = GetClassModificationMark(boxClass);
+    ASSERT(classMark1 > classMark);
+
+    ASSERT(!IsUpToDate(box));
+    CalculateInstance(box);
+    ASSERT(IsUpToDate(box));
+
+    UnsetClassParent(boxClassParent, extraClass);
+
+    //
+    classMark1 = GetClassModificationMark(boxClass);
+    ASSERT(classMark1 > classMark);
+
+    ASSERT(!IsUpToDate(box));
+    CalculateInstance(box);
+    ASSERT(IsUpToDate(box));
+
+    CloseModel(model);
+}
+
 static void TestUpToDate()
 {
     ENTER_TEST;
@@ -258,6 +300,9 @@ static void TestUpToDate()
 
     auto box = GEOM::Cube::Create(model);
     box.set_length(5);
+
+    auto len = box.get_length();
+    ASSERT(len && *len == 5);
 
     auto trans = GEOM::Transformation::Create(model);
     trans.set_object(box);
@@ -280,6 +325,8 @@ static void TestUpToDate()
     //
 
     box.set_length(1);
+    len = box.get_length();
+    ASSERT(len && *len == 1);
 
     auto classMark1 = GetClassModificationMark(boxClass);
     ASSERT(classMark1 == classMark);
@@ -290,6 +337,9 @@ static void TestUpToDate()
 
     CalculateInstance(trans);
 
+    len = box.get_length();
+    ASSERT(len && *len == 1);
+
     ASSERT(IsUpToDate(trans));
     ASSERT(IsUpToDate(box));
 
@@ -298,7 +348,13 @@ static void TestUpToDate()
     //
     auto extraClass = CreateClass(model, "ExtraClass");
 
+    len = box.get_length();
+    ASSERT(len && *len == 1);
+
     SetClassParent(boxClassParent, extraClass);
+
+    len = box.get_length();
+    ASSERT(len && *len == 1);
 
     classMark1 = GetClassModificationMark(boxClass);
     ASSERT(classMark1 > classMark);
@@ -316,6 +372,9 @@ static void TestUpToDate()
     //remove class parent should invalidate
     //
     UnsetClassParent(boxClassParent, extraClass);
+
+    len = box.get_length();
+    ASSERT(len && *len == 1);
 
     classMark1 = GetClassModificationMark(boxClass);
     ASSERT(classMark1 > classMark);
@@ -353,6 +412,7 @@ static void TestUpToDate()
 extern void VariousTests()
 {
     TestUpToDate();
+    TestChangedOnSetParentWithoutProps();
     CrossModelReferences();
     ThingIsParent();
     SetParentUpdatesBackLinks();
