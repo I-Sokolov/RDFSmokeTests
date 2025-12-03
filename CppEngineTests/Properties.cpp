@@ -138,7 +138,55 @@ static void TestDatatypeProps()
     TestDatatypeProps(1);
 }
 
+static void TestDerivedPropsAPI()
+{
+    ENTER_TEST;
+    int64_t model = CreateModel();
+
+    auto mat = GEOM::Material::Create(model);
+
+    auto sphere = GEOM::Sphere::Create(model);
+    sphere.set_radius(5.0);
+    sphere.set_material(mat);
+
+    auto propRadius = GetPropertyByName(model, "radius");
+    auto propMat = GetPropertyByName(model, "material");
+    auto propLength = GetPropertyByName(model, "length"); 
+    auto propObject = GetPropertyByName(model, "object");
+
+    ASSERT(!IsPropertyDerived(sphere, propRadius));
+    ASSERT(!IsPropertyDerived(sphere, propMat));
+    ASSERT(!IsPropertyDerived(sphere, propLength));
+    ASSERT(!IsPropertyDerived(sphere, propObject));
+
+    double rad = 10.0;
+    RdfsResource matRes = mat;
+
+    SetDatatypePropertyDerived(sphere, propRadius, &rad, 1, true);
+    SetObjectPropertyDerived(sphere, propMat, &matRes, 1, true);
+    SetDatatypePropertyDerived(sphere, propLength, NULL, 0, true);
+    SetObjectPropertyDerived(sphere, propObject, NULL, 0, true);
+
+    ASSERT(IsPropertyDerived(sphere, propRadius));
+    ASSERT(IsPropertyDerived(sphere, propMat));
+    ASSERT(IsPropertyDerived(sphere, propLength));
+    ASSERT(IsPropertyDerived(sphere, propObject));
+
+    SetDatatypePropertyDerived(sphere, propRadius, &rad, 1, false);
+    SetObjectPropertyDerived(sphere, propMat, &matRes, 1, false);
+    SetDatatypePropertyDerived(sphere, propLength, NULL, 0, false);
+    SetObjectPropertyDerived(sphere, propObject, NULL, 0, false);
+
+    ASSERT(!IsPropertyDerived(sphere, propRadius));
+    ASSERT(!IsPropertyDerived(sphere, propMat));
+    ASSERT(!IsPropertyDerived(sphere, propLength));
+    ASSERT(!IsPropertyDerived(sphere, propObject));
+
+    CloseModel(model);
+}
+
 extern void Test_Properties()
 {
+    TestDerivedPropsAPI();
     TestDatatypeProps();
 }
