@@ -8,7 +8,7 @@ const double testDouble[] = { 3.14159, 2.71828 };
 const unsigned char testByte[] = { 0x12, 0x34};
 
 
-static void CheckTextProps(int64_t model)
+static void CheckDatatypeProps(int64_t model)
 {
     auto inst = GetInstancesByIterator(model, NULL);
 
@@ -73,7 +73,7 @@ static void CheckTextProps(int64_t model)
     SetCharacterSerialization(model, saveEncoding, 0, saveAscii);
 }
 
-static void TestTextProps(int startAscii)
+static void TestDatatypeProps(int startAscii)
 {
     int64_t model = CreateModel();
 
@@ -112,7 +112,7 @@ static void TestTextProps(int startAscii)
     SetDataTypeProperty(inst, propDouble, testDouble, 2);
     SetDataTypeProperty(inst, propByte, testByte, 2);
 
-    CheckTextProps(model);
+    CheckDatatypeProps(model);
 
     const char* files[] = { "TestTextProp.bin" }; //.ttl, .rdf, .bct not implements strings 
     
@@ -124,21 +124,21 @@ static void TestTextProps(int startAscii)
 
     for (auto file : files) {
         model = OpenModel(file);
-        CheckTextProps(model);
+        CheckDatatypeProps(model);
         CloseModel(model);
     }
 }
 
-static void TestTextProps()
+static void TestDatatypeProps()
 {
     ENTER_TEST;
     
-    TestTextProps(0);
-    TestTextProps(-1);
-    TestTextProps(1);
+    TestDatatypeProps(0);
+    TestDatatypeProps(-1);
+    TestDatatypeProps(1);
 }
 
 extern void Test_Properties()
 {
-    TestTextProps();
+    TestDatatypeProps();
 }
