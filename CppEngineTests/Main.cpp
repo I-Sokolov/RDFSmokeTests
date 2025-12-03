@@ -9,6 +9,7 @@ extern void EntitiesTests();
 extern void VariousTests();
 extern void Test_Example_RDFGeomGet();
 extern void Test_Example_RDFGeomDefine();
+extern void Test_Properties();
 
 extern int main()
 {
@@ -19,6 +20,8 @@ extern int main()
         VLDEnable();
 #endif
 
+
+        Test_Properties();
         VariousTests();
         EntitiesTests();
         EarlyBindingTests();
