@@ -138,7 +138,7 @@ static void TestDatatypeProps()
     TestDatatypeProps(1);
 }
 
-static void TestDerivedPropsAPI()
+static void TestDerivedProps()
 {
     ENTER_TEST;
     int64_t model = CreateModel();
@@ -182,11 +182,55 @@ static void TestDerivedPropsAPI()
     ASSERT(!IsPropertyDerived(sphere, propLength));
     ASSERT(!IsPropertyDerived(sphere, propObject));
 
+    //
+    auto poly = GEOM::PolyLine3D::Create(model);
+
+    double points[] = { 0,0,0,1,0,0,1,1,0 };
+    poly.set_points(points, 9);
+
+    //
+    CalculateInstance(poly);
+    
+    //not calculated by default
+    auto len = poly.get_length();
+
+    ASSERT(!len);
+    ASSERT(!IsPropertyDerived(poly, propLength));
+
+    //not changing when set
+    poly.set_length(7);
+    
+    CalculateInstance(poly);
+
+    len = poly.get_length();
+
+    ASSERT(len && *len == 7);
+    ASSERT(!IsPropertyDerived(poly, propLength));
+
+    //set derived
+    SetDatatypePropertyDerived(poly, propLength, NULL, 0, true);
+
+    CalculateInstance(poly);
+
+    len = poly.get_length();
+
+    ASSERT(len && *len == 2);
+    ASSERT(IsPropertyDerived(poly, propLength));
+
+    //reset
+    SetDatatypeProperty(poly, propLength, NULL, 0);
+
+    CalculateInstance(poly);
+
+    len = poly.get_length();
+    ASSERT(!len);
+    ASSERT(!IsPropertyDerived(poly, propLength));
+
     CloseModel(model);
 }
 
 extern void Test_Properties()
 {
-    TestDerivedPropsAPI();
+    TestDerivedProps();
     TestDatatypeProps();
 }
