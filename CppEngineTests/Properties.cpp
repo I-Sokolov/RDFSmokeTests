@@ -176,10 +176,21 @@ static void TestDerivedProps()
     ASSERT(IsPropertyDerived(sphere, propLength));
     ASSERT(IsPropertyDerived(sphere, propObject));
 
+    auto sphereCls = GetInstanceClass(sphere);
+    auto myCls = CreateClass(model, "MyClass");
+    SetClassParent(sphereCls, myCls);
+
+    ASSERT(IsPropertyDerived(sphere, propRadius));
+    ASSERT(IsPropertyDerived(sphere, propMat));
+    ASSERT(IsPropertyDerived(sphere, propLength));
+    ASSERT(IsPropertyDerived(sphere, propObject));
+
     SetDatatypePropertyDerived(sphere, propRadius, &rad, 1, false);
     SetObjectPropertyDerived(sphere, propMat, &matRes, 1, false);
     SetDatatypePropertyDerived(sphere, propLength, NULL, 0, false);
     SetObjectPropertyDerived(sphere, propObject, NULL, 0, false);
+
+    UnsetClassParent(sphereCls, myCls);
 
     ASSERT(!IsPropertyDerived(sphere, propRadius));
     ASSERT(!IsPropertyDerived(sphere, propMat));
