@@ -157,55 +157,58 @@ static void TestDerivedProps()
     auto propObject = GetPropertyByName(model, "object");
     auto propMaterial = GetPropertyByName(model, "material");
 
-    ASSERT(!IsPropertyDerived(sphere, propRadius));
-    ASSERT(!IsPropertyDerived(sphere, propMat));
-    ASSERT(!IsPropertyDerived(sphere, propLength));
-    ASSERT(!IsPropertyDerived(sphere, propObject));
-    ASSERT(!IsPropertyDerived(poly, propMaterial));
+    ASSERT(!GetPropertyDerived(sphere, propRadius));
+    ASSERT(!GetPropertyDerived(sphere, propMat));
+    ASSERT(!GetPropertyDerived(sphere, propLength));
+    ASSERT(!GetPropertyDerived(sphere, propObject));
+    ASSERT(!GetPropertyDerived(poly, propMaterial));
 
     int_t rad = 1;
     RdfsResource matRes = mat;
 
-    SetDatatypePropertyDerived(sphere, propRadius, &rad, 1, true);
-    SetObjectPropertyDerived(sphere, propMat, &matRes, 1, true);
-    SetDatatypePropertyDerived(sphere, propLength, NULL, 0, true);
-    SetObjectPropertyDerived(sphere, propObject, NULL, 0, true);
+    SetDatatypeProperty(sphere, propRadius, &rad, 1);
+    SetObjectProperty(sphere, propMat, &matRes, 1);
 
-    ASSERT(IsPropertyDerived(sphere, propRadius));
-    ASSERT(IsPropertyDerived(sphere, propMat));
-    ASSERT(IsPropertyDerived(sphere, propLength));
-    ASSERT(IsPropertyDerived(sphere, propObject));
+    SetPropertyDerived(sphere, propRadius, true);
+    SetPropertyDerived(sphere, propMat,    true);
+    SetPropertyDerived(sphere, propLength, true);
+    SetPropertyDerived(sphere, propObject, true);
+
+    ASSERT(GetPropertyDerived(sphere, propRadius));
+    ASSERT(GetPropertyDerived(sphere, propMat));
+    ASSERT(GetPropertyDerived(sphere, propLength));
+    ASSERT(GetPropertyDerived(sphere, propObject));
 
     auto sphereCls = GetInstanceClass(sphere);
     auto myCls = CreateClass(model, "MyClass");
     SetClassParent(sphereCls, myCls);
 
-    ASSERT(IsPropertyDerived(sphere, propRadius));
-    ASSERT(IsPropertyDerived(sphere, propMat));
-    ASSERT(IsPropertyDerived(sphere, propLength));
-    ASSERT(IsPropertyDerived(sphere, propObject));
+    ASSERT(GetPropertyDerived(sphere, propRadius));
+    ASSERT(GetPropertyDerived(sphere, propMat));
+    ASSERT(GetPropertyDerived(sphere, propLength));
+    ASSERT(GetPropertyDerived(sphere, propObject));
 
-    SetDatatypePropertyDerived(sphere, propRadius, &rad, 1, false);
-    SetObjectPropertyDerived(sphere, propMat, &matRes, 1, false);
-    SetDatatypePropertyDerived(sphere, propLength, NULL, 0, false);
-    SetObjectPropertyDerived(sphere, propObject, NULL, 0, false);
+    SetPropertyDerived(sphere, propRadius, false);
+    SetPropertyDerived(sphere, propMat,    false);
+    SetPropertyDerived(sphere, propLength, false);
+    SetPropertyDerived(sphere, propObject, false);
 
     UnsetClassParent(sphereCls, myCls);
 
-    ASSERT(!IsPropertyDerived(sphere, propRadius));
-    ASSERT(!IsPropertyDerived(sphere, propMat));
-    ASSERT(!IsPropertyDerived(sphere, propLength));
-    ASSERT(!IsPropertyDerived(sphere, propObject));
+    ASSERT(!GetPropertyDerived(sphere, propRadius));
+    ASSERT(!GetPropertyDerived(sphere, propMat));
+    ASSERT(!GetPropertyDerived(sphere, propLength));
+    ASSERT(!GetPropertyDerived(sphere, propObject));
 
-    SetDatatypePropertyDerived(sphere, propRadius, &rad, 1, true);
-    SetObjectPropertyDerived(sphere, propMat, &matRes, 1, true);
-    SetDatatypePropertyDerived(sphere, propLength, NULL, 0, true);
-    SetObjectPropertyDerived(sphere, propObject, NULL, 0, true);
+    SetPropertyDerived(sphere, propRadius, true);
+    SetPropertyDerived(sphere, propMat,    true);
+    SetPropertyDerived(sphere, propLength, true);
+    SetPropertyDerived(sphere, propObject, true);
 
-    ASSERT(IsPropertyDerived(sphere, propRadius));
-    ASSERT(IsPropertyDerived(sphere, propMat));
-    ASSERT(IsPropertyDerived(sphere, propLength));
-    ASSERT(IsPropertyDerived(sphere, propObject));
+    ASSERT(GetPropertyDerived(sphere, propRadius));
+    ASSERT(GetPropertyDerived(sphere, propMat));
+    ASSERT(GetPropertyDerived(sphere, propLength));
+    ASSERT(GetPropertyDerived(sphere, propObject));
 
     //
     // Test calculate derived
@@ -220,7 +223,7 @@ static void TestDerivedProps()
     auto len = poly.get_length();
 
     ASSERT(!len);
-    ASSERT(!IsPropertyDerived(poly, propLength));
+    ASSERT(!GetPropertyDerived(poly, propLength));
 
     //not changing when set
     poly.set_length(7);
@@ -230,26 +233,27 @@ static void TestDerivedProps()
     len = poly.get_length();
 
     ASSERT(len && *len == 7);
-    ASSERT(!IsPropertyDerived(poly, propLength));
+    ASSERT(!GetPropertyDerived(poly, propLength));
 
     //set derived
-    SetDatatypePropertyDerived(poly, propLength, NULL, 0, true);
+    SetPropertyDerived(poly, propLength, true);
 
     CalculateInstance(poly);
 
     len = poly.get_length();
 
     ASSERT(len && *len == 2);
-    ASSERT(IsPropertyDerived(poly, propLength));
+    ASSERT(GetPropertyDerived(poly, propLength));
 
     //reset
     SetDatatypeProperty(poly, propLength, NULL, 0);
+    SetPropertyDerived(poly, propLength, false);
 
     CalculateInstance(poly);
 
     len = poly.get_length();
     ASSERT(!len);
-    ASSERT(!IsPropertyDerived(poly, propLength));
+    ASSERT(!GetPropertyDerived(poly, propLength));
 
     SaveModel(model, "TestDerivedProps.bin");
 
@@ -282,16 +286,16 @@ static void TestDerivedProps()
     propObject = GetPropertyByName(model, "object");
     propMaterial = GetPropertyByName(model, "material");
 
-    ASSERT(IsPropertyDerived(sphere, propRadius));
-    ASSERT(IsPropertyDerived(sphere, propMat));
-    ASSERT(IsPropertyDerived(sphere, propLength));
-    ASSERT(IsPropertyDerived(sphere, propObject));
+    ASSERT(GetPropertyDerived(sphere, propRadius));
+    ASSERT(GetPropertyDerived(sphere, propMat));
+    ASSERT(GetPropertyDerived(sphere, propLength));
+    ASSERT(GetPropertyDerived(sphere, propObject));
 
-    ASSERT(!IsPropertyDerived(poly, propLength));
+    ASSERT(!GetPropertyDerived(poly, propLength));
 
     ASSERT(poly.get_material() && *poly.get_material() == mat);
     ASSERT(propMaterial);
-    ASSERT(!IsPropertyDerived(poly, propMaterial));
+    ASSERT(!GetPropertyDerived(poly, propMaterial));
 
     CloseModel(model);
 }
