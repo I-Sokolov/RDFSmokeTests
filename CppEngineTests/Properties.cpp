@@ -143,23 +143,27 @@ static void TestDerivedProps()
     ENTER_TEST;
     int64_t model = CreateModel();
 
-    auto mat = GEOM::Material::Create(model);
-
     auto sphere = GEOM::Sphere::Create(model);
-    sphere.set_radius(5.0);
-    sphere.set_material(mat);
+    auto poly = GEOM::PolyLine3D::Create(model);
+    auto mat = GEOM::Material::Create(model);
+    poly.set_material(mat);
 
-    auto propRadius = GetPropertyByName(model, "radius");
-    auto propMat = GetPropertyByName(model, "material");
+    //
+    // Test set-unset derived
+    //
+    auto propRadius = CreateProperty(model, DATATYPEPROPERTY_TYPE_INTEGER, "My_radius");
+    auto propMat = CreateProperty(model, OBJECTPROPERTY_TYPE, "My_material");
     auto propLength = GetPropertyByName(model, "length"); 
     auto propObject = GetPropertyByName(model, "object");
+    auto propMaterial = GetPropertyByName(model, "material");
 
     ASSERT(!IsPropertyDerived(sphere, propRadius));
     ASSERT(!IsPropertyDerived(sphere, propMat));
     ASSERT(!IsPropertyDerived(sphere, propLength));
     ASSERT(!IsPropertyDerived(sphere, propObject));
+    ASSERT(!IsPropertyDerived(poly, propMaterial));
 
-    double rad = 10.0;
+    int_t rad = 1;
     RdfsResource matRes = mat;
 
     SetDatatypePropertyDerived(sphere, propRadius, &rad, 1, true);
@@ -182,9 +186,19 @@ static void TestDerivedProps()
     ASSERT(!IsPropertyDerived(sphere, propLength));
     ASSERT(!IsPropertyDerived(sphere, propObject));
 
-    //
-    auto poly = GEOM::PolyLine3D::Create(model);
+    SetDatatypePropertyDerived(sphere, propRadius, &rad, 1, true);
+    SetObjectPropertyDerived(sphere, propMat, &matRes, 1, true);
+    SetDatatypePropertyDerived(sphere, propLength, NULL, 0, true);
+    SetObjectPropertyDerived(sphere, propObject, NULL, 0, true);
 
+    ASSERT(IsPropertyDerived(sphere, propRadius));
+    ASSERT(IsPropertyDerived(sphere, propMat));
+    ASSERT(IsPropertyDerived(sphere, propLength));
+    ASSERT(IsPropertyDerived(sphere, propObject));
+
+    //
+    // Test calculate derived
+    //
     double points[] = { 0,0,0,1,0,0,1,1,0 };
     poly.set_points(points, 9);
 
@@ -199,7 +213,7 @@ static void TestDerivedProps()
 
     //not changing when set
     poly.set_length(7);
-    
+
     CalculateInstance(poly);
 
     len = poly.get_length();
@@ -225,6 +239,48 @@ static void TestDerivedProps()
     len = poly.get_length();
     ASSERT(!len);
     ASSERT(!IsPropertyDerived(poly, propLength));
+
+    SaveModel(model, "TestDerivedProps.bin");
+
+    CloseModel(model);
+
+    //
+    // read and check state
+    //
+    model = OpenModel("TestDerivedProps.bin");
+
+    OwlInstance inst = NULL;
+    while (inst = GetInstancesByIterator(model, inst)) {
+        auto cls = GetInstanceClass(inst);
+        auto clsName = GetNameOfClass(cls);
+        if (0 == strcmp(clsName, "Sphere")) {
+            sphere = inst;
+        }
+        else if (0 == strcmp(clsName, "PolyLine3D")) {
+            poly = inst;
+        }
+        else if (0 == strcmp(clsName, "Material")) {
+            mat = inst;
+        }
+    }
+    ASSERT(sphere && poly && mat);
+
+    propRadius = GetPropertyByName(model, "My_radius");
+    propMat = GetPropertyByName(model, "My_material");
+    propLength = GetPropertyByName(model, "length");
+    propObject = GetPropertyByName(model, "object");
+    propMaterial = GetPropertyByName(model, "material");
+
+    ASSERT(IsPropertyDerived(sphere, propRadius));
+    ASSERT(IsPropertyDerived(sphere, propMat));
+    ASSERT(IsPropertyDerived(sphere, propLength));
+    ASSERT(IsPropertyDerived(sphere, propObject));
+
+    ASSERT(!IsPropertyDerived(poly, propLength));
+
+    ASSERT(poly.get_material() && *poly.get_material() == mat);
+    ASSERT(propMaterial);
+    ASSERT(!IsPropertyDerived(poly, propMaterial));
 
     CloseModel(model);
 }
