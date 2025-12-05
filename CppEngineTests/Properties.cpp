@@ -300,8 +300,75 @@ static void TestDerivedProps()
     CloseModel(model);
 }
 
+static void TestDefaultValues()
+{
+    ENTER_TEST;
+
+    int64_t model = CreateModel();
+
+    auto propLength = GetPropertyByName(model, "length");
+    auto propObj = GetPropertyByName(model, "objects");
+    auto propDer = CreateProperty(model, DATATYPEPROPERTY_TYPE_DOUBLE, "DerProp");
+    auto prop2 = CreateProperty(model, DATATYPEPROPERTY_TYPE_DOUBLE, "Prop2");
+
+    auto clsCube = GetClassByName(model, "Cube");
+    auto clsGItem = GetClassByName(model, "GeometricItem");
+    auto clsCollection = GetClassByName(model, "Collection");
+
+    //default data values
+    SetDatatypeProperty(clsCube, propLength, 7.0);
+    SetPropertyDerived(clsGItem, propDer, true);
+
+    auto cube = GEOM::Cube::Create(model);
+
+    auto len = cube.get_length();
+    ASSERT(len && *len == 7);
+    ASSERT(GetPropertyDerived(cube, propDer));
+
+    //default object value
+    SetObjectProperty(clsCollection, propObj, cube);
+
+    auto coll = GEOM::Collection::Create(model);
+
+    int64_t crd = 0;
+    auto objs = coll.get_objects(&crd);
+    ASSERT(objs && crd == 1 && *objs == cube);
+
+    CalculateInstance(coll);
+
+    double box[6] = { 0,0,0,0,0,0 };
+    GetBoundingBox(coll, box, box + 3);
+
+    double boxe[6] = { 0,0,0,7,7,7 };
+    ASSERT_ARR_EQ(box, boxe, 6);
+
+    //from set parent
+    auto parent = CreateClass(model, "parent");
+    SetDatatypeProperty(parent, propLength, 10.0);
+    SetDatatypeProperty(parent, prop2, 10.0);
+    SetDatatypeProperty(parent, propDer, 10.0);
+
+    SetClassParent(clsGItem, parent);
+
+    double* getVal = NULL;
+    GetDatatypeProperty(cube, propLength, (void**) &getVal, &crd);
+    ASSERT(crd == 1 && *getVal == 7); //not changed
+    ASSERT(!GetPropertyDerived(cube, propLength));
+
+    GetDataTypeProperty(cube, prop2, (void**)&getVal, &crd);
+    ASSERT(crd == 1 && *getVal == 10); //set default
+    ASSERT(!GetPropertyDerived(cube, prop2));
+
+    GetDataTypeProperty(cube, propDer, (void**)&getVal, &crd);
+    ASSERT(crd == 0); //not changed
+    ASSERT(GetPropertyDerived(cube, propDer));
+
+    CloseModel(model);
+}
+
 extern void Test_Properties()
 {
+    TestDefaultValues();
     TestDerivedProps();
     TestDatatypeProps();
 }
