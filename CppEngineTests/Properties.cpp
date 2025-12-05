@@ -219,15 +219,27 @@ static void TestDerivedProps()
     //
     CalculateInstance(poly);
     
-    //not calculated by default
+    //calculated by default
     auto len = poly.get_length();
 
-    ASSERT(!len);
-    ASSERT(!GetPropertyDerived(poly, propLength));
+    ASSERT(len && *len == 2);
+    ASSERT(GetPropertyDerived(poly, propLength));
 
-    //not changing when set
+    //restoring when set
     poly.set_length(7);
+    poly.set_points(points, 9);
 
+    CalculateInstance(poly);
+
+    len = poly.get_length();
+
+    ASSERT(len && *len == 2);
+    ASSERT(GetPropertyDerived(poly, propLength));
+
+    //
+    SetPropertyDerived(poly, propLength, false);
+    poly.set_length(7);
+ 
     CalculateInstance(poly);
 
     len = poly.get_length();
@@ -236,14 +248,6 @@ static void TestDerivedProps()
     ASSERT(!GetPropertyDerived(poly, propLength));
 
     //set derived
-    SetPropertyDerived(poly, propLength, true);
-
-    CalculateInstance(poly);
-
-    len = poly.get_length();
-
-    ASSERT(len && *len == 2);
-    ASSERT(GetPropertyDerived(poly, propLength));
 
     //reset
     SetDatatypeProperty(poly, propLength, NULL, 0);
@@ -291,7 +295,7 @@ static void TestDerivedProps()
     ASSERT(GetPropertyDerived(sphere, propLength));
     ASSERT(GetPropertyDerived(sphere, propObject));
 
-    ASSERT(!GetPropertyDerived(poly, propLength));
+    ASSERT(GetPropertyDerived(poly, propLength));
 
     ASSERT(poly.get_material() && *poly.get_material() == mat);
     ASSERT(propMaterial);
