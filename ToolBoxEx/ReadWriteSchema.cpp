@@ -31,7 +31,7 @@ static bool FileEquals(std::string& file1, std::string& file2)
 }
 
 
-static void ReadWriteSchema(const char* expFileName, const char* embeddedName, test_schema generate)
+static void ReadWriteSchema(const char* expFileName, const char* embeddedName, enum_test_schema generate)
 {
     ENTER_TEST_NAME(expFileName);
 
@@ -51,7 +51,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, t
     ASSERT(model != 0);
 
 #ifdef INJECTED_SMOKE_TESTS
-    SmokeTest_SetGeneratedSchemaFile(test_schema::NONE, NULL);
+    SmokeTest_SetGeneratedSchemaFile(enum_test_schema::NONE, NULL);
 
     //test expression parsing
     ASSERT(SmokeTest_ParseFunctions(model));
@@ -118,14 +118,14 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, t
 
 extern void ReadWriteSchemaTest()
 {
-    ReadWriteSchema("IFC4_ADD2_TC1.exp", "IFC4", test_schema::IFC4_ADD2_TC1);
-    ReadWriteSchema("IFC2X3_TC1.exp", "IFC2x3", test_schema::IFC2X3_TC1);
-    ReadWriteSchema("IFC4x1.exp", "IFC4x1", test_schema::IFC4X1_FINAL);
-    ReadWriteSchema("IFC4x2.exp", "IFC4x2", test_schema::IFC4X2_DRAFT);
-    ReadWriteSchema("IFC4X3_ADD2.exp", "IFC4x3", test_schema::IFC4X3_ADD2);
-    ReadWriteSchema("IFC4X4.exp", "IFC4x4", test_schema::IFC4X4);
-    ReadWriteSchema("structural_frame_schema.exp", "CIS2", test_schema::CIS2);
-    ReadWriteSchema("ap242ed3_mim_lf_v1.152.exp", "AP242", test_schema::AP242);
-    ReadWriteSchema("AP214E3_2010.exp", "AP214", test_schema::AP214);
-    ReadWriteSchema("part403ts_wg3n2635mim_lf.exp", "AP203", test_schema::AP203);
+    ReadWriteSchema("IFC4_ADD2_TC1.exp", "IFC4", enum_test_schema::IFC4_ADD2_TC1);
+    ReadWriteSchema("IFC2X3_TC1.exp", "IFC2x3", enum_test_schema::IFC2X3_TC1);
+    ReadWriteSchema("IFC4x1.exp", "IFC4x1", enum_test_schema::IFC4X1_FINAL);
+    ReadWriteSchema("IFC4x2.exp", "IFC4x2", enum_test_schema::IFC4X2_DRAFT);
+    ReadWriteSchema("IFC4X3_ADD2.exp", "IFC4x3", enum_test_schema::IFC4X3_ADD2);
+    ReadWriteSchema("IFC4X4.exp", "IFC4x4", enum_test_schema::IFC4X4);
+    ReadWriteSchema("structural_frame_schema.exp", "CIS2", enum_test_schema::CIS2);
+    ReadWriteSchema("ap242ed3_mim_lf_v1.152.exp", "AP242", enum_test_schema::AP242);
+    ReadWriteSchema("AP214E3_2010.exp", "AP214", enum_test_schema::AP214);
+    ReadWriteSchema("part403ts_wg3n2635mim_lf.exp", "AP203", enum_test_schema::AP203);
 }
