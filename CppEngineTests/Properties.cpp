@@ -257,7 +257,7 @@ static void TestDerivedProps()
     len = poly.get_length();
     ASSERT(len&&* len == 2);
 
-    //uset derived does not make instant dirty
+    //unset derived does not make instant dirty
     SetPropertyDerived(poly, propLength, false);
     ASSERT(IsUpToDate(poly));
 
