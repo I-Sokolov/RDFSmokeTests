@@ -243,11 +243,23 @@ static void TestDerivedProps()
     CalculateInstance(poly);
 
     len = poly.get_length();
-
     ASSERT(len && *len == 7);
     ASSERT(!GetPropertyDerived(poly, propLength));
 
-    //set derived
+    //set derived makes instant dirty
+    ASSERT(IsUpToDate(poly));
+
+    SetPropertyDerived(poly, propLength, true);
+    ASSERT(!IsUpToDate(poly));
+
+    CalculateInstance(poly);
+
+    len = poly.get_length();
+    ASSERT(len&&* len == 2);
+
+    //uset derived does not make instant dirty
+    SetPropertyDerived(poly, propLength, false);
+    ASSERT(IsUpToDate(poly));
 
     //reset
     SetDatatypeProperty(poly, propLength, NULL, 0);
