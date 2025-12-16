@@ -48,7 +48,7 @@ static void TriangulationTest()
     CloseModel(model);
 }
 
-bool    AlphabeticalOrder(int i, char chrI, char chrII)
+bool    AlphabeticalOrder(size_t i, char chrI, char chrII)
 {
     if (chrI == '_')
         return true;
