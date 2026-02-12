@@ -2,7 +2,7 @@
 #include "pch.h"
 
 #define TEST_FILE_DEL   "..\\TestData\\Walls.ifc"
-#define TEST_FILE_AGGR  "..\\TestData\\AggregationTest.ifc"
+#define TEST_FILE_AGGR  "..\\TestData\\DataFiles\\AggregationTest.ifc"
 #define TEST_SAVE       "AggregationTest.ifc"
 
 #define TEST_SCHEMA         "..\\TestData\\schemas\\smoke_test.exp"

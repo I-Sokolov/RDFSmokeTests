@@ -25,7 +25,7 @@ namespace CsIfcEngineTests
             ifcengine.sdaiCloseModel(model);
 
             //
-            model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
+            model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\DataFiles\\AggregationTest.ifc", "");
 
             TestEvaluateDerivedByScript(model);
 

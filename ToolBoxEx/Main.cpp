@@ -1,6 +1,7 @@
 
 #include "pch.h"
 
+extern void ReadWriteDataFileTest();
 extern void ReadWriteSchemaTest();
 extern void ModelCheckerTests();
 
@@ -14,6 +15,7 @@ extern int main()
 #endif
         auto startingHeap = HeapUsed();
 
+        ReadWriteDataFileTest();
         ModelCheckerTests();
         ReadWriteSchemaTest();
 

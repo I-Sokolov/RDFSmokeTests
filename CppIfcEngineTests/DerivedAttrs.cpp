@@ -116,7 +116,7 @@ static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getOn, bool al
 
 ExpressID Ifc4test()
 {
-    auto model = sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
+    auto model = sdaiOpenModelBN(0, "..\\TestData\\DataFiles\\AggregationTest.ifc", "");
     ASSERT(model);
 
     auto oper = IFC4::IfcCartesianTransformationOperator3DnonUniform::Create(model);

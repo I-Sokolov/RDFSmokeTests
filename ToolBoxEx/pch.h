@@ -19,6 +19,7 @@
 #include <set>
 #include <map>
 #include <filesystem>
+#include <fstream>
 
 #include "ifcengine.h"
 
