@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#define STEP_TEST1 "..\\TestData\\ComplexInstance1.step"
-#define STEP_TEST2 "..\\TestData\\ComplexInstance2.step"
+#define STEP_TEST1 "..\\TestData\\DataFiles\\ComplexInstance1.step"
+#define STEP_TEST2 "..\\TestData\\DataFiles\\ComplexInstance2.step"
 #define STEP_TEST_SAVED "ComplexInstance_saved.step"
 
 #define TEST_SCHEMA         "..\\TestData\\schemas\\smoke_test.exp"
@@ -53,6 +53,7 @@ static void CheckComplex(const char* testFile, ExpressID id, Instance rInst[], i
 
     //
     SdaiModel model = sdaiOpenModelBN(0, testFile, "");
+    ASSERT(model);
 
     CheckComplex(model, id, rInst, nInst);
 
