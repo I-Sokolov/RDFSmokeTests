@@ -192,35 +192,45 @@ static void CompareFiles(const char* file1, const char* file2)
     CompareFileContent(content1, content2);
 }   
 
-static void TestFile(const char* fileName)
+static void TestDataFile(std::filesystem::path readPath)
 {
-    std::filesystem::path readPath(TEST_DIR);
-    readPath.append(fileName);
+    ENTER_TEST_NAME(readPath.string().c_str());
+
 
     auto model = sdaiOpenModelBN(1, readPath.string().c_str(), "");
     ASSERT(model);
 
-    sdaiSaveModelBN(model, fileName);
+    std::string savePath = readPath.filename().string();
+
+    sdaiSaveModelBN(model, savePath.c_str());
 
     sdaiCloseModel(model);
 
-    CompareFiles(fileName, readPath.string().c_str());
+    CompareFiles(savePath.c_str(), readPath.string().c_str());
 }
 
-extern void ReadWriteDataFileTest()
+static void TestDataFiles(std::string dir)
 {
-    ENTER_TEST;
-
     WIN32_FIND_DATAA ffd;
-    auto hFind = FindFirstFileA(TEST_DIR "\\*", &ffd);
+    auto hFind = FindFirstFileA((dir + "\\*").c_str(), &ffd);
     ASSERT(hFind != INVALID_HANDLE_VALUE);
 
     do {
-        if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-            TestFile(ffd.cFileName);
+        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            if (strcmp(ffd.cFileName, ".") != 0 && strcmp(ffd.cFileName, "..") != 0) {
+                TestDataFiles(dir + "\\" + ffd.cFileName);
+            }
+        }
+        else {
+            TestDataFile(dir + "\\" + ffd.cFileName);
         }
     } while (FindNextFileA(hFind, &ffd) != 0);
 
     FindClose(hFind);
 
+}
+
+extern void ReadWriteDataFileTest()
+{
+    TestDataFiles(TEST_DIR);
 }

@@ -15,7 +15,7 @@ namespace CsIfcEngineTests
         {
             ENTER_TEST();
 
-            var model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\Wall_SweptSolid.ifc", "");
+            var model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\DataFiles\\Wall_SweptSolid.ifc", "");
             ASSERT(model != 0);
 
             TestSIUnitsDerivedDim(model);

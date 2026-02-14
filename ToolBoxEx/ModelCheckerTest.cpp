@@ -575,7 +575,7 @@ static void PassOrFailTests()
 
     PassOrFailTests("IfcOpenShell\\validate");
     PassOrFailTests("IfcOpenShell\\rules");    
-    PassOrFailTests("IFC4x3");
+    PassOrFailTests("DataFiles\\IFC4x3");
 
     printf(" <PassOrFailTests>\n");
 }
