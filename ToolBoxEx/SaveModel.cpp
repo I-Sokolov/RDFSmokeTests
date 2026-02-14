@@ -552,6 +552,23 @@ static void    SaveFileAggregation(
 /// <summary>
 /// 
 /// </summary>
+static void    SaveFileAttributeNull(
+    FILE* fp,
+    SdaiInstance    instance,
+    SdaiAttr        attribute
+)
+{
+    if (engiGetAttrDerived(sdaiGetInstanceType(instance), attribute)) {
+        fprintf(fp, "*");
+    }
+    else {
+        fprintf(fp, "$");
+    }
+}
+
+/// <summary>
+/// 
+/// </summary>
 static void    SaveFileAttribute(
     FILE* fp,
     SdaiInstance    instance,
@@ -589,7 +606,7 @@ static void    SaveFileAttribute(
                 CreateOID(fp, valueInstance);
             }
             else {
-                fprintf(fp, "$");
+                SaveFileAttributeNull(fp, instance, attribute);
             }
         }
         break;
@@ -600,12 +617,7 @@ static void    SaveFileAttribute(
                 CreateOID(fp, value);
             }
             else {
-                if (engiGetAttrDerived(sdaiGetInstanceType(instance), attribute)) {
-                    fprintf(fp, "*");
-                }
-                else {
-                    fprintf(fp, "$");
-                }
+                SaveFileAttributeNull(fp, instance, attribute);
             }
         }
         break;
@@ -616,7 +628,7 @@ static void    SaveFileAttribute(
                 CreateBoolean(fp, value);
             }
             else {
-                fprintf(fp, "$");
+                SaveFileAttributeNull(fp, instance, attribute);
             }
         }
         break;
@@ -627,7 +639,7 @@ static void    SaveFileAttribute(
                 CreateLogical(fp, value);
             }
             else {
-                fprintf(fp, "$");
+                SaveFileAttributeNull(fp, instance, attribute);
             }
         }
         break;
@@ -638,7 +650,7 @@ static void    SaveFileAttribute(
                 CreateEnumeration(fp, value);
             }
             else {
-                fprintf(fp, "$");
+                SaveFileAttributeNull(fp, instance, attribute);
             }
         }
         break;
@@ -649,7 +661,7 @@ static void    SaveFileAttribute(
                 CreateReal(fp, value);
             }
             else {
-                fprintf(fp, "$");
+                SaveFileAttributeNull(fp, instance, attribute);
             }
         }
         break;
@@ -660,7 +672,7 @@ static void    SaveFileAttribute(
                 CreateInteger(fp, value);
             }
             else {
-                fprintf(fp, "$");
+                SaveFileAttributeNull(fp, instance, attribute);
             }
         }
         break;
@@ -671,7 +683,7 @@ static void    SaveFileAttribute(
                 CreateString(fp, value);
             }
             else {
-                fprintf(fp, "$");
+                SaveFileAttributeNull(fp, instance, attribute);
             }
         }
         break;
