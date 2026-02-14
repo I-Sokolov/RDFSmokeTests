@@ -1,5 +1,6 @@
 
 #include "pch.h"
+#include "ToolBoxEx.h"
 
 static bool FileEquals(std::string& file1, std::string& file2)
 {

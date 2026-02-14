@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "ToolBoxEx.h"
 
 #define TEST_DIR "..\\TestData\\DataFiles"
 
@@ -200,13 +201,21 @@ static void TestDataFile(std::filesystem::path readPath)
     auto model = sdaiOpenModelBN(1, readPath.string().c_str(), "");
     ASSERT(model);
 
-    std::string savePath = readPath.filename().string();
+    auto savePath = readPath.filename();
 
-    sdaiSaveModelBN(model, savePath.c_str());
+    sdaiSaveModelBN(model, savePath.string().c_str());
+
+    auto apiSavePath = savePath;
+    auto ext = ".api" + savePath.extension().string();
+    apiSavePath.replace_extension(ext);
+
+    SaveModel(model, apiSavePath.string().c_str());
 
     sdaiCloseModel(model);
 
-    CompareFiles(savePath.c_str(), readPath.string().c_str());
+    CompareFiles(savePath.string().c_str(), readPath.string().c_str());
+    CompareFiles(apiSavePath.string().c_str(), readPath.string().c_str());
+
 }
 
 static void TestDataFiles(std::string dir)

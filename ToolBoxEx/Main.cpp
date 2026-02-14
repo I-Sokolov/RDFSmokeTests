@@ -1,9 +1,6 @@
 
 #include "pch.h"
-
-extern void ReadWriteDataFileTest();
-extern void ReadWriteSchemaTest();
-extern void ModelCheckerTests();
+#include "ToolBoxEx.h"
 
 extern int main()
 {
