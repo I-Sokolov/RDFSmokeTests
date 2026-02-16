@@ -179,14 +179,14 @@ static char* UpperCase(
 /// <summary>
 /// 
 /// </summary>
-static void    CreateOID(
+static void    CreateInstanceReference(
     FILE* fp,
     SdaiInstance    instance
 )
 {
     assert(instance);
-
-    fprintf(fp, "#%i", (int)internalGetP21Line(instance));
+    auto id = (int)internalGetP21Line(instance);
+    fprintf(fp, "#%i", id);
 }
 
 /// <summary>
@@ -233,7 +233,7 @@ static void    CreateReal(
     double          value
 )
 {
-    fprintf(fp, "%f", value);
+    fprintf(fp, "%.20g", value);
 }
 
 /// <summary>
@@ -295,7 +295,7 @@ static void    SaveFileADB(
                 fprintf(fp, ")");
             }
             else if (sdaiGetADBValue(ADB, sdaiINSTANCE, &valueInstance)) {
-                CreateOID(fp, valueInstance);
+                CreateInstanceReference(fp, valueInstance);
             }
             else {
                 assert(false);
@@ -306,7 +306,7 @@ static void    SaveFileADB(
         {
             SdaiInstance    value = 0;
             if (sdaiGetADBValue(ADB, sdaiINSTANCE, &value)) {
-                CreateOID(fp, value);
+                CreateInstanceReference(fp, value);
             }
             else {
                 assert(false);
@@ -428,7 +428,7 @@ static void    SaveFileAggregationElement(
                 fprintf(fp, ")");
             }
             else if (engiGetAggrElement(aggregation, index, sdaiINSTANCE, &valueInstance)) {
-                CreateOID(fp, valueInstance);
+                CreateInstanceReference(fp, valueInstance);
             }
             else {
                 assert(false);
@@ -439,7 +439,7 @@ static void    SaveFileAggregationElement(
         {
             SdaiInstance    value = 0;
             if (engiGetAggrElement(aggregation, index, sdaiINSTANCE, &value)) {
-                CreateOID(fp, value);
+                CreateInstanceReference(fp, value);
             }
             else {
                 assert(false);
@@ -558,11 +558,21 @@ static void    SaveFileAttributeNull(
     SdaiAttr        attribute
 )
 {
-    if (engiGetAttrDerived(sdaiGetInstanceType(instance), attribute)) {
-        fprintf(fp, "*");
-    }
-    else {
-        fprintf(fp, "$");
+    SdaiString value = nullptr;
+    auto ret = sdaiGetAttr(instance, attribute, sdaiEXPRESSSTRING, &value);
+    ASSERT(!ret && value);
+
+    if (value) {
+        switch (value[0]) {
+            case  '$':
+                fprintf(fp, "$");
+                return;
+            case  '*':
+                fprintf(fp, "*");
+                return;
+            default:
+                ASSERT(false);
+        }        
     }
 }
 
@@ -603,7 +613,7 @@ static void    SaveFileAttribute(
                 fprintf(fp, ")");
             }
             else if (sdaiGetAttr(instance, attribute, sdaiINSTANCE, &valueInstance)) {
-                CreateOID(fp, valueInstance);
+                CreateInstanceReference(fp, valueInstance);
             }
             else {
                 SaveFileAttributeNull(fp, instance, attribute);
@@ -614,7 +624,7 @@ static void    SaveFileAttribute(
         {
             SdaiInstance    value = 0;
             if (sdaiGetAttr(instance, attribute, sdaiINSTANCE, &value)) {
-                CreateOID(fp, value);
+                CreateInstanceReference(fp, value);
             }
             else {
                 SaveFileAttributeNull(fp, instance, attribute);
@@ -704,7 +714,8 @@ static void    SaveFileInstance(
 {
     char* entityName = nullptr;
     engiGetEntityName(sdaiGetInstanceType(instance), sdaiSTRING, (const char**)&entityName);
-    fprintf(fp, "#%i = %s(", (int)internalGetP21Line(instance), UpperCase(entityName));
+    auto id = (int)internalGetP21Line(instance);
+    fprintf(fp, "#%i = %s(", id, UpperCase(entityName));
 
     bool    countedWithParents = true,
         countedWithInverse = false;
