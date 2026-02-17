@@ -241,5 +241,6 @@ static void TestDataFiles(std::string dir)
 
 extern void ReadWriteDataFileTest()
 {
+    //TestDataFile(R"(..\TestData\DataFiles\ComplexInstance2.step)");
     TestDataFiles(TEST_DIR);
 }
