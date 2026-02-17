@@ -1,0 +1,12 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('','ExchangeRequirement[Architecture, Structural, BuildingService]'),'2;1');
+FILE_NAME('85425984-846d-45d8-95c6-73d572017f89r-159bec28ccdf978e9cb4e5291bcd06bc562dd131withcond_2309.ifc','2025-09-24T12:52:40',('User '),('Organization'),'ODA SDAI 25.8',$,$);
+FILE_SCHEMA(('IFC4X3_ADD2'));
+ENDSEC;
+
+DATA;
+#407=IFCPROPERTYSINGLEVALUE('Federation GUID',$,IFCTEXT('fc9c82d1-4103-41a5-8c4f-a5e55810e6cb'),$);
+ENDSEC;
+
+END-ISO-10303-21;

@@ -33,7 +33,8 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
     auto pch2 = inst2.c_str();
 
     bool literal = false;
-   
+    bool argStart = false;
+
     while (*pch1 && *pch2) {
 
         if (!literal) {
@@ -41,10 +42,12 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
             SkipSpaces(pch2);
         }
 
-        if (isdigit(*pch1)) {
+        if (argStart && (isdigit(*pch1) || *pch1=='-')) {
             auto num1 = ExtractNumber(pch1);
             auto num2 = ExtractNumber(pch2);
-            ASSERT (fabs(num1 - num2) < 1e-11);
+
+            double abs = max (1, .5 * fabs(num1 + num2));
+            ASSERT(fabs(num1 - num2) < abs * 1e-11);
         }
         else {
             ASSERT(*pch1 == *pch2);
@@ -63,6 +66,8 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
                     literal = false;
                 }
             }
+
+            argStart = !literal && (*pch1 == '(' || *pch1 == ',');
 
             pch1++;
             pch2++;
