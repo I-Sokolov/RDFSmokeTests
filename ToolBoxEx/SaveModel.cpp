@@ -704,6 +704,28 @@ static void    SaveFileAttribute(
     }
 }
 
+
+/// <summary>
+/// 
+/// </summary>
+static void    SaveFileArguments(
+    FILE*           fp,
+    SdaiInstance    instance,
+    SdaiEntity      entity,
+    bool            includeParentAttributes
+)
+{
+    SdaiInteger index = 0; 
+    while (SdaiAttr attribute = engiGetEntityAttributeByIndex(entity, index++, includeParentAttributes, false)){
+
+        if (index > 1)
+            fprintf(fp, ", ");
+
+        SaveFileAttribute(fp, instance, attribute);
+    }
+
+}
+
 /// <summary>
 /// 
 /// </summary>
@@ -712,34 +734,31 @@ static void    SaveFileInstance(
     SdaiInstance    instance
 )
 {
-    char* entityName = nullptr;
-    engiGetEntityName(sdaiGetInstanceType(instance), sdaiSTRING, (const char**)&entityName);
     auto id = (int)internalGetP21Line(instance);
-    fprintf(fp, "#%i = %s(", id, UpperCase(entityName));
-
-    bool    countedWithParents = true,
-        countedWithInverse = false;
+    fprintf(fp, "#%i = ", id);
 
     SdaiEntity  entity = sdaiGetInstanceType(instance);
-    SdaiInteger index = 0;
-    SdaiAttr    attribute = engiGetEntityAttributeByIndex(
-        entity,
-        index++,
-        countedWithParents,
-        countedWithInverse
-    );
-    SaveFileAttribute(fp, instance, attribute);
-    while (attribute) {
-        attribute = engiGetEntityAttributeByIndex(
-            entity,
-            index++,
-            countedWithParents,
-            countedWithInverse
-        );
-        if (attribute) {
-            fprintf(fp, ", ");
-            SaveFileAttribute(fp, instance, attribute);
+    if (engiIsComplexEntity(entity)) {
+        fprintf(fp, "(\n");
+
+        SdaiInteger index = 0;
+        while (SdaiEntity component = engiGetEntityParentEx(entity, index++)) {
+
+            SdaiString componentName = nullptr;
+            engiGetEntityNameEx(component, sdaiSTRING, &componentName, false);
+            fprintf(fp, "%s(", componentName);
+
+            SaveFileArguments(fp, instance, component, false);
+
+            fprintf(fp, ")\n");
         }
+    }
+    else {
+        SdaiString entityName = nullptr;
+        engiGetEntityNameEx(sdaiGetInstanceType(instance), sdaiSTRING, &entityName, false);
+        fprintf(fp, "%s(", entityName);
+
+        SaveFileArguments(fp, instance, entity, true);
     }
 
     fprintf(fp, ");\n");
