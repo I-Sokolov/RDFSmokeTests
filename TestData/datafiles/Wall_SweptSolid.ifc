@@ -97,5 +97,6 @@ DATA;
 #90=IFCPROPERTYSET('2qJSTdQSj0wQKmIdFVroG2',#2,'Test:IfcPropertySet','Property Set',(#65,#67,#69,#71,#74,#76,#81,#83,#85,#87,#89));
 #91=IFCRELDEFINESBYPROPERTIES('3n83nuxoj0gA5F$UnucPP3',#2,'Property Association','IfcPropertySet associated to wall',(#29),#90);
 #92=IFCRELCONTAINEDINSPATIALSTRUCTURE('1mefbELBn5JQeF1AH4vA0$',#2,$,$,(#29),#24);
+#34727=IFCPROPERTYSINGLEVALUE('Latitude',$,IFCTEXT('46^51''55"N'),$);
 ENDSEC;
 END-ISO-10303-21;
