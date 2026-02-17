@@ -270,9 +270,14 @@ static void    SaveFileADB(
 )
 {
     const char* path = sdaiGetADBTypePath(ADB, 0);
-    fprintf(fp, "%s(", path);
+    auto adbType = sdaiGetADBType(ADB);
 
-    switch (sdaiGetADBType(ADB)) {
+    if (path && *path)
+        fprintf(fp, "%s(", path);
+    else
+        assert(adbType == sdaiINSTANCE);
+
+    switch (adbType) {
         case  sdaiADB:
         {
             SdaiADB    attributeDataBlock = 0;
@@ -392,7 +397,8 @@ static void    SaveFileADB(
             break;
     }
 
-    fprintf(fp, ")");
+    if (path && *path)
+        fprintf(fp, ")");
 }
 
 /// <summary>
