@@ -5,6 +5,7 @@
 
 struct DataFileContent
 {
+    std::list<std::string> header;
     std::map<int, std::string> instances;
 };
 
@@ -13,6 +14,34 @@ static void SkipSpaces(const char*& pch)
     while (*pch && isspace(*pch)) {
         pch++;
     }
+}
+
+
+static const char* SkipComment(const char* pch)
+{
+    if (*pch == '/' && *(pch + 1) == '*') {
+        pch += 2;
+        while (*pch) {
+            if (*pch == '*' && *(pch + 1) == '/') {
+                pch += 2;
+                return pch;
+            }
+            pch++;
+        }
+        return nullptr; //comment was open but not closed
+    }
+
+    return pch;  //was not opened, so consider it closed
+}
+
+static void SkipSpacesAndComments(const char*& pch)
+{
+    const char* oldPos = NULL;
+    while (oldPos != pch) {
+        SkipSpaces(pch);
+        oldPos = pch;
+        pch = SkipComment(oldPos);
+    };
 }
 
 static double ExtractNumber(const char*& pch)
@@ -38,8 +67,8 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
     while (*pch1 && *pch2) {
 
         if (!literal) {
-            SkipSpaces(pch1);
-            SkipSpaces(pch2);
+            SkipSpacesAndComments(pch1);
+            SkipSpacesAndComments(pch2);
         }
 
         if (argStart && (isdigit(*pch1) || *pch1=='-')) {
@@ -79,8 +108,16 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
 
 static void CompareFileContent(const DataFileContent& data1, const DataFileContent& data2)
 {
-    auto it1 = data1.instances.begin();
-    auto it2 = data2.instances.begin();
+    //compare header
+    auto i1 = data1.header.begin();    auto i2 = data2.header.begin();
+    while (i1 != data1.header.end() && i2 != data2.header.end()) {
+        CompareInstanceString(*i1, *i2);
+        ++i1;
+        ++i2;
+    }
+
+    //compare data
+    auto it1 = data1.instances.begin();    auto it2 = data2.instances.begin();
 
     while (it1 != data1.instances.end() && it2 != data2.instances.end()) {
         
@@ -95,18 +132,34 @@ static void CompareFileContent(const DataFileContent& data1, const DataFileConte
     ASSERT(it1 == data1.instances.end() && it2 == data2.instances.end());
 }
 
-static bool IsInstance(const std::string& line)
+
+static const char* IsInstance(const std::string& line)
 {
     auto pch = line.c_str();
-    SkipSpaces(pch);
-    return (*pch == '#');
+    SkipSpacesAndComments(pch);
+    if (*pch == '#')
+        return pch;
+    else
+        return nullptr;
 }
 
-static bool InstanceFinished(const std::string& str)
+static bool LineFinished(const std::string& str)
 {
+    if (str.empty()) {
+        return false;
+    }
+
     //is literal finished
     bool literal = false;
+
     for (auto pch = str.c_str(); *pch; pch++) {
+        
+        if (!literal) {
+            pch = SkipComment(pch);
+            if (!pch)
+                return false; //>>>
+        }
+
         if (*pch == '\'') {
             if (!literal) {
                 literal = true;
@@ -137,10 +190,6 @@ static bool InstanceFinished(const std::string& str)
     while (last > 0 && isspace(str[last]))
         last--;
 
-    if (str[last] != ')') {
-        return false; //>>>
-    }
-
     return true;
 }
 
@@ -150,16 +199,12 @@ static bool NextLine(std::ifstream& file, std::string& line)
         return false;
     }
 
-    if (IsInstance(line)) {
-        //read multi-line instance
-        while (!InstanceFinished(line)) {
-            std::string piece;
-            if (!std::getline(file, piece)) {
-                ASSERT(!"Unexpected end of file while reading instance");
-                return false;
-            }
-            line += piece;
+    while (!LineFinished(line)) {
+        std::string piece;
+        if (!std::getline(file, piece)) {
+            return false;
         }
+        line += piece;
     }
 
     return true;
@@ -173,16 +218,21 @@ static void ReadDataFile(const char* filePath, DataFileContent& content)
     std::string line;
     while (NextLine(file, line)) {
 
-        if (IsInstance(line)) {
+        if (auto instLine = IsInstance(line)) {
+            line = instLine;
+
             auto pos = line.find('=');
             ASSERT(pos != std::string::npos);
 
-            auto idStr = line.substr(1, pos-1);
+            auto idStr = line.substr(1, pos - 1);
             int id = std::stoi(idStr);
 
             auto contentStr = line.substr(pos + 1);
 
             content.instances[id] = contentStr;
+        }
+        else {
+            content.header.push_back(line);
         }
     }
 }
@@ -246,6 +296,6 @@ static void TestDataFiles(std::string dir)
 
 extern void ReadWriteDataFileTest()
 {
-    //TestDataFile(R"(..\TestData\DataFiles\ComplexInstance2.step)");
+    //TestDataFile(R"(..\TestData\DataFiles\IFC4x3\pass-E_4_1.ifc)");
     TestDataFiles(TEST_DIR);
 }

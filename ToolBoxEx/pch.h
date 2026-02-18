@@ -20,6 +20,7 @@
 #include <map>
 #include <filesystem>
 #include <fstream>
+#include <list>
 
 #include "ifcengine.h"
 
