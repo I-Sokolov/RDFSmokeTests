@@ -61,6 +61,9 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
     auto pch1 = inst1.c_str();
     auto pch2 = inst2.c_str();
 
+    SkipSpacesAndComments(pch1);
+    SkipSpacesAndComments(pch2);
+
     bool literal = false;
     bool argStart = false;
 
@@ -296,6 +299,6 @@ static void TestDataFiles(std::string dir)
 
 extern void ReadWriteDataFileTest()
 {
-    //TestDataFile(R"(..\TestData\DataFiles\IFC4x3\pass-E_4_1.ifc)");
+    TestDataFiles(R"(W:\DevArea\RDF\TestSets\STEP)");
     TestDataFiles(TEST_DIR);
 }

@@ -732,6 +732,27 @@ static void    SaveFileArguments(
 
 }
 
+struct EntityLessByName
+{
+    bool operator()(SdaiEntity lhs, SdaiEntity rhs) const
+    {
+        auto l = engiGetEntityName(lhs, sdaiSTRING);
+        auto r = engiGetEntityName(rhs, sdaiSTRING);
+        return strcmp(l, r) < 0;
+    }
+};
+
+typedef std::set<SdaiEntity, EntityLessByName> EntityByNames;
+
+static void CollectParents(SdaiEntity entity, EntityByNames& allParents)
+{
+    SdaiInteger index = 0;
+    while (SdaiEntity parent = engiGetEntityParentEx(entity, index++)) {
+        allParents.insert(parent);
+        CollectParents(parent, allParents);
+    }
+}
+
 /// <summary>
 /// 
 /// </summary>
@@ -747,9 +768,14 @@ static void    SaveFileInstance(
     if (engiIsComplexEntity(entity)) {
         fprintf(fp, "(\n");
 
+#if 1
         SdaiInteger index = 0;
         while (SdaiEntity component = engiGetEntityParentEx(entity, index++)) {
-
+#else
+        EntityByNames allParents;
+        CollectParents(entity, allParents);
+        for (auto component : allParents) {
+#endif
             SdaiString componentName = nullptr;
             engiGetEntityNameEx(component, sdaiSTRING, &componentName, false);
             fprintf(fp, "%s(", componentName);
