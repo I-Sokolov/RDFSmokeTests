@@ -88,14 +88,14 @@ static void CheckComplex()
     ENTER_TEST;
 
     Instance inst1[] = {
-        {"+NAMED_UNIT+SI_UNIT+SOLID_ANGLE_UNIT", 0},
+        {"Complex Entity NAMED_UNIT; SI_UNIT; SOLID_ANGLE_UNIT", 0},
         {"NAMED_UNIT", 1},
         {"SI_UNIT", 2},
         {"SOLID_ANGLE_UNIT", 0}
     };
 
     Instance inst2[] = {
-        {"+PART+PART_PRISMATIC+PART_PRISMATIC_SIMPLE+STRUCTURAL_FRAME_ITEM+STRUCTURAL_FRAME_PRODUCT+STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL", 0},
+        {"Complex Entity PART; PART_PRISMATIC; PART_PRISMATIC_SIMPLE; STRUCTURAL_FRAME_ITEM; STRUCTURAL_FRAME_PRODUCT; STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL", 0},
         {"PART", 2},
         {"PART_PRISMATIC", 0},
         {"PART_PRISMATIC_SIMPLE", 4},
@@ -134,7 +134,7 @@ static void CheckDiamondAttrs(SdaiInstance inst, AttrVal& attrVal)
 
         auto ent = sdaiGetInstanceType(inst);
         auto name = engiGetEntityName(ent, sdaiSTRING);
-        ASSERT(0==strcmp(name, "Diamond") || NULL != strstr(name, "+DIAMOND"));
+        ASSERT(0==strcmp(name, "Diamond") || NULL != strstr(name, "; DIAMOND"));
 
         auto attr = sdaiGetAttrDefinition(ent, av.first);
         ASSERT(attr);
