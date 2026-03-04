@@ -8,35 +8,45 @@
 #define TEST_MODEL_SAVED    "SmokeTest.txt"
 #define TEST_MODEL          "..\\TestData\\" TEST_MODEL_SAVED
 
-struct Instance
+struct Attribute
 {
-    const char* entityName = NULL;
-    int narg = 0;
-    const char** args = NULL;
+    const char*       attrName = NULL;
+    SdaiPrimitiveType sdaiType = 0;
+    const char*       stringValue = NULL;
 };
 
-static void CheckComplex(SdaiModel model, ExpressID id, Instance rInst[], int nInst)
+static void ASSERT_STR_VAL(const char* v1, const char* v2)
+{
+    if (v1 == NULL) {
+        ASSERT(v2 == NULL);
+    }
+    else {
+        ASSERT(v2 && 0 == strcmp(v1, v2));
+    }
+}
+
+
+static void CheckComplex(SdaiModel model, ExpressID id, const char* entityName, Attribute rAttr[], int nAttr)
 {
     auto inst = internalGetInstanceFromP21Line(model, id);
+    auto entity = sdaiGetInstanceType(inst);
 
-    int i = 0;
-    while (inst) {
-        ASSERT(i < nInst);
+    auto name = engiGetEntityName(entity, sdaiSTRING);
+    ASSERT(0 == _stricmp(name, entityName));
 
-        auto entity = sdaiGetInstanceType(inst);
-        auto name = engiGetEntityName(entity, sdaiSTRING);
-        ASSERT(0 == _stricmp(name, rInst[i].entityName));
-        
-        SdaiAggr args = NULL;
-        engiGetAttributeAggr(inst, (int_t*)&args);
-        ASSERT(sdaiGetMemberCount(args) == rInst[i].narg);
+    for (int i = 0; i < nAttr; i++) {
+        auto& attr = rAttr[i];
 
-        //inst = engiGetComplexInstanceNextPart(inst);
-        //i++;
-        return;
+        auto attrDef = sdaiGetAttrDefinition(entity, attr.attrName);
+        ASSERT(attrDef);
+
+        auto sdaiType = engiGetInstanceAttrType(inst, attrDef);
+        ASSERT(sdaiType == attr.sdaiType);
+
+        SdaiString stringValue = NULL;
+        sdaiGetAttr(inst, attrDef, sdaiEXPRESSSTRING, &stringValue);
+        ASSERT_STR_VAL(stringValue, attr.stringValue);
     }
-
-    ASSERT(i == nInst);
 }
 
 //
@@ -48,14 +58,14 @@ static void    __stdcall   WriteCallBackFunction(unsigned char* content, int64_t
 }
 
 
-static void CheckComplex(const char* testFile, ExpressID id, Instance rInst[], int nInst)
+static void CheckComplex(const char* testFile, ExpressID id, const char* entityName, Attribute rAttr[], int nAttr)
 {
 
     //
     SdaiModel model = sdaiOpenModelBN(0, testFile, "");
     ASSERT(model);
 
-    CheckComplex(model, id, rInst, nInst);
+    CheckComplex(model, id, entityName, rAttr, nAttr);
 
     sdaiSaveModelBN(model, STEP_TEST_SAVED);
 
@@ -64,7 +74,7 @@ static void CheckComplex(const char* testFile, ExpressID id, Instance rInst[], i
     //
     model = sdaiOpenModelBN(0, STEP_TEST_SAVED, "");
     
-    CheckComplex(model, id, rInst, nInst);
+    CheckComplex(model, id, entityName, rAttr, nAttr);
 
     fopen_s(&myFileWrite, STEP_TEST_SAVED "_S", "wb");
     ASSERT(myFileWrite);
@@ -78,7 +88,7 @@ static void CheckComplex(const char* testFile, ExpressID id, Instance rInst[], i
     //
     model = sdaiOpenModelBN(0, STEP_TEST_SAVED "_S", "");
 
-    CheckComplex(model, id, rInst, nInst);
+    CheckComplex(model, id, entityName, rAttr, nAttr);
 
     sdaiCloseModel(model);
 }
@@ -87,39 +97,22 @@ static void CheckComplex()
 {
     ENTER_TEST;
 
-    Instance inst1[] = {
-        {"Complex Entity NAMED_UNIT; SI_UNIT; SOLID_ANGLE_UNIT", 0},
-        {"NAMED_UNIT", 1},
-        {"SI_UNIT", 2},
-        {"SOLID_ANGLE_UNIT", 0}
+    auto name1 = "Complex Entity NAMED_UNIT; SI_UNIT; SOLID_ANGLE_UNIT";
+    Attribute inst1[] = {
+        {"dimensions", 0, "*"},
+        {"prefix", 0, "$"},
+        {"name", sdaiENUM, ".STERADIAN."}
     };
 
-    Instance inst2[] = {
-        {"Complex Entity PART; PART_PRISMATIC; PART_PRISMATIC_SIMPLE; STRUCTURAL_FRAME_ITEM; STRUCTURAL_FRAME_PRODUCT; STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL", 0},
-        {"PART", 2},
-        {"PART_PRISMATIC", 0},
-        {"PART_PRISMATIC_SIMPLE", 4},
-        {"STRUCTURAL_FRAME_ITEM", 3},
-        {"STRUCTURAL_FRAME_PRODUCT", 1},
-        {"STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL", 3}
-    };
+    auto name2 = "Complex Entity PART; PART_PRISMATIC; PART_PRISMATIC_SIMPLE; STRUCTURAL_FRAME_ITEM; STRUCTURAL_FRAME_PRODUCT; STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL";
 
-    CheckComplex(STEP_TEST1, 1007, inst1, 4);
-    CheckComplex(STEP_TEST2, 1233, inst2, 7);
+    CheckComplex(STEP_TEST1, 1007, name1, inst1, _countof(inst1));
+    CheckComplex(STEP_TEST2, 1233, name2, NULL, 0);
    
 }
 
 typedef std::map<const char*, const char*> AttrVal;
 
-static void ASSERT_STR_VAL(const char* v1, const char* v2)
-{
-    if (v1 == NULL) {
-        ASSERT(v2 == NULL);
-    }
-    else {
-        ASSERT(v2 && 0 == strcmp(v1, v2));
-    }
-}
 
 static void CheckDiamondAttrs(SdaiInstance inst, AttrVal& attrVal)
 {
