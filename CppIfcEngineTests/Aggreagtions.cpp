@@ -5,7 +5,7 @@
 #define TEST_FILE_AGGR  "..\\TestData\\DataFiles\\AggregationTest.ifc"
 #define TEST_SAVE       "AggregationTest.ifc"
 
-#define TEST_SCHEMA         "..\\TestData\\schemas\\smoke_test.exp"
+#define TEST_SCHEMA         "..\\TestData\\smoke_test.exp"
 #define TEST_MODEL_SAVED    "AggrSmokeTest.txt"
 #define TEST_MODEL          "..\\TestData\\" TEST_MODEL_SAVED
 

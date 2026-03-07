@@ -4,7 +4,7 @@
 #define STEP_TEST2 "..\\TestData\\DataFiles\\ComplexInstance2.step"
 #define STEP_TEST_SAVED "ComplexInstance_saved.step"
 
-#define TEST_SCHEMA         "..\\TestData\\schemas\\smoke_test.exp"
+#define TEST_SCHEMA         "..\\TestData\\smoke_test.exp"
 #define TEST_MODEL_SAVED    "SmokeTest.txt"
 #define TEST_MODEL          "..\\TestData\\" TEST_MODEL_SAVED
 

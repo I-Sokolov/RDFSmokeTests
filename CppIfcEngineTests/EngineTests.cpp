@@ -1092,7 +1092,7 @@ extern void EngineTests(void)
     //
     ifcModel = sdaiOpenModelBN(NULL, "..\\TestData\\IFC4_test.ifc", "IFC4");
     ASSERT(ifcModel);
-    GetAllInstancesTest(ifcModel, 17);
+    GetAllInstancesTest(ifcModel, 18);
 
     TestAttrIndex(ifcModel);
     TestGetADBValue(ifcModel);

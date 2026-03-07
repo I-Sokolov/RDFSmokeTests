@@ -77,23 +77,26 @@ static void IterateAllAttr()
 {
     auto model = sdaiCreateModelBN("AP242");
 
-    int i = 0;
+    int nEntities = 0;
+    int nAttributes = 0;
     SchemaTypeIterator it = 0;
     while (0 != (it = engiGetNextTypeDeclarationIterator(model, it))) {
         
         auto entity = engiGetTypeDeclarationFromIterator(model, it);
 
         if (engiGetDeclarationType(entity) == enum_express_declaration::__ENTITY) {
+            nEntities++;
+
             SdaiAttr attr = 0;
             while (0 != (attr = ::engiGetEntityAttributeByIterator(entity, attr))) {
-                //printf("#%d %s\n", i, engiGetAttrName(attr));
-                i++;
+                nAttributes++;
+
             }
 
         }
     }
     
-    ASSERT(i==9744);
+    ASSERT(nEntities==2140 &&nAttributes==9765);
 
     sdaiCloseModel(model);
 }
