@@ -241,13 +241,15 @@ static void IterateAttributes()
 
     auto ent = sdaiGetEntity(model, "IfcSIUnit");
     const char* rNames[] = { "Dimensions", "UnitType", "Prefix", "Name" };
-    const char* rDef[] = { "IfcNamedUnit", "IfcNamedUnit", "IfcSIUnit", "IfcSIUnit" };
+    const char* rDef[] = { "IfcSIUnit", "IfcNamedUnit", "IfcSIUnit", "IfcSIUnit" };
     SdaiBoolean derived[] = { sdaiTRUE, false, false, false };
     TestAttributes(ent, 4, rNames, rDef, derived);
 
     ent = sdaiGetEntity(model, "IfcNamedUnit");
-    derived[0] = sdaiFALSE;
-    TestAttributes(ent, 2, rNames, rDef, derived);
+    const char* rNames_[] = { "Dimensions", "UnitType" };
+    const char* rDef_[] = { "IfcNamedUnit", "IfcNamedUnit" };
+    SdaiBoolean derived_[] = { false, false };
+    TestAttributes(ent, 2, rNames_, rDef_, derived_);
 
     ent = sdaiGetEntity(model, "IfcCartesianPoint");
     const char* rNames2[] = { "LayerAssignment", "StyledByItem", "Coordinates", "Dim" };

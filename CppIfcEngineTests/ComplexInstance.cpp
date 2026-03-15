@@ -42,8 +42,8 @@ static void CheckComplex(SdaiModel model, ExpressID id, const char* entityName, 
 
         auto sdaiType = engiGetInstanceAttrType(inst, attrDef);
         ASSERT(sdaiType == attr.sdaiType);
-
-        SdaiString stringValue = NULL;
+       
+        SdaiString stringValue = NULL; //TODO check the same with derived attributes calculation
         sdaiGetAttr(inst, attrDef, sdaiEXPRESSSTRING, &stringValue);
         ASSERT_STR_VAL(stringValue, attr.stringValue);
     }
