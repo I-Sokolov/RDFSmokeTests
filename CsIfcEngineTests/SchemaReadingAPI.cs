@@ -56,7 +56,7 @@ namespace CsIfcEngineTests
         {
             public string name;
             public string definingEntity;
-            public enum_express_attr_type attrType;
+            public enum_express_data_type attrType;
             public string domainEntity;
             public bool direct;
             public bool inverse;
@@ -68,7 +68,7 @@ namespace CsIfcEngineTests
                 string definingEntity,
                 bool direct,
                 bool inverse,
-                enum_express_attr_type attrType,
+                enum_express_data_type attrType,
                 string domainEntity,
                 bool optional,
                 AggrDef aggrDef
@@ -132,7 +132,7 @@ namespace CsIfcEngineTests
                 Int64 definingEntity;
                 bool direct;
                 bool inverse;
-                enum_express_attr_type attrType;
+                enum_express_data_type attrType;
                 Int64 domainEntity;
                 Int64 aggregationDefinition;
                 bool optional;
@@ -261,10 +261,10 @@ namespace CsIfcEngineTests
             ASSERT(b==expected);
         }
 
-        static void Check (enum_express_attr_type attrType, enum_express_attr_type expected)
+        static void Check (enum_express_data_type attrType, enum_express_data_type expected)
         {
 #if WRITE
-            System.Console.Write("enum_express_attr_type.");
+            System.Console.Write("enum_express_data_type.");
             System.Console.Write (attrType.ToString());
             System.Console.WriteLine(",");
 #endif
@@ -325,7 +325,7 @@ namespace CsIfcEngineTests
             "IfcRoot",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcGloballyUniqueId",
             false,
             null
@@ -336,7 +336,7 @@ namespace CsIfcEngineTests
             "IfcRoot",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcOwnerHistory",
             true,
             null
@@ -347,7 +347,7 @@ namespace CsIfcEngineTests
             "IfcRoot",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcLabel",
             true,
             null
@@ -358,7 +358,7 @@ namespace CsIfcEngineTests
             "IfcRoot",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcText",
             true,
             null
@@ -369,7 +369,7 @@ namespace CsIfcEngineTests
             "IfcObjectDefinition",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelAssigns",
             false,
             new AggrDef(
@@ -387,7 +387,7 @@ namespace CsIfcEngineTests
             "IfcObjectDefinition",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelNests",
             false,
             new AggrDef(
@@ -405,7 +405,7 @@ namespace CsIfcEngineTests
             "IfcObjectDefinition",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelNests",
             false,
             new AggrDef(
@@ -423,7 +423,7 @@ namespace CsIfcEngineTests
             "IfcObjectDefinition",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelDeclares",
             false,
             new AggrDef(
@@ -441,7 +441,7 @@ namespace CsIfcEngineTests
             "IfcObjectDefinition",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelAggregates",
             false,
             new AggrDef(
@@ -459,7 +459,7 @@ namespace CsIfcEngineTests
             "IfcObjectDefinition",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelAggregates",
             false,
             new AggrDef(
@@ -477,7 +477,7 @@ namespace CsIfcEngineTests
             "IfcObjectDefinition",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelAssociates",
             false,
             new AggrDef(
@@ -495,7 +495,7 @@ namespace CsIfcEngineTests
             "IfcObject",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcLabel",
             true,
             null
@@ -506,7 +506,7 @@ namespace CsIfcEngineTests
             "IfcObject",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelDefinesByObject",
             false,
             new AggrDef(
@@ -524,7 +524,7 @@ namespace CsIfcEngineTests
             "IfcObject",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelDefinesByObject",
             false,
             new AggrDef(
@@ -542,7 +542,7 @@ namespace CsIfcEngineTests
             "IfcObject",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelDefinesByType",
             false,
             new AggrDef(
@@ -560,7 +560,7 @@ namespace CsIfcEngineTests
             "IfcObject",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelDefinesByProperties",
             false,
             new AggrDef(
@@ -578,7 +578,7 @@ namespace CsIfcEngineTests
             "IfcProduct",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcObjectPlacement",
             true,
             null
@@ -589,7 +589,7 @@ namespace CsIfcEngineTests
             "IfcProduct",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcProductRepresentation",
             true,
             null
@@ -600,7 +600,7 @@ namespace CsIfcEngineTests
             "IfcProduct",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelAssignsToProduct",
             false,
             new AggrDef(
@@ -618,7 +618,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcIdentifier",
             true,
             null
@@ -629,7 +629,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelFillsElement",
             false,
             new AggrDef(
@@ -647,7 +647,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelConnectsElements",
             false,
             new AggrDef(
@@ -664,7 +664,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelInterferesElements",
             false,
             new AggrDef(
@@ -681,7 +681,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelInterferesElements",
             false,
             new AggrDef(
@@ -698,7 +698,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelProjectsElement",
             false,
             new AggrDef(
@@ -715,7 +715,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelReferencedInSpatialStructure",
             false,
             new AggrDef(
@@ -732,7 +732,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelVoidsElement",
             false,
             new AggrDef(
@@ -749,7 +749,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelConnectsWithRealizingElements",
             false,
             new AggrDef(
@@ -766,7 +766,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelSpaceBoundary",
             false,
             new AggrDef(
@@ -783,7 +783,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelConnectsElements",
             false,
             new AggrDef(
@@ -800,7 +800,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelContainedInSpatialStructure",
             false,
             new AggrDef(
@@ -817,7 +817,7 @@ namespace CsIfcEngineTests
             "IfcElement",
             false,
             true,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcRelCoversBldgElements",
             false,
             new AggrDef(
@@ -834,7 +834,7 @@ namespace CsIfcEngineTests
             "IfcWall",
             true,
             false,
-            enum_express_attr_type.__NONE,
+            enum_express_data_type.__NONE,
             "IfcWallTypeEnum",
             true,
             null

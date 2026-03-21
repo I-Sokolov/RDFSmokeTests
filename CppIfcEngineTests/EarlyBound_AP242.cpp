@@ -248,9 +248,9 @@ static void test_multi_parent()
         { false, false, false, false, false, false, false };
     const char* rDefiningEntity[] = 
         { "representation_item", "a3m_equivalence_criterion", "a3m_equivalence_criterion", "a3m_equivalence_criterion", "a3m_equivalence_criterion", "a3m_equivalence_criterion", "a3m_equivalence_criterion" };
-    enum_express_attr_type rAttrType[] =
-        { enum_express_attr_type::__NONE, enum_express_attr_type::__NONE, enum_express_attr_type::__NONE, enum_express_attr_type::__NONE,
-        enum_express_attr_type::__NONE ,enum_express_attr_type::__NONE ,enum_express_attr_type::__NONE };
+    enum_express_data_type rAttrType[] =
+        { enum_express_data_type::__NONE, enum_express_data_type::__NONE, enum_express_data_type::__NONE, enum_express_data_type::__NONE,
+        enum_express_data_type::__NONE ,enum_express_data_type::__NONE ,enum_express_data_type::__NONE };
     const char* rDomainEntity[] =
         { "label", "a3m_equivalence_assessment_specification_select", "a3m_element_type_name", "a3m_element_type_name", "a3m_measured_data_type_name", "a3m_detected_difference_type_name", "a3m_accuracy_type_name" };
     const SdaiBoolean rOptional[] = 
@@ -262,7 +262,7 @@ static void test_multi_parent()
         const char* name = NULL;
         SdaiBoolean inverse = false;
         SdaiEntity definingEntity = 0;
-        enum_express_attr_type attrType = enum_express_attr_type::__NONE;
+        enum_express_data_type attrType = enum_express_data_type::__NONE;
         SdaiEntity domainEntity = 0;
         SchemaAggr aggrDescr = 0;
         SdaiBoolean optional = false;

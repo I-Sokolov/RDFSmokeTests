@@ -696,13 +696,13 @@ static void TestAttrIndex(SdaiModel ifcModel)
     const char* attrName = nullptr;
     SdaiBoolean inverse = false;
     SdaiEntity definingEntity = 0;
-    enum_express_attr_type attrType = enum_express_attr_type::__NONE;
+    enum_express_data_type attrType = enum_express_data_type::__NONE;
     SdaiEntity domainEntity = 0;
     SchemaAggr aggrDescr = 0;
     SdaiBoolean optional = false;
     engiGetAttrTraits(attr, &attrName, &definingEntity, nullptr, &inverse, &attrType, &domainEntity, &aggrDescr, &optional);
     ASSERT(!inverse && !strcmp(attrName, "PredefinedType") && optional);
-    ASSERT(attrType == enum_express_attr_type::__NONE);
+    ASSERT(attrType == enum_express_data_type::__NONE);
     auto sz = engiGetEntityName(definingEntity, sdaiSTRING);
     ASSERT(!strcmp(sz, "IfcWall"));
     sz = engiGetEntityName(domainEntity, sdaiSTRING);
