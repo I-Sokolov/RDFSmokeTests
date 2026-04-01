@@ -420,7 +420,7 @@ static void    SaveFileAggregationElement(
         case  sdaiADB:
         {
             SdaiADB    attributeDataBlock = 0;
-            if (engiGetAggrElement(aggregation, index, sdaiADB, &attributeDataBlock)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiADB, &attributeDataBlock)) {
                 SaveFileADB(fp, attributeDataBlock);
             }
             else {
@@ -433,12 +433,12 @@ static void    SaveFileAggregationElement(
         {
             SdaiAggr        valueAggr = nullptr;
             SdaiInstance    valueInstance = 0;
-            if (engiGetAggrElement(aggregation, index, sdaiAGGR, &valueAggr)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiAGGR, &valueAggr)) {
                 fprintf(fp, "(");
                 SaveFileAggregation(fp, valueAggr);
                 fprintf(fp, ")");
             }
-            else if (engiGetAggrElement(aggregation, index, sdaiINSTANCE, &valueInstance)) {
+            else if (sdaiGetAggrByIndex(aggregation, index, sdaiINSTANCE, &valueInstance)) {
                 CreateInstanceReference(fp, valueInstance);
             }
             else {
@@ -449,7 +449,7 @@ static void    SaveFileAggregationElement(
         case  sdaiINSTANCE:
         {
             SdaiInstance    value = 0;
-            if (engiGetAggrElement(aggregation, index, sdaiINSTANCE, &value)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiINSTANCE, &value)) {
                 CreateInstanceReference(fp, value);
             }
             else {
@@ -461,7 +461,7 @@ static void    SaveFileAggregationElement(
         case  sdaiBOOLEAN:
         {
             bool    value = false;
-            if (engiGetAggrElement(aggregation, index, sdaiBOOLEAN, &value)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiBOOLEAN, &value)) {
                 CreateBoolean(fp, value);
             }
             else {
@@ -473,7 +473,7 @@ static void    SaveFileAggregationElement(
         case  sdaiLOGICAL:
         {
             char* value = nullptr;
-            if (engiGetAggrElement(aggregation, index, sdaiLOGICAL, &value)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiLOGICAL, &value)) {
                 CreateLogical(fp, value);
             }
             else {
@@ -485,7 +485,7 @@ static void    SaveFileAggregationElement(
         case  sdaiENUM:
         {
             char* value = nullptr;
-            if (engiGetAggrElement(aggregation, index, sdaiENUM, &value)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiENUM, &value)) {
                 CreateEnumeration(fp, value);
             }
             else {
@@ -497,7 +497,7 @@ static void    SaveFileAggregationElement(
         case  sdaiREAL:
         {
             double  value = 0.;
-            if (engiGetAggrElement(aggregation, index, sdaiREAL, &value)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiREAL, &value)) {
                 CreateReal(fp, value);
             }
             else {
@@ -509,7 +509,7 @@ static void    SaveFileAggregationElement(
         case  sdaiINTEGER:
         {
             int_t   value = 0;
-            if (engiGetAggrElement(aggregation, index, sdaiINTEGER, &value)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiINTEGER, &value)) {
                 CreateInteger(fp, value);
             }
             else {
@@ -521,7 +521,7 @@ static void    SaveFileAggregationElement(
         case  sdaiSTRING:
         {
             char* value = nullptr;
-            if (engiGetAggrElement(aggregation, index, sdaiSTRING, &value)) {
+            if (sdaiGetAggrByIndex(aggregation, index, sdaiSTRING, &value)) {
                 CreateString(fp, value);
             }
             else {
@@ -816,7 +816,7 @@ static void    SaveFileBody(
         myAggrCount = sdaiGetMemberCount(myAggr);
     for (int_t j = 0; j < myAggrCount; j++) {
         int_t   myInstance = 0;
-        engiGetAggrElement(myAggr, j, sdaiINSTANCE, &myInstance);
+        sdaiGetAggrByIndex(myAggr, j, sdaiINSTANCE, &myInstance);
         SaveFileInstance(fp, myInstance);
     }
 
