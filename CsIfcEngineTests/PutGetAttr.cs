@@ -133,7 +133,7 @@ namespace CsIfcEngineTests
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
             ifcengine.sdaiPutADBTypePath(adb, 1, "IFCBOOLEAN"); //adding typePath changes ADB to complex
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", complexArg = true });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = "IFCBOOLEAN(.F.)", complexArg = true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiLOGICAL, "U");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
@@ -142,7 +142,7 @@ namespace CsIfcEngineTests
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
             ifcengine.sdaiPutADBTypePath(adb, 1, "IFCLOGICAL");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);//adding typePath changes ADB to complex
-            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", complexArg = true });
+            CheckValues(wall, "Name", new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = "IFCLOGICAL(.F.)", complexArg = true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
             ifcengine.sdaiPutAttrBN(wall, "Name", ifcengine.sdaiADB, adb);
@@ -341,65 +341,65 @@ namespace CsIfcEngineTests
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             var aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "testPath(1234)", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiSTRING, "T");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { stringVal = "T", expressStringVal = "T", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "T", expressStringVal = "testPath(T)", aggrLevel=1, complexArgAggregated=true });
 
             Int64 i = 1234;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINTEGER, ref i);
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "1234", intVal = 1234, realVal = 1234, aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "1234", expressStringVal = "testPath(1234)", intVal = 1234, realVal = 1234, aggrLevel=1, complexArgAggregated=true });
 
             double d = 12.34;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiREAL, ref d);
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { stringVal = "12.340000", expressStringVal = "12.340000", intVal = 12, realVal = 12.34, aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "12.340000", expressStringVal = "testPath(12.340000)", intVal = 12, realVal = 12.34, aggrLevel=1, complexArgAggregated=true });
 
             bool b = true;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = ".T.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { boolVal = true, enumVal = "T", logicalVal = "T", stringVal = ".T.", expressStringVal = "testPath(.T.)", aggrLevel=1, complexArgAggregated=true });
 
             b = false;
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiBOOLEAN, ref b);
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = "testPath(.F.)", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiLOGICAL, "U");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = ".U.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "U", logicalVal = "U", stringVal = ".U.", expressStringVal = "testPath(.U.)", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { boolVal = false, enumVal = "F", logicalVal = "F", stringVal = ".F.", expressStringVal = "testPath(.F.)", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "EEE");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = ".EEE.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "EEE", stringVal = ".EEE.", expressStringVal = "testPath(.EEE.)", aggrLevel=1, complexArgAggregated=true });
 
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiENUM, "F");
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = ".F.", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { enumVal = "F", logicalVal = "F", boolVal = false, stringVal = ".F.", expressStringVal = "testPath(.F.)", aggrLevel=1, complexArgAggregated=true });
 
             var typ = IfcWallType.Create(model);
             adb = ifcengine.sdaiCreateADB(ifcengine.sdaiINSTANCE, typ);
@@ -411,7 +411,7 @@ namespace CsIfcEngineTests
             ifcengine.sdaiPutADBTypePath(adb, 1, "testPath");
             aggr = ifcengine.sdaiCreateAggrBN(person, attrName);
             ifcengine.sdaiAppend(aggr, ifcengine.sdaiADB, adb);
-            CheckValues(person, attrName, new PrimitiveValues { stringVal = "0AF", expressStringVal = "0AF", binVal = "0AF", aggrLevel=1, complexArgAggregated=true });
+            CheckValues(person, attrName, new PrimitiveValues { stringVal = "0AF", expressStringVal = "testPath(0AF)", binVal = "0AF", aggrLevel=1, complexArgAggregated=true });
 
             //empty ADB
             /* creates empty aggregation
@@ -707,8 +707,14 @@ namespace CsIfcEngineTests
             if (expected != null && expected.complexArg)
             {
                 ASSERT(res != 0);
+
+                var saveExpressString = expected.expressStringVal;
+                expected.expressStringVal = expected.stringVal; //step in ADB
                 expected.complexArg = false;
+
                 CheckADBValues(adbVal, expected);
+
+                expected.expressStringVal = saveExpressString;
                 expected.complexArg = true;
             }
             else

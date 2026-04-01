@@ -252,13 +252,18 @@ static void    CreateInteger(
 /// </summary>
 static void    CreateString(
     FILE* fp,
-    char* value
+    std::string value
 )
 {
-    if (value)
-        fprintf(fp, "'%s'", value);
-    else
-        fprintf(fp, "''");
+    // Replace single quotes with doubled single quotes for STEP format escaping
+    size_t pos = 0;
+    while ((pos = value.find('\'', pos)) != std::string::npos) {
+        value.replace(pos, 1, "''");
+        pos += 2;
+    }
+
+    //
+    fprintf(fp, "'%s'", value.c_str());
 }
 
 /// <summary>
@@ -382,7 +387,7 @@ static void    SaveFileADB(
         case  sdaiSTRING:
         {
             char* value = nullptr;
-            if (sdaiGetADBValue(ADB, sdaiEXPRESSSTRING, &value)) {
+            if (sdaiGetADBValue(ADB, sdaiSTRING, &value)) {
                 CreateString(fp, value);
             }
             else {
@@ -516,7 +521,7 @@ static void    SaveFileAggregationElement(
         case  sdaiSTRING:
         {
             char* value = nullptr;
-            if (engiGetAggrElement(aggregation, index, sdaiEXPRESSSTRING, &value)) {
+            if (engiGetAggrElement(aggregation, index, sdaiSTRING, &value)) {
                 CreateString(fp, value);
             }
             else {
@@ -695,7 +700,7 @@ static void    SaveFileAttribute(
         case  sdaiSTRING:
         {
             char* value = nullptr;
-            if (sdaiGetAttr(instance, attribute, sdaiEXPRESSSTRING, &value)) {
+            if (sdaiGetAttr(instance, attribute, sdaiSTRING, &value)) {
                 CreateString(fp, value);
             }
             else {

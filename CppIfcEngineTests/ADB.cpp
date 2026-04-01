@@ -9,11 +9,20 @@ static void TestCreate()
     int_t model = sdaiCreateModelBN(0, nullptr, "IFC4x1");
 
     for (int_t i = 0; i < 100000; i++) {
+        
         void* value = sdaiCreateADB(sdaiSTRING, "bar");
         sdaiPutADBTypePath(value, 1, "IFCTEXT");
-        int_t prop = sdaiCreateInstanceBN(model, "IFCPROPERTYSINGLEVALUE");
-        sdaiPutAttrBN(prop, "Name", sdaiUNICODE, L"foo");
-        sdaiPutAttrBN(prop, "NominalValue", sdaiADB, value);
+
+        int_t inst = sdaiCreateInstanceBN(model, "IFCPROPERTYSINGLEVALUE");
+        sdaiPutAttrBN(inst, "Name", sdaiUNICODE, L"foo");
+        sdaiPutAttrBN(inst, "NominalValue", sdaiADB, value);
+
+        SdaiString getval = NULL;
+        sdaiGetADBValue(value, sdaiEXPRESSSTRING, &getval);
+        ASSERT(0 == strcmp(getval, "IFCTEXT(bar)"));
+
+        sdaiGetAttrBN(inst, "NominalValue", sdaiEXPRESSSTRING, &getval);
+        ASSERT(0 == strcmp(getval, "IFCTEXT(bar)"));
     }
 
    // std::string filename = "e:\\Downloads\\foo.ifc";
@@ -30,7 +39,7 @@ static void ShareOrCopyABD()
 
     auto model = sdaiCreateModelBN(0, nullptr, "IFC2x3");
 
-    //get returns modificable value (we can change type), but put copied it to target
+    //get returns modifiable value (we can change type), but put copied it to target
     //I'm not sure it is exact intention, the test is just to pin the behavior and alam if changed
 
 

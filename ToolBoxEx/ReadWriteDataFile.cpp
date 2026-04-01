@@ -299,6 +299,6 @@ static void TestDataFiles(std::string dir)
 
 extern void ReadWriteDataFileTest()
 {
-    TestDataFiles(R"(W:\DevArea\RDF\TestSets\STEP)");
+    //TestDataFiles(R"(W:\DevArea\RDF\TestSets\STEP)");
     TestDataFiles(TEST_DIR);
 }
