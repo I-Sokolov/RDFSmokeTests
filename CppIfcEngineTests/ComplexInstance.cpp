@@ -111,6 +111,33 @@ static void CheckComplex()
    
 }
 
+static void DerivedComplex()
+{
+    //derived attributes of complex entities
+    ENTER_TEST;
+
+    SdaiModel model = sdaiOpenModelBN(0, STEP_TEST1, "");
+    ASSERT(model);
+
+    engiEnableDerivedAttributes(model, sdaiTRUE);
+
+    auto inst = internalGetInstanceFromP21Line(model, 1004);
+    ASSERT(inst);
+
+    SdaiInstance dimensions = NULL;
+    auto ret = sdaiGetAttrBN(inst, "dimensions", sdaiINSTANCE, &dimensions);
+    ASSERT(ret && ret == (void*)dimensions);
+
+    SdaiReal val = 0;
+    ret = sdaiGetAttrBN(dimensions, "length_exponent", sdaiREAL, &val);
+    ASSERT(ret && val == 1);
+
+    ret = sdaiGetAttrBN(dimensions, "mass_exponent", sdaiREAL, &val);
+    ASSERT(ret && val == 0);
+
+    sdaiCloseModel(model);
+}
+
 typedef std::map<const char*, const char*> AttrVal;
 
 
@@ -605,6 +632,7 @@ static void ReadWithoutSchema()
 extern void ComplexInstance()
 {
     CheckComplex();
+    DerivedComplex();
     SmokeTestSchema();
     ReadWithoutSchema();
 }
