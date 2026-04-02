@@ -73,10 +73,8 @@ static void SchemaRuleByIterator(SdaiModel model)
     ASSERT(numRules[0] == 47 && numRules[1] == 0 && numRules[2] == 2);
 }
 
-static void IterateAllAttr()
+static void IterateAllAttr(SdaiModel model)
 {
-    auto model = sdaiCreateModelBN("AP242");
-
     int nEntities = 0;
     int nAttributes = 0;
     SchemaTypeIterator it = 0;
@@ -97,17 +95,82 @@ static void IterateAllAttr()
     }
     
     ASSERT(nEntities==2140 &&nAttributes==9765);
+}
 
-    sdaiCloseModel(model);
+static void CheckRedeclaration(SdaiModel model,
+    const char* entityName,
+    const char* attrName,
+    const char* definingEntityName,
+    const char* defindedDomain,
+    const char* redeclaredEnity,
+    const char* redeclaredDomain
+)
+{
+    auto entity = sdaiGetEntity(model, entityName);
+    ASSERT(entity);
+
+    auto attr = sdaiGetAttrDefinition(entity, attrName);
+    ASSERT(attr);
+
+    auto definingEntity = engiGetAttrDefiningEntity(attr);
+    ASSERT(definingEntity && definingEntity == sdaiGetEntity(model, definingEntityName));
+
+    auto domain = engiGetAttrDomain(attr);
+    ASSERT(0 == strcmp(domain, defindedDomain));
+
+    auto redeclaration = engiGetAttrRedeclarationByIterator(entity, attr, NULL);
+    ASSERT(redeclaration);
+
+    auto redeclEntity = engiGetAttrDefiningEntity(redeclaration);
+    ASSERT(redeclEntity && redeclEntity == sdaiGetEntity(model, redeclaredEnity));
+
+    auto redeclDomain = engiGetAttrDomain(redeclaration);
+    ASSERT(0 == strcmp(redeclDomain, redeclaredDomain));
+
+    auto next = engiGetAttrRedeclarationByIterator(entity, attr, redeclaration);
+    ASSERT(!next);
+}
+
+static void CheckAP242Redeclarations(SdaiModel model)
+{
+    /*
+ENTITY shape_aspect_occurrence
+  definition : shape_aspect_or_characterized_object;
+
+ENTITY counterbore_hole_occurrence  SUBTYPE OF (shape_aspect_occurrence);
+  SELF\shape_aspect_occurrence.definition : counterbore_hole_definition;
+
+ENTITY counterbore_hole_occurrence_in_assembly  SUBTYPE OF (counterbore_hole_occurrence);
+
+ENTITY spotface_occurrence_in_assembly  SUBTYPE OF (counterbore_hole_occurrence_in_assembly);
+  SELF\counterbore_hole_occurrence.definition : spotface_hole_definition;
+    */
+    CheckRedeclaration(model, 
+        "spotface_occurrence_in_assembly","definition", 
+        "shape_aspect_occurrence", "shape_aspect_or_characterized_object",
+        "spotface_occurrence_in_assembly", "spotface_hole_definition");
+
+    CheckRedeclaration(model,
+        "counterbore_hole_occurrence_in_assembly", "definition",
+        "shape_aspect_occurrence", "shape_aspect_or_characterized_object",
+        "counterbore_hole_occurrence", "counterbore_hole_definition");
 }
 
 extern void SchemaReadingTests()
 {
     ENTER_TEST;
     
-    IterateAllAttr();
+    //
+    auto model = sdaiCreateModelBN("AP242");
 
-    auto model = sdaiCreateModelBN("IFC4");
+    IterateAllAttr(model);
+
+    CheckAP242Redeclarations(model);
+
+    sdaiCloseModel(model);
+
+    //
+    model = sdaiCreateModelBN("IFC4");
 
     SchemaRuleByIterator(model);
         
