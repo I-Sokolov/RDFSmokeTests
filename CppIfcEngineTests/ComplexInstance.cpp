@@ -31,6 +31,8 @@ static void CheckComplex(SdaiModel model, ExpressID id, const char* entityName, 
     auto inst = internalGetInstanceFromP21Line(model, id);
     auto entity = sdaiGetInstanceType(inst);
 
+    ASSERT(engiIsComplexEntity(entity));
+
     auto name = engiGetEntityName(entity, sdaiSTRING);
     ASSERT(0 == _stricmp(name, entityName));
 

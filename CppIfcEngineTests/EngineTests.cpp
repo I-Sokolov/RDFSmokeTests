@@ -539,6 +539,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
 
     ASSERT(sdaiGetADBValue(adbValue, sdaiINSTANCE, &intV));
     intV = sdaiGetInstanceType(intV);
+    ASSERT(!engiIsComplexEntity(intV));
     engiGetEntityName(intV, sdaiSTRING, &textV);
     ASSERT(!strcmp(textV, "IfcPropertyListValue"));
     auto typePath = sdaiGetADBTypePath(adbValue, 0);
