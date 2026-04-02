@@ -103,7 +103,11 @@ static void CheckRedeclaration(SdaiModel model,
     const char* definingEntityName,
     const char* defindedDomain,
     const char* redeclaredEnity,
-    const char* redeclaredDomain
+    const char* redeclaredDomain,
+    bool derived,
+    const char* redeclaredEnity2 = NULL,
+    const char* redeclaredDomain2 = NULL,
+    bool derived2 = false
 )
 {
     auto entity = sdaiGetEntity(model, entityName);
@@ -127,13 +131,32 @@ static void CheckRedeclaration(SdaiModel model,
     auto redeclDomain = engiGetAttrDomain(redeclaration);
     ASSERT(0 == strcmp(redeclDomain, redeclaredDomain));
 
-    auto next = engiGetAttrRedeclarationByIterator(entity, attr, redeclaration);
-    ASSERT(!next);
+    auto der = engiGetAttrDerived(NULL, redeclaration);
+    ASSERT((der != NULL) == derived);
+
+    if (redeclaredEnity2) {
+        redeclaration = engiGetAttrRedeclarationByIterator(entity, attr, redeclaration);
+        ASSERT(redeclaration);
+
+        redeclEntity = engiGetAttrDefiningEntity(redeclaration);
+        ASSERT(redeclEntity && redeclEntity == sdaiGetEntity(model, redeclaredEnity2));
+
+        redeclDomain = engiGetAttrDomain(redeclaration);
+        ASSERT(0 == strcmp(redeclDomain, redeclaredDomain2));
+
+        der = engiGetAttrDerived(NULL, redeclaration);
+        ASSERT((der != NULL) == derived2);
+    }
+
+    redeclaration = engiGetAttrRedeclarationByIterator(entity, attr, redeclaration);
+    ASSERT(!redeclaration);
 }
 
 static void CheckAP242Redeclarations(SdaiModel model)
 {
     /*
+Double redeclaration
+
 ENTITY shape_aspect_occurrence
   definition : shape_aspect_or_characterized_object;
 
@@ -148,12 +171,39 @@ ENTITY spotface_occurrence_in_assembly  SUBTYPE OF (counterbore_hole_occurrence_
     CheckRedeclaration(model, 
         "spotface_occurrence_in_assembly","definition", 
         "shape_aspect_occurrence", "shape_aspect_or_characterized_object",
-        "spotface_occurrence_in_assembly", "spotface_hole_definition");
+        "spotface_occurrence_in_assembly", "spotface_hole_definition", false);
 
     CheckRedeclaration(model,
         "counterbore_hole_occurrence_in_assembly", "definition",
         "shape_aspect_occurrence", "shape_aspect_or_characterized_object",
-        "counterbore_hole_occurrence", "counterbore_hole_definition");
+        "counterbore_hole_occurrence", "counterbore_hole_definition", false);
+
+    /*
+Diamonde inheritance with 2 redeclarations
+
+ENTITY item_identified_representation_usage;
+    used_representation : representation;
+
+
+ENTITY chain_based_item_identified_representation_usage SUBTYPE OF (item_identified_representation_usage);
+DERIVE
+    SELF\item_identified_representation_usage.used_representation : representation := nodes[HIINDEX(nodes)];
+
+
+ENTITY geometric_item_specific_usage SUBTYPE OF (item_identified_representation_usage);
+SELF\item_identified_representation_usage.used_representation : shape_model;
+END_ENTITY;
+
+
+ENTITY chain_based_geometric_item_specific_usage
+SUBTYPE OF (geometric_item_specific_usage, chain_based_item_identified_representation_usage);
+    */
+
+    CheckRedeclaration(model,
+        "chain_based_geometric_item_specific_usage", "used_representation",
+        "item_identified_representation_usage", "representation",
+        "geometric_item_specific_usage", "shape_model", false,
+        "chain_based_item_identified_representation_usage", "representation", true);
 }
 
 extern void SchemaReadingTests()
