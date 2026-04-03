@@ -228,6 +228,7 @@ static int_t r32[] = { 3,2 };
 static IssueInfo rExpectedIssuesIFC2x3[] =
 {
     //id   class                    attrName                    ind     aggrLev/aggrInd         Issue
+    {14,    "IfcSIUnit",            "Dimensions",               0,      0,NULL,         enum_validation_type::__STAR_USAGE},
     {24,    "IfcLocalPlacement",    "PlacesObject",             -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         enum_validation_type::__KNOWN_ENTITY},
     {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
@@ -241,12 +242,7 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         enum_validation_type::__STAR_USAGE},
     {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__AGGREGATION_NOT_EXPECTED},
-//    {113,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
-//    {113,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
-//    {113,   "IfcProject",           "UnitsInContext",           8,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
     {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
-//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {114,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
     {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__ARRGEGATION_EXPECTED},
     {115,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
@@ -278,12 +274,11 @@ static IssueInfo rExpectedIssuesIFC2x3[] =
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitCount[] =
 {
+    {14,    "IfcSIUnit",                    "Dimensions",           0,      0,NULL,         enum_validation_type::__STAR_USAGE},
     {24,    "IfcLocalPlacement",            "PlacesObject",         -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {51,    "IfcProductDefinitionShape",    "Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
     {51,    "IfcProdcutDefinitionShape",    NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-    {52,    "IfcShapeRepresentation",       "OfProductRepresentation", -1,  0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
-    {52,    "IfcShapeRepresentation",       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
-//    {74,    "IfcPolyLoop",                  "Polygon",              0,      1,r1,           enum_validation_type::__REFERENCE_EXISTS}
+    {52,    "IfcShapeRepresentation",       "OfProductRepresentation", -1,  0,NULL,         enum_validation_type::__AGGREGATION_SIZE}
 };
 
 static IssueInfo rExpectedIssuesIFC2x3_LimitTime[] =
@@ -294,13 +289,12 @@ static IssueInfo rExpectedIssuesIFC2x3_LimitTime[] =
 static IssueInfo rExpectedIssuesIFC2x3_once[] =
 {
     //id   class                    attrName                    ind     aggrLev/aggrInd         Issue
+    {14,    "IfcSIUnit",            "Dimensions",               0,      0,NULL,         enum_validation_type::__STAR_USAGE},
     {24,    "IfcLocalPlacement",    "PlacesObject",             -1,     0,NULL,         enum_validation_type::__AGGREGATION_SIZE},
     {84,    "IFCCARTESIANPOINTLIST2D",NULL,                     -1,     0,NULL,         enum_validation_type::__KNOWN_ENTITY},
     {51,    "IfcProductDefinitionShape","Representations",      2,      1,r3,           enum_validation_type::__REFERENCE_EXISTS},
     {52,    "IfcShapeRepresentation",       NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {110,   "IfcProject",           "GlobalId",                 0,      0,NULL,         enum_validation_type::__REQUIRED_ARGUMENTS},
-    {111,   "IfcProject",           "ObjectType",               4,      0,NULL,         enum_validation_type::__STAR_USAGE},
-//    {112,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__AGGREGATION_NOT_EXPECTED},
     {115,   "IfcProject",           "RepresentationContexts",   7,      0,NULL,         enum_validation_type::__ARRGEGATION_EXPECTED},
     {115,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {116,   "IfcProject",           "OwnerHistory",             1,      0,NULL,         enum_validation_type::__ARGUMENT_EXPRESS_TYPE},
@@ -308,7 +302,6 @@ static IssueInfo rExpectedIssuesIFC2x3_once[] =
     {162,   "IfcApplication",       NULL,                       -1,     0,NULL,         enum_validation_type::__UNIQUE_RULE},
     {74,    "IfcPolyLoop",          NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__NO_OF_ARGUMENTS},
-//    {113,   "IfcProject",           NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {230,   "IfcSite",              NULL,                       -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {51,    "IfcProdcutDefinitionShape",NULL,                   -1,     0,NULL,         enum_validation_type::__WHERE_RULE},
     {85,    "IfcPropertyEnumeration","EnumerationValues",        1,     1,r1,           enum_validation_type::__AGGREGATION_NOT_EXPECTED},
