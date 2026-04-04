@@ -45,7 +45,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     bool generatedFile = false;
 
 #ifdef INJECTED_SMOKE_TESTS
-    SmokeTest_SetGeneratedSchemaFile(generate, ".");
+    generatedFile = SmokeTest_SetGeneratedSchemaFile(generate, ".");
 #endif
     
     auto model = sdaiCreateModelBN(1, "", readFilePath.string().c_str());
@@ -126,7 +126,7 @@ extern void ReadWriteSchemaTest()
     ReadWriteSchema("IFC4X3_ADD2.exp", "IFC4x3", enum_test_schema::IFC4X3_ADD2);
     ReadWriteSchema("IFC4X4.exp", "IFC4x4", enum_test_schema::IFC4X4);
     ReadWriteSchema("structural_frame_schema.exp", "CIS2", enum_test_schema::CIS2);
-    ReadWriteSchema("ap242ed3_mim_lf_v1.152.exp", "AP242", enum_test_schema::AP242);
+    ReadWriteSchema("ap242ed4_mim_lf.exp", "AP242", enum_test_schema::AP242);
     ReadWriteSchema("AP214E3_2010.exp", "AP214", enum_test_schema::AP214);
     ReadWriteSchema("part403ts_wg3n2635mim_lf.exp", "AP203", enum_test_schema::AP203);
 }

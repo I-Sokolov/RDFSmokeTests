@@ -94,7 +94,7 @@ static void IterateAllAttr(SdaiModel model)
         }
     }
     
-    ASSERT(nEntities==2140 &&nAttributes==9765);
+    ASSERT(nEntities==2407 && nAttributes==11060);
 }
 
 static void CheckRedeclaration(SdaiModel model,

@@ -12,9 +12,9 @@ extern int main()
 #endif
         auto startingHeap = HeapUsed();
 
+        ReadWriteSchemaTest();
         ReadWriteDataFileTest();
         ModelCheckerTests();
-        ReadWriteSchemaTest();
 
         auto finalHeap = HeapUsed();
 
