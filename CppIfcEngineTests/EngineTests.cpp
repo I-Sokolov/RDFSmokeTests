@@ -1066,6 +1066,25 @@ static void TestUnknonwEntities()
     sdaiCloseModel(model);
 }
 
+static void TestVariousMethods (SdaiModel ifcModel)
+    {
+    ENTER_TEST;
+
+    auto wall = sdaiGetEntity (ifcModel, "IfcWall");
+    auto root = sdaiGetEntity (ifcModel, "IfcRoot");
+    auto dir = sdaiGetEntity (ifcModel, "IfcDirection");
+    ASSERT (wall && root && dir);
+
+    ASSERT (engiIsSupertypeOf (root, wall));
+    ASSERT (!engiIsSupertypeOf (wall, root));
+
+    ASSERT (engiIsSupertypeOf (root, root));
+
+    ASSERT (!engiIsSupertypeOf (dir, wall));
+    ASSERT (!engiIsSupertypeOf (wall, dir));
+
+    }
+
 extern void EngineTests(void)
 {
     ENTER_TEST
@@ -1097,6 +1116,7 @@ extern void EngineTests(void)
 
     TestAttrIndex(ifcModel);
     TestGetADBValue(ifcModel);
+    TestVariousMethods(ifcModel);
 
     sdaiCloseModel(ifcModel);
 
