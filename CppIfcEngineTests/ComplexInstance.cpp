@@ -583,6 +583,30 @@ static void DeleteInstance(SdaiModel model, ExpressID id)
     sdaiDeleteInstance(inst);
 }
 
+
+static void TestAttrPositions(SdaiModel model)
+{
+    auto entityDiamond = sdaiGetEntity(model, "Diamond");
+    auto entityRight = sdaiGetEntity(model, "DiamondRight");
+
+    auto attrRight = sdaiGetAttrDefinition(entityRight, "AttrRight");
+
+    auto pos = engiGetEntityAttributePosition(entityRight, attrRight);
+    ASSERT(pos == 1);
+
+    pos = engiGetEntityAttributePosition(entityDiamond, attrRight);
+    ASSERT(pos == 2);
+
+    //complex
+    auto inst = internalGetInstanceFromP21Line(model, 5);
+    auto entityComplex = sdaiGetInstanceType(inst);
+    auto attr = sdaiGetAttrDefinition(entityComplex, "AttrRight");
+    ASSERT(attr == attrRight);
+
+    pos = engiGetEntityAttributePosition(entityComplex, attrRight);
+    ASSERT(pos == -1);
+}
+
 static void SmokeTestSchema()
 {
     ENTER_TEST;
@@ -605,6 +629,9 @@ static void SmokeTestSchema()
 
     model = sdaiOpenModelBN(0, TEST_MODEL, TEST_SCHEMA);
     ASSERT(model);
+    
+    TestAttrPositions(model);
+
     engiEnableDerivedAttributes(model, sdaiTRUE);
     SmokeTestModelCheckContent(model);
 
@@ -630,6 +657,7 @@ static void ReadWithoutSchema()
     sdaiCloseModel(model);
     */
 }
+
 
 extern void ComplexInstance()
 {

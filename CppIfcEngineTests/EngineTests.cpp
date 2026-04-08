@@ -1066,24 +1066,70 @@ static void TestUnknonwEntities()
     sdaiCloseModel(model);
 }
 
-static void TestIsParentOf (SdaiModel ifcModel)
-    {
+static void TestIsParentOf(SdaiModel ifcModel)
+{
     ENTER_TEST;
 
-    auto wall = sdaiGetEntity (ifcModel, "IfcWall");
-    auto root = sdaiGetEntity (ifcModel, "IfcRoot");
-    auto dir = sdaiGetEntity (ifcModel, "IfcDirection");
-    ASSERT (wall && root && dir);
+    auto wall = sdaiGetEntity(ifcModel, "IfcWall");
+    auto root = sdaiGetEntity(ifcModel, "IfcRoot");
+    auto dir = sdaiGetEntity(ifcModel, "IfcDirection");
+    ASSERT(wall && root && dir);
 
-    ASSERT (engiIsParentOf (root, wall));
-    ASSERT (!engiIsParentOf (wall, root));
+    ASSERT(engiIsParentOf(root, wall));
+    ASSERT(!engiIsParentOf(wall, root));
 
-    ASSERT (engiIsParentOf (root, root));
+    ASSERT(engiIsParentOf(root, root));
 
-    ASSERT (!engiIsParentOf (dir, wall));
-    ASSERT (!engiIsParentOf (wall, dir));
+    ASSERT(!engiIsParentOf(dir, wall));
+    ASSERT(!engiIsParentOf(wall, dir));
 
-    }
+}
+
+static void     TestAttributePosition()
+{
+    ENTER_TEST;
+    auto model = sdaiCreateModelBN(0, NULL, "IFC4");    
+
+    auto entity = sdaiGetEntity(model, "IfcWall");
+
+    auto attr = sdaiGetAttrDefinition(entity, "Description");
+    auto pos = engiGetEntityAttributePosition(entity, attr);
+    ASSERT(attr && pos == 3);
+
+    attr = sdaiGetAttrDefinition(entity, "FillsVoids");
+    pos = engiGetEntityAttributePosition(entity, attr);
+    ASSERT(attr && pos == -1);
+
+    auto e2 = sdaiGetEntity(model, "IfcWallType");
+    attr = sdaiGetAttrDefinition(e2, "PredefinedType");
+    pos = engiGetEntityAttributePosition(entity, attr);
+    ASSERT(attr && pos == -1);
+
+    entity = sdaiGetEntity(model, "IfcCartesianPoint");
+    attr = sdaiGetAttrDefinition(entity, "dim");
+    pos = engiGetEntityAttributePosition(entity, attr);
+    ASSERT(attr && pos == -1);
+
+    sdaiCloseModel(model);
+
+    model = sdaiCreateModelBN(0, NULL, "AP242");
+    
+    entity = sdaiGetEntity(model, "chain_based_geometric_item_specific_usage");
+    attr = sdaiGetAttrDefinition(entity, "name");
+    pos = engiGetEntityAttributePosition(entity, attr);
+    ASSERT(pos == 0);
+
+    auto supertype = sdaiGetEntity(model, "chain_based_item_identified_representation_usage");
+    attr = sdaiGetAttrDefinition(supertype, "nodes");
+
+    pos = engiGetEntityAttributePosition(supertype, attr);
+    ASSERT(pos == 5);
+
+    pos = engiGetEntityAttributePosition(entity, attr);
+    ASSERT(pos == 5);
+
+    sdaiCloseModel(model);
+}
 
 extern void EngineTests(void)
 {
@@ -1123,5 +1169,7 @@ extern void EngineTests(void)
     TestBigID();
 
     TestUnknonwEntities();
+
+    TestAttributePosition ();
 }
 
