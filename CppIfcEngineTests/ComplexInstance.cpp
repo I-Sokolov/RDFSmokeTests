@@ -587,14 +587,14 @@ static void DeleteInstance(SdaiModel model, ExpressID id)
 static void TestAttrPositions(SdaiModel model)
 {
     auto entityDiamond = sdaiGetEntity(model, "Diamond");
-    auto entityRight = sdaiGetEntity(model, "DiamondRight");
+    auto entityRight = sdaiGetEntity(model, "DiamondRight2");
 
     auto attrRight = sdaiGetAttrDefinition(entityRight, "AttrRight");
 
-    auto pos = engiGetEntityAttributePosition(entityRight, attrRight);
+    auto pos = engiGetEntityAttributePosition(entityRight, attrRight, true);
     ASSERT(pos == 1);
 
-    pos = engiGetEntityAttributePosition(entityDiamond, attrRight);
+    pos = engiGetEntityAttributePosition(entityDiamond, attrRight, true);
     ASSERT(pos == 2);
 
     //complex
@@ -603,8 +603,11 @@ static void TestAttrPositions(SdaiModel model)
     auto attr = sdaiGetAttrDefinition(entityComplex, "AttrRight");
     ASSERT(attr == attrRight);
 
-    pos = engiGetEntityAttributePosition(entityComplex, attrRight);
+    pos = engiGetEntityAttributePosition(entityComplex, attrRight, true);
     ASSERT(pos == -1);
+
+    pos = engiGetEntityAttributePosition(entityRight, attrRight, false);
+    ASSERT(pos == 0);
 }
 
 static void SmokeTestSchema()

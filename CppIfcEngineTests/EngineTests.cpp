@@ -1093,22 +1093,27 @@ static void     TestAttributePosition()
     auto entity = sdaiGetEntity(model, "IfcWall");
 
     auto attr = sdaiGetAttrDefinition(entity, "Description");
-    auto pos = engiGetEntityAttributePosition(entity, attr);
+    auto pos = engiGetEntityAttributePosition(entity, attr, true);
     ASSERT(attr && pos == 3);
 
     attr = sdaiGetAttrDefinition(entity, "FillsVoids");
-    pos = engiGetEntityAttributePosition(entity, attr);
+    pos = engiGetEntityAttributePosition(entity, attr, true);
     ASSERT(attr && pos == -1);
 
     auto e2 = sdaiGetEntity(model, "IfcWallType");
     attr = sdaiGetAttrDefinition(e2, "PredefinedType");
-    pos = engiGetEntityAttributePosition(entity, attr);
+    pos = engiGetEntityAttributePosition(entity, attr, true);
     ASSERT(attr && pos == -1);
 
     entity = sdaiGetEntity(model, "IfcCartesianPoint");
     attr = sdaiGetAttrDefinition(entity, "dim");
-    pos = engiGetEntityAttributePosition(entity, attr);
+    pos = engiGetEntityAttributePosition(entity, attr, true);
     ASSERT(attr && pos == -1);
+
+    entity = sdaiGetEntity(model, "IfcSIUnit");
+    attr = sdaiGetAttrDefinition(entity, "Prefix");
+    pos = engiGetEntityAttributePosition(entity, attr, true);
+    ASSERT(attr && pos == 2);
 
     sdaiCloseModel(model);
 
@@ -1116,16 +1121,16 @@ static void     TestAttributePosition()
     
     entity = sdaiGetEntity(model, "chain_based_geometric_item_specific_usage");
     attr = sdaiGetAttrDefinition(entity, "name");
-    pos = engiGetEntityAttributePosition(entity, attr);
+    pos = engiGetEntityAttributePosition(entity, attr, true);
     ASSERT(pos == 0);
 
     auto supertype = sdaiGetEntity(model, "chain_based_item_identified_representation_usage");
     attr = sdaiGetAttrDefinition(supertype, "nodes");
 
-    pos = engiGetEntityAttributePosition(supertype, attr);
+    pos = engiGetEntityAttributePosition(supertype, attr, true);
     ASSERT(pos == 5);
 
-    pos = engiGetEntityAttributePosition(entity, attr);
+    pos = engiGetEntityAttributePosition(entity, attr, true);
     ASSERT(pos == 5);
 
     sdaiCloseModel(model);
