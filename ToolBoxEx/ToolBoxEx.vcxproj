@@ -178,6 +178,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CopyModelByAPI.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModelCheckerTest.cpp" />
     <ClCompile Include="pch.cpp">
@@ -192,7 +193,7 @@
     </ClCompile>
     <ClCompile Include="ReadWriteDataFile.cpp" />
     <ClCompile Include="ReadWriteSchema.cpp" />
-    <ClCompile Include="SaveModel.cpp" />
+    <ClCompile Include="SaveModelByAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

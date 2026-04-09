@@ -6,7 +6,7 @@
 struct DataFileContent
 {
     std::list<std::string> header;
-    std::map<int, std::string> instances;
+    std::map<ExpressID, std::string> instances;
 };
 
 static void SkipSpaces(const char*& pch)
@@ -56,7 +56,7 @@ static double ExtractNumber(const char*& pch)
     return num;
 }
 
-static void CompareInstanceString(const std::string& inst1, const std::string& inst2)
+static void CompareInstanceString(const std::string& inst1, const std::string& inst2, InstanceMap* instanceMap)
 {
     auto pch1 = inst1.c_str();
     auto pch2 = inst2.c_str();
@@ -81,8 +81,28 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
             double abs = max (1, .5 * fabs(num1 + num2));
             ASSERT(fabs(num1 - num2) < abs * 1e-11);
         }
-        else {
-            ASSERT(*pch1 == *pch2);
+        else if (argStart && *pch1 == '#') {
+            ASSERT(*pch2 == '#');
+            
+            pch1++;
+            pch2++;
+
+            auto id1 = strtoll(pch1, nullptr, 10);
+            auto id2 = strtoll(pch2, nullptr, 10);
+            if (instanceMap) {
+                id1 = (*instanceMap)[id1];
+            }
+            ASSERT(id1 == id2);
+
+            while (isdigit(*pch1)) pch1++;
+            while (isdigit(*pch2)) pch2++;
+        }
+        else {            
+            if (*pch1 == '*') { ////TODO - invalid default unset
+                ASSERT(*pch2 == '*' || *pch2 == '$');
+            } 
+            else
+                ASSERT(*pch1 == *pch2);
 
             if (*pch1 == '\'') {
                 if (!literal) {
@@ -109,30 +129,31 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
     ASSERT(!*pch1 && !*pch2);
 }
 
-static void CompareFileContent(const DataFileContent& data1, const DataFileContent& data2)
+static void CompareFileContent(const DataFileContent& data1, const DataFileContent& data2, InstanceMap* instanceMap)
 {
     //compare header
     auto i1 = data1.header.begin();    auto i2 = data2.header.begin();
     while (i1 != data1.header.end() && i2 != data2.header.end()) {
-        CompareInstanceString(*i1, *i2);
+        CompareInstanceString(*i1, *i2, NULL);
         ++i1;
         ++i2;
     }
 
     //compare data
-    auto it1 = data1.instances.begin();    auto it2 = data2.instances.begin();
+    ASSERT(data1.instances.size() == data2.instances.size());
 
-    while (it1 != data1.instances.end() && it2 != data2.instances.end()) {
+    for (auto it1 = data1.instances.begin(); it1 != data1.instances.end(); it1++){
         
-        ASSERT (it1->first == it2->first);
+        auto id2 = it1->first;
+        if (instanceMap) {
+            id2 = (*instanceMap)[id2];
+        }
+        ASSERT(id2);
 
-        CompareInstanceString(it1->second, it2->second);
+        auto& inst2 = data2.instances.at(id2);
 
-        ++it1;
-        ++it2;
+        CompareInstanceString(it1->second, inst2, instanceMap);
     }
-
-    ASSERT(it1 == data1.instances.end() && it2 == data2.instances.end());
 }
 
 
@@ -228,7 +249,7 @@ static void ReadDataFile(const char* filePath, DataFileContent& content)
             ASSERT(pos != std::string::npos);
 
             auto idStr = line.substr(1, pos - 1);
-            int id = std::stoi(idStr);
+            auto id = std::stoll(idStr);
 
             auto contentStr = line.substr(pos + 1);
 
@@ -240,7 +261,7 @@ static void ReadDataFile(const char* filePath, DataFileContent& content)
     }
 }
 
-static void CompareFiles(const char* file1, const char* file2)
+static void CompareFiles(const char* file1, const char* file2, InstanceMap* instanceMap = nullptr)
 {
     DataFileContent content1;
     ReadDataFile(file1, content1);
@@ -248,7 +269,7 @@ static void CompareFiles(const char* file1, const char* file2)
     DataFileContent content2;
     ReadDataFile(file2, content2);
 
-    CompareFileContent(content1, content2);
+    CompareFileContent(content1, content2, instanceMap);
 }   
 
 static void TestDataFile(std::filesystem::path readPath)
@@ -259,21 +280,34 @@ static void TestDataFile(std::filesystem::path readPath)
     auto model = sdaiOpenModelBN(1, readPath.string().c_str(), "");
     ASSERT(model);
 
+    //
     auto savePath = readPath.filename();
 
     sdaiSaveModelBN(model, savePath.string().c_str());
 
+    //
     auto apiSavePath = savePath;
-    auto ext = ".api" + savePath.extension().string();
+    auto ext = ".saveByAPI" + savePath.extension().string();
     apiSavePath.replace_extension(ext);
 
-    SaveModel(model, apiSavePath.string().c_str());
+    SaveModelByAPI(model, apiSavePath.string().c_str());
 
+    //
+    auto apiCopyPath = savePath;
+    ext = ".copyByAPI" + savePath.extension().string();
+    apiCopyPath.replace_extension(ext);
+
+    InstanceMap instanceMap;
+    SdaiModel copy = CopyModelByAPI(model, instanceMap);
+
+    sdaiSaveModelBN(copy, apiCopyPath.string().c_str());
+
+    //
     sdaiCloseModel(model);
 
     CompareFiles(savePath.string().c_str(), readPath.string().c_str());
     CompareFiles(apiSavePath.string().c_str(), readPath.string().c_str());
-
+    CompareFiles(readPath.string().c_str(), apiCopyPath.string().c_str(), &instanceMap);
 }
 
 static void TestDataFiles(std::string dir)
@@ -299,6 +333,6 @@ static void TestDataFiles(std::string dir)
 
 extern void ReadWriteDataFileTest()
 {
-    //TestDataFiles(R"(W:\DevArea\RDF\TestSets\STEP)");
-    TestDataFiles(TEST_DIR);
+    //TestDataFile(R"(W:\DevArea\RDF\SmokeTests\TestData\DataFiles\IFC4x3\pass-E_2_3.ifc)");
+    //TestDataFiles(TEST_DIR);
 }

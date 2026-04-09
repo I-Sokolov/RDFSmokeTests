@@ -847,7 +847,7 @@ static void    SaveModel(int_t   model, FILE* fp)
 /// <summary>
 /// 
 /// </summary>
-extern void SaveModel(SdaiModel model, const char* filePath)
+extern void SaveModelByAPI(SdaiModel model, const char* filePath)
 {
     FILE* fp = nullptr;
     fopen_s(&fp, filePath, "wt");
