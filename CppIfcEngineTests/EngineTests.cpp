@@ -368,7 +368,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
     ASSERT(!strcmp(textV, "List value 2"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "IFCLABEL(List value 2)"));
+    ASSERT(!strcmp(textV, "List value 2"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
     ASSERT(!wcscmp(wcV, L"List value 2"));
     ASSERT(!sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
@@ -398,7 +398,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
     ASSERT(!strcmp(textV, "13"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "IFCINTEGER(13)"));
+    ASSERT(!strcmp(textV, "13"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
     ASSERT(!wcscmp(wcV,L"13"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
@@ -428,7 +428,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
     ASSERT(!strcmp(textV, "8.500000"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "IFCLENGTHMEASURE(8.500000)"));
+    ASSERT(!strcmp(textV, "8.500000"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
     ASSERT(!wcscmp(wcV,L"8.500000"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
@@ -458,7 +458,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
     ASSERT(!strcmp(textV, ".T."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "IFCBOOLEAN(.T.)"));
+    ASSERT(!strcmp(textV, ".T."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
     ASSERT(!wcscmp(wcV, L".T."));
     ASSERT(!sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
@@ -489,7 +489,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
     ASSERT(!strcmp(textV, ".U."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "IFCLOGICAL(.U.)"));
+    ASSERT(!strcmp(textV, ".U."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
     ASSERT(!wcscmp(wcV, L".U."));
     ASSERT(!sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
@@ -519,7 +519,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
     ASSERT(!strcmp(textV, "02F"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "IFCBINARY(02F)"));
+    ASSERT(!strcmp(textV, "02F"));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
     ASSERT(!wcscmp(wcV, L"02F"));
     ASSERT(!sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));
@@ -618,7 +618,7 @@ static void TestGetADBValue(SdaiModel ifcModel)
     ASSERT(sdaiGetADBValue(adbValue, sdaiSTRING, &textV));
     ASSERT(!strcmp(textV, ".BELL."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiEXPRESSSTRING, &textV));
-    ASSERT(!strcmp(textV, "IFCALARMTYPEENUM(.BELL.)"));
+    ASSERT(!strcmp(textV, ".BELL."));
     ASSERT(sdaiGetADBValue(adbValue, sdaiUNICODE, &wcV));
     ASSERT(!wcscmp(wcV, L".BELL."));
     ASSERT(!sdaiGetADBValue(adbValue, sdaiREAL, &doubleV));

@@ -19,10 +19,10 @@ static void TestCreate()
 
         SdaiString getval = NULL;
         sdaiGetADBValue(value, sdaiEXPRESSSTRING, &getval);
-        ASSERT(0 == strcmp(getval, "IFCTEXT(bar)"));
+        ASSERT(0 == strcmp(getval, "bar"));
 
         sdaiGetAttrBN(inst, "NominalValue", sdaiEXPRESSSTRING, &getval);
-        ASSERT(0 == strcmp(getval, "IFCTEXT(bar)"));
+        ASSERT(0 == strcmp(getval, "bar"));
     }
 
    // std::string filename = "e:\\Downloads\\foo.ifc";
