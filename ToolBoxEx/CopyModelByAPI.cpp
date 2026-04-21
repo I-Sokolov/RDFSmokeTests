@@ -184,7 +184,7 @@ static void CopyAttributes(SdaiInstance srcInst, SdaiInstance dstInst, SdaiEntit
             //nothing to do, assume this is default value for new instance
             SdaiString dst = NULL;
             sdaiGetAttr(dstInst, dstAttr, sdaiEXPRESSSTRING, &dst);
-            //TODO - invalid default value - ASSERT(dst && src && 0==strcmp(src, dst));
+            ASSERT(dst && src && 0==strcmp(src, dst));
         }
     }
 }

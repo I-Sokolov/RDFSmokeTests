@@ -98,12 +98,7 @@ static void CompareInstanceString(const std::string& inst1, const std::string& i
             while (isdigit(*pch2)) pch2++;
         }
         else {            
-            if (*pch1 == '*') { ////TODO - invalid default unset
-                ASSERT(*pch2 == '*' || *pch2 == '$');
-            } 
-            else
-                ASSERT(*pch1 == *pch2);
-
+            ASSERT(*pch1 == *pch2);
             if (*pch1 == '\'') {
                 if (!literal) {
                     literal = true;

@@ -119,6 +119,7 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
 
 extern void ReadWriteSchemaTest()
 {
+    ReadWriteSchema("AP214E3_2010.exp", "AP214", enum_test_schema::AP214);
     ReadWriteSchema("IFC4_ADD2_TC1.exp", "IFC4", enum_test_schema::IFC4_ADD2_TC1);
     ReadWriteSchema("IFC2X3_TC1.exp", "IFC2x3", enum_test_schema::IFC2X3_TC1);
     ReadWriteSchema("IFC4x1.exp", "IFC4x1", enum_test_schema::IFC4X1_FINAL);
@@ -127,6 +128,5 @@ extern void ReadWriteSchemaTest()
     ReadWriteSchema("IFC4X4.exp", "IFC4x4", enum_test_schema::IFC4X4);
     ReadWriteSchema("structural_frame_schema.exp", "CIS2", enum_test_schema::CIS2);
     ReadWriteSchema("ap242ed4_mim_lf.exp", "AP242", enum_test_schema::AP242);
-    ReadWriteSchema("AP214E3_2010.exp", "AP214", enum_test_schema::AP214);
     ReadWriteSchema("part403ts_wg3n2635mim_lf.exp", "AP203", enum_test_schema::AP203);
 }

@@ -12,8 +12,8 @@ extern int main()
 #endif
         auto startingHeap = HeapUsed();
 
-        ReadWriteDataFileTest();
         ReadWriteSchemaTest();
+        ReadWriteDataFileTest();
         ModelCheckerTests();
 
         auto finalHeap = HeapUsed();
