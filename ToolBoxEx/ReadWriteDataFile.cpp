@@ -304,6 +304,7 @@ static void TestDataFile(std::filesystem::path readPath)
 
     //
     sdaiCloseModel(model);
+    sdaiCloseModel(copy);
 
     CompareFiles(savePath.string().c_str(), readPath.string().c_str());
     CompareFiles(apiSavePath.string().c_str(), readPath.string().c_str());
@@ -334,5 +335,5 @@ static void TestDataFiles(std::string dir)
 extern void ReadWriteDataFileTest()
 {
     //TestDataFile(R"(W:\DevArea\RDF\SmokeTests\TestData\DataFiles\IFC4x3\pass-E_2_3.ifc)");
-    //TestDataFiles(TEST_DIR);
+    TestDataFiles(TEST_DIR);
 }

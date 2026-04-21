@@ -32,9 +32,10 @@ static SdaiNPL CopyAggregate(SdaiAggr srcAggr, SdaiModel dstModel, InstanceMap& 
     while (sdaiNext(it)) {
 
         SdaiADB adbVal = NULL;
-        if (sdaiGetAggrByIterator(it, sdaiADB, &adbVal)) {
+        if (sdaiGetAggrByIterator(it, sdaiADB, &adbVal) && adbVal) {
             if (auto dstVal = CopyADB(adbVal, dstModel, instanceMap)) {
                 sdaiAdd(dstAggr, sdaiADB, dstVal);
+                sdaiDeleteADB (dstVal);
             }
             else ASSERT(0);
         }
@@ -63,9 +64,9 @@ template<typename TValue> static void CopyADBValue(SdaiADB src, SdaiADB dst, Sda
 /// <summary>
 /// 
 /// </summary>
-static void CopyADBStringValue(SdaiADB src, SdaiADB dst, SdaiPrimitiveType sdaiType)
+template<typename TValue>static void CopyADBRefValue(SdaiADB src, SdaiADB dst, SdaiPrimitiveType sdaiType)
 {
-    const char* value = 0;
+    TValue value = NULL;
     if (sdaiGetADBValue(src, sdaiType, &value)) {
         sdaiPutADBValue(dst, sdaiType, value);
     }
@@ -89,10 +90,10 @@ static SdaiADB CopyADB(SdaiADB srcADB, SdaiModel dstModel, InstanceMap& instance
             CopyADBValue<bool>(srcADB, dstADB, sdaiBOOLEAN);
             break;
         case  sdaiLOGICAL:
-            CopyADBStringValue(srcADB, dstADB, sdaiLOGICAL);
+            CopyADBRefValue<const char*>(srcADB, dstADB, sdaiLOGICAL);
             break;
         case  sdaiENUM:
-            CopyADBStringValue(srcADB, dstADB, sdaiENUM);
+            CopyADBRefValue<const char*>(srcADB, dstADB, sdaiENUM);
             break;
         case  sdaiREAL:
             CopyADBValue<SdaiReal>(srcADB, dstADB, sdaiREAL);
@@ -101,7 +102,7 @@ static SdaiADB CopyADB(SdaiADB srcADB, SdaiModel dstModel, InstanceMap& instance
             CopyADBValue<SdaiInteger>(srcADB, dstADB, sdaiINTEGER);
             break;
         case  sdaiSTRING:
-            CopyADBStringValue(srcADB, dstADB, sdaiEXPRESSSTRING); //request exact express string to avoid conversion
+            CopyADBRefValue<const char*>(srcADB, dstADB, sdaiEXPRESSSTRING); //request exact express string to avoid conversion
             break;
         case  sdaiINSTANCE:
         {
@@ -114,19 +115,20 @@ static SdaiADB CopyADB(SdaiADB srcADB, SdaiModel dstModel, InstanceMap& instance
             break;
         }
         case  sdaiAGGR:
+            //we can't copy directly because have to convert instances CopyADBRefValue<SdaiAggr>(srcADB, dstADB, sdaiAGGR);
         {
-            SdaiAggr srcValue = NULL;
-            sdaiGetADBValue(srcADB, sdaiAGGR, &srcValue);
-            ASSERT(srcValue);
-            
-            if (auto dstValue = CopyAggregate(srcValue, dstModel, instanceMap)) {
-                sdaiPutADBValue(dstADB, sdaiAGGR, dstValue);
-                //TODO memory issue - sdaiDeleteNPL(dstValue);
+            SdaiAggr srcAggr = NULL;
+            sdaiGetADBValue(srcADB, sdaiAGGR, &srcAggr);
+            ASSERT(srcAggr);
+            if (auto dstAggr = CopyAggregate(srcAggr, dstModel, instanceMap)) {
+                sdaiPutADBValue(dstADB, sdaiAGGR, dstAggr);
+                sdaiDeleteNPL(dstAggr);
             }
             break;
         }
         case  sdaiADB:
-            ASSERT(!"Not support nested ADB");
+            ASSERT(!"Not expected (not tested) nested ADB");
+            CopyADBRefValue<SdaiAggr>(srcADB, dstADB, sdaiAGGR);
             break;
         default:
             ASSERT("Unsupported ADB type");
@@ -169,7 +171,7 @@ static void CopyAttributes(SdaiInstance srcInst, SdaiInstance dstInst, SdaiEntit
             //
             if (auto dstADB = CopyADB(adb, sdaiGetInstanceModel(dstInst), instanceMap)) {
                 sdaiPutAttr(dstInst, dstAttr, sdaiADB, dstADB);
-                //TODO memory issue - sdaiDeleteADB(dstADB);
+                sdaiDeleteADB(dstADB);
             }
             else ASSERT(0);
         }
