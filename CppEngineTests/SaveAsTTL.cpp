@@ -26,8 +26,21 @@ extern void SaveAsTTL()
     //
     SetOverrideFileIO(model, FLAGBIT(5), FLAGBIT(5));
 
-    res = SaveModel(model, "test2.ttl");
+    res = SaveModelW(model, L"test2.ttl");
     ASSERT(res == 0);
+
+
+    CloseModel(model);
+
+    //
+    model = OpenModel("test.ttl");
+    ASSERT(model);
+
+    CloseModel(model);
+
+    //
+    model = OpenModelW(L"test2.ttl");
+    ASSERT(model);
 
     CloseModel(model);
 }
