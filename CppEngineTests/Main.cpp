@@ -10,6 +10,7 @@ extern void VariousTests();
 extern void Test_Example_RDFGeomGet();
 extern void Test_Example_RDFGeomDefine();
 extern void Test_Properties();
+extern void SaveAsTTL();
 
 extern int main()
 {
@@ -20,7 +21,7 @@ extern int main()
         VLDEnable();
 #endif
 
-
+        SaveAsTTL();
         Test_Properties();
         VariousTests();
         EntitiesTests();

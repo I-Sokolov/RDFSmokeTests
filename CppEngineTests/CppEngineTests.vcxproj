@@ -170,6 +170,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Properties.cpp" />
+    <ClCompile Include="SaveAsTTL.cpp" />
     <ClCompile Include="Various.cpp" />
     <ClCompile Include="EntitiesTest.cpp" />
     <ClCompile Include="Example_RDFGeomDefine.cpp" />
