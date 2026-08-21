@@ -61,8 +61,8 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     std::string writeFile = "WriteSchema_";
     writeFile.append(expFileName);
 
-    bool ok = engiSaveSchemaBN(model, writeFile.c_str());
-    ASSERT(ok);
+    bool res = engiSaveSchemaBN(model, writeFile.c_str());
+    ASSERT(res == 0);
 
     sdaiCloseModel(model);
 
@@ -75,8 +75,8 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     std::string rewriteFile = "ReWriteSchema_";
     rewriteFile.append(expFileName);
 
-    ok = engiSaveSchemaBN(model, rewriteFile.c_str());
-    ASSERT(ok); //write-read is different from read
+    res = engiSaveSchemaBN(model, rewriteFile.c_str());
+    ASSERT(res == 0); //write-read is different from read
 
     sdaiCloseModel(model);
 
@@ -104,7 +104,8 @@ static void ReadWriteSchema(const char* expFileName, const char* embeddedName, e
     writeEmbedded.append(embeddedName);
     writeEmbedded.append(".exp");
 
-    ok = engiSaveSchemaBN(model, writeEmbedded.c_str());
+    res = engiSaveSchemaBN(model, writeEmbedded.c_str());
+    ASSERT (res == 0);
 
     sdaiCloseModel(model);
     model = 0;

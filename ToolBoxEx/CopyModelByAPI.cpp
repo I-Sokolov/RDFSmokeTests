@@ -289,8 +289,8 @@ extern SdaiModel CopyModelByAPI(SdaiModel source, InstanceMap& instanceMap)
 {
     const char* schemaFile = "CopyModelByAPI.exp";
 
-    auto ok = engiSaveSchemaBN(source, schemaFile);
-    ASSERT(ok);
+    auto res = engiSaveSchemaBN(source, schemaFile);
+    ASSERT(res == 0);
 
     auto target = sdaiCreateModelBN(0, NULL, schemaFile);
     ASSERT(target);
