@@ -23,7 +23,7 @@ IF not EXIST output (echo !!!!  Failed to create output !!! & goto END)
 
 echo ----------------------------- Configurator  -----------------------------
 
-call RunTest Configurator "Release|Any CPU" net5.0-windows
+call RunTest Configurator "Release|Any CPU" net9.0-windows7.0
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED to configurate tests !!!! & goto END)
 
 call output\SetConfig.bat
@@ -38,7 +38,7 @@ call RunTest CppIfcEngineTests "Release|x64" .
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED CPP IfcEngine Test !!!! & goto END)
 
 echo ----------------------------- C# IfcEngine Test -----------------------------
-call RunTest CsIfcEngineTests "Release|Any CPU" net5.0
+call RunTest CsIfcEngineTests "Release|Any CPU" net9.0
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED C# IfcEngine Test !!!! & goto END)
 
 if not .%RDF_TEST_TOOLBOX_EX%. == .1. goto SKIP_TOOLBOX_EX
@@ -54,7 +54,7 @@ call RunTest CppEngineTests "Release|x64" .
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED CPP Geometry Kernerl Engine Test !!!! & goto END)
 
 echo ----------------------------- C# Geometry Kernel Test -----------------------------
-call RunTest CsEngineTests "Release|Any CPU" net5.0
+call RunTest CsEngineTests "Release|Any CPU" net9.0
 if not .%ERRORLEVEL% == .0 (echo !!!! FAILED C# Geometry Kernel Engine Test !!!! & goto END)
 
 echo ------------------------------ OK. TESTS ARE PASSED --------------------------

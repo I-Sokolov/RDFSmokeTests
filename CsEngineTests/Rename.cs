@@ -23,7 +23,7 @@ namespace CsEngineTests
         {
             ENTER_TEST(w ? "SetNameOfClassW" : "SetNameOfClass");
 
-            var model = engine.OpenModel(null as byte[]);
+            var model = Engine.OpenModel(null as byte[]);
 
             RenameClass(model, "Box", "RenameBox", enum_error_code_set_uri_LOCKED_NAME, w);
             if (w)
@@ -31,10 +31,10 @@ namespace CsEngineTests
                 RenameClass(model, "Box", "Юникод", enum_error_code_set_uri_LOCKED_NAME, w);
             }
 
-            engine.CreateClass(model, "UsedName");
-            engine.CreateProperty(model, 1, "UsedProp");
+            Engine.CreateClass(model, "UsedName");
+            Engine.CreateProperty(model, 1, "UsedProp");
 
-            engine.CreateClass(model, "CustomClass");
+            Engine.CreateClass(model, "CustomClass");
             RenameClass(model, "CustomClass", "UsedName", enum_error_code_set_uri_NAME_USED_BY_CLASS, w);
             RenameClass(model, "CustomClass", "Box", enum_error_code_set_uri_NAME_USED_BY_CLASS, w);
             RenameClass(model, "CustomClass", "length", enum_error_code_set_uri_NAME_USED_BY_PROPERTY, w);
@@ -47,7 +47,7 @@ namespace CsEngineTests
                 RenameClass(model, "UsedName", "Юникод", enum_error_code_set_uri_NAME_USED_BY_CLASS, w);
             }
 
-            engine.CloseModel(model);
+            Engine.CloseModel(model);
         }
 
         const int enum_error_code_set_uri_SUCCESSFUL = 0;	//successful
@@ -63,7 +63,7 @@ namespace CsEngineTests
         {
             ENTER_TEST(w ? "SetNameOfPropertyW" : "SetNameOfProperty");
 
-            var model = engine.OpenModel(null as byte[]);
+            var model = Engine.OpenModel(null as byte[]);
 
             RenameProperty(model, "length", "RenameLen", enum_error_code_set_uri_LOCKED_NAME, w);
             if (w)
@@ -71,14 +71,14 @@ namespace CsEngineTests
                 RenameProperty(model, "length", "Юникод", enum_error_code_set_uri_LOCKED_NAME, w);
             }
 
-            engine.CreateClass(model, "UsedClass");
-            engine.CreateProperty(model, 1, "UsedProp");
+            Engine.CreateClass(model, "UsedClass");
+            Engine.CreateProperty(model, 1, "UsedProp");
 
             for (int type = 1; type < 3; type++)
             {
                 var propName = string.Format("CustomProp_{0}", type);
-                
-                engine.CreateProperty(model, type, propName);
+
+                Engine.CreateProperty(model, type, propName);
                 
                 RenameProperty(model, propName, "UsedClass", enum_error_code_set_uri_NAME_USED_BY_CLASS, w);
                 RenameProperty(model, propName, "Box", enum_error_code_set_uri_NAME_USED_BY_CLASS, w);
@@ -93,12 +93,12 @@ namespace CsEngineTests
                 }
             }
 
-            engine.CloseModel(model);
+            Engine.CloseModel(model);
         }
 
         private static void RenameClass (Int64 model, string oldName, string newName, long expect, bool w)
         {
-            var cls = engine.GetClassByName(model, oldName);
+            var cls = Engine.GetClassByName(model, oldName);
             ASSERT(cls != 0);
 
             byte[] ucodeName = Encoding.Unicode.GetBytes(newName);
@@ -106,11 +106,11 @@ namespace CsEngineTests
             long res = enum_error_code_set_uri_OTHER_ERROR;
             if (w)
             {
-                res = engine.SetNameOfClassW(cls, ucodeName);
+                res = Engine.SetNameOfClassW(cls, ucodeName);
             }
             else
             {
-                res = engine.SetNameOfClass(cls, newName);
+                res = Engine.SetNameOfClass(cls, newName);
             }
             ASSERT(res == expect);
 
@@ -120,32 +120,32 @@ namespace CsEngineTests
             Int64 cls2 = 0;
             if (w)
             {
-                cls2 = engine.GetClassByNameW(model, ucodeName);
+                cls2 = Engine.GetClassByNameW(model, ucodeName);
             }
             else
             {
-                cls2 = engine.GetClassByName(model, newName);
+                cls2 = Engine.GetClassByName(model, newName);
             }
             ASSERT(cls2 == cls);
 
             string name2;
             if (w)
             {
-                name2 = engine.GetNameOfClassW(cls2);
+                name2 = Engine.GetNameOfClassW(cls2);
             }
             else
             {
-                name2 = engine.GetNameOfClass(cls2);
+                name2 = Engine.GetNameOfClass(cls2);
             }
             ASSERT(name2 == newName);
 
-            cls = engine.GetClassByName(model, oldName);
+            cls = Engine.GetClassByName(model, oldName);
             ASSERT (cls == 0);
         }
 
         private static void RenameProperty(Int64 model, string oldName, string newName, long expect, bool w)
         {
-            var prp = engine.GetPropertyByName(model, oldName);
+            var prp = Engine.GetPropertyByName(model, oldName);
             ASSERT(prp != 0);
 
             byte[] ucodeName = Encoding.Unicode.GetBytes(newName);
@@ -153,11 +153,11 @@ namespace CsEngineTests
             long res = enum_error_code_set_uri_OTHER_ERROR;
             if (w)
             {
-                res = engine.SetNameOfPropertyW(prp, ucodeName);
+                res = Engine.SetNameOfPropertyW(prp, ucodeName);
             }
             else
             {
-                res = engine.SetNameOfProperty(prp, newName);
+                res = Engine.SetNameOfProperty(prp, newName);
             }
             ASSERT(res == expect);
 
@@ -167,26 +167,26 @@ namespace CsEngineTests
             Int64 prp2 = 0;
             if (w)
             {
-                prp2 = engine.GetPropertyByNameW(model, ucodeName);
+                prp2 = Engine.GetPropertyByNameW(model, ucodeName);
             }
             else
             {
-                prp2 = engine.GetPropertyByName(model, newName);
+                prp2 = Engine.GetPropertyByName(model, newName);
             }
             ASSERT(prp2 == prp);
 
             string name2;
             if (w)
             {
-                name2 = engine.GetNameOfPropertyW(prp2);
+                name2 = Engine.GetNameOfPropertyW(prp2);
             }
             else
             {
-                name2 = engine.GetNameOfProperty(prp2);
+                name2 = Engine.GetNameOfProperty(prp2);
             }
             ASSERT(name2 == newName);
 
-            prp = engine.GetPropertyByName(model, oldName);
+            prp = Engine.GetPropertyByName(model, oldName);
             ASSERT(prp == 0);
         }
 

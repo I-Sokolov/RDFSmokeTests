@@ -13,13 +13,13 @@ namespace CsEngineTests
 		/// <param name="args"></param>
         public static void Run()
         {
-            var model = engine.OpenModel(null as byte[]);
+            var model = Engine.OpenModel(null as byte[]);
 
             CreateRedBox(model);
 
 			MoreExamplesToAccessDifferentTypesOfProperties(model);
 
-            engine.CloseModel(model);
+            Engine.CloseModel(model);
         }
 
 		/// <summary>
@@ -41,15 +41,15 @@ namespace CsEngineTests
 			colorComponent.B = 0;
 
 			//you can use instance and property handlers API
-			Int64 propW = engine.GetPropertyByName(model, "W");
+			Int64 propW = Engine.GetPropertyByName(model, "W");
 			double w = 0.5;
-			engine.SetDatatypeProperty(colorComponent, propW, ref w, 1);
+            Engine.SetDatatypeProperty(colorComponent, propW, ref w, 1);
 			//the code above is equivalent to
 			colorComponent.W = 0.5;
 
 			//or you easy use existing instance handlers with classes
-			Int64 colorClass = engine.GetClassByName(model, "Color");
-			Int64 colorInstance = engine.CreateInstance(colorClass, null as string);
+			Int64 colorClass = Engine.GetClassByName(model, "Color");
+			Int64 colorInstance = Engine.CreateInstance(colorClass, null as string);
 
 			//get wrapper object from instance handler
 			Color color = new Color(colorInstance);

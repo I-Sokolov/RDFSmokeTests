@@ -22,7 +22,7 @@ namespace CsEngineTests
 
         private static void CreateCollection (out long model, out Collection collection) 
             {
-            model = engine.OpenModel(null as byte[]);
+            model = Engine.OpenModel(null as byte[]);
 
             var material = Material.Create(model);
 
@@ -51,32 +51,32 @@ namespace CsEngineTests
             var cnt = InstanceCount(model);
             ASSERT(cnt == 4);
 
-            ASSERT(engine.RemoveInstance(collection)==0);
+            ASSERT(Engine.RemoveInstance(collection)==0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 3);
 
             //double delete
-            ASSERT(engine.RemoveInstance(collection) == 0);
+            ASSERT(Engine.RemoveInstance(collection) == 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 3);
 
-            ASSERT(engine.RemoveInstance(items[0])==0);
+            ASSERT(Engine.RemoveInstance(items[0])==0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 2);
 
-            ASSERT(engine.RemoveInstance(material) != 0);
+            ASSERT(Engine.RemoveInstance(material) != 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 2);
 
-            ASSERT(engine.RemoveInstance(items[1]) == 0);
+            ASSERT(Engine.RemoveInstance(items[1]) == 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 1);
 
-            ASSERT(engine.RemoveInstance(material) == 0);
+            ASSERT(Engine.RemoveInstance(material) == 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 0);
 
-            engine.CloseModel(model);
+            Engine.CloseModel(model);
             }
 
         private static void RemoveInstanceRecursively()
@@ -93,18 +93,18 @@ namespace CsEngineTests
             var cnt = InstanceCount(model);
             ASSERT(cnt == 4);
 
-            ASSERT(engine.RemoveInstanceRecursively(collection) == 4);
+            ASSERT(Engine.RemoveInstanceRecursively(collection) == 4);
             cnt = InstanceCount(model);
             ASSERT(cnt == 0);
 
             //double delete
-            ASSERT(engine.RemoveInstanceRecursively(collection) == 0);
+            ASSERT(Engine.RemoveInstanceRecursively(collection) == 0);
 
-            ASSERT(engine.RemoveInstance(items[0]) == 0);
-            ASSERT(engine.RemoveInstanceRecursively(items[1]) == 0);
-            ASSERT(engine.RemoveInstance(material) == 0);
+            ASSERT(Engine.RemoveInstance(items[0]) == 0);
+            ASSERT(Engine.RemoveInstanceRecursively(items[1]) == 0);
+            ASSERT(Engine.RemoveInstance(material) == 0);
 
-            engine.CloseModel(model);
+            Engine.CloseModel(model);
             }
 
         static private void UpwardDelete()
@@ -121,29 +121,29 @@ namespace CsEngineTests
             var cnt = InstanceCount(model);
             ASSERT(cnt == 4);
 
-            ASSERT(engine.RemoveInstance(items[0]) != 0);
-            ASSERT(engine.RemoveInstanceRecursively(items[1]) == 0);
+            ASSERT(Engine.RemoveInstance(items[0]) != 0);
+            ASSERT(Engine.RemoveInstanceRecursively(items[1]) == 0);
 
-            ASSERT(engine.RemoveInstance(collection) == 0);
+            ASSERT(Engine.RemoveInstance(collection) == 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 3);
 
-            ASSERT(engine.RemoveInstance(items[0]) == 0);
+            ASSERT(Engine.RemoveInstance(items[0]) == 0);
             cnt = InstanceCount(model);
             ASSERT(cnt == 2);
 
-            ASSERT(engine.RemoveInstanceRecursively(items[1]) == 2);
+            ASSERT(Engine.RemoveInstanceRecursively(items[1]) == 2);
             cnt = InstanceCount(model);
             ASSERT(cnt == 0);
 
-            engine.CloseModel(model);
+            Engine.CloseModel(model);
             }
 
         private static int InstanceCount(long model)
             {
             int cnt = 0;
             long inst = 0;
-            while ((inst = engine.GetInstancesByIterator(model, inst))!=0)
+            while ((inst = Engine.GetInstancesByIterator(model, inst))!=0)
                 {
                 cnt++;
                 }
@@ -154,72 +154,72 @@ namespace CsEngineTests
             {
             ENTER_TEST();
 
-            var model = engine.OpenModel(null as byte[]);
+            var model = Engine.OpenModel(null as byte[]);
             
-            var box = engine.GetClassByName(model, "Box");
+            var box = Engine.GetClassByName(model, "Box");
             ASSERT(box != 0);
-            var length = engine.GetPropertyByName (model, "length");
+            var length = Engine.GetPropertyByName (model, "length");
             ASSERT(length != 0);
-            var material = engine.GetPropertyByName(model, "material");
+            var material = Engine.GetPropertyByName(model, "material");
             ASSERT(material != 0);
             
-            var res = engine.GetNameOfClass(model);
+            var res = Engine.GetNameOfClass(model);
             ASSERT(res == null);
 
-            res = engine.GetNameOfClass (box);
+            res = Engine.GetNameOfClass (box);
             ASSERT(res == "Box");
 
-            res = engine.GetNameOfClassW(model);
+            res = Engine.GetNameOfClassW(model);
             ASSERT(res == null);
 
-            res = engine.GetNameOfClassW(box);
+            res = Engine.GetNameOfClassW(box);
             ASSERT(res == "Box");
 
-            res = engine.GetNameOfClassEx(model, model);
+            res = Engine.GetNameOfClassEx(model, model);
             ASSERT(res == null);
 
-            res = engine.GetNameOfClassEx(model, box);
+            res = Engine.GetNameOfClassEx(model, box);
             ASSERT(res == "Box");
 
-            res = engine.GetNameOfClassWEx(model, model);
+            res = Engine.GetNameOfClassWEx(model, model);
             ASSERT(res == null);
 
-            res = engine.GetNameOfClassWEx(model, box);
+            res = Engine.GetNameOfClassWEx(model, box);
             ASSERT(res == "Box");
 
-            res = engine.GetNameOfProperty(model);
+            res = Engine.GetNameOfProperty(model);
             ASSERT(res == null);
 
-            res = engine.GetNameOfProperty(length);
+            res = Engine.GetNameOfProperty(length);
             ASSERT(res == "length");
-            res = engine.GetNameOfProperty(material);
+            res = Engine.GetNameOfProperty(material);
             ASSERT(res == "material");
 
-            res = engine.GetNameOfPropertyW(model);
+            res = Engine.GetNameOfPropertyW(model);
             ASSERT(res == null);
 
-            res = engine.GetNameOfPropertyW(length);
+            res = Engine.GetNameOfPropertyW(length);
             ASSERT(res == "length");
-            res = engine.GetNameOfPropertyW(material);
+            res = Engine.GetNameOfPropertyW(material);
             ASSERT(res == "material");
 
-            res = engine.GetNameOfPropertyEx(model, model);
+            res = Engine.GetNameOfPropertyEx(model, model);
             ASSERT(res == null);
 
-            res = engine.GetNameOfPropertyEx(model, length);
+            res = Engine.GetNameOfPropertyEx(model, length);
             ASSERT(res == "length");
-            res = engine.GetNameOfPropertyEx(model, material);
+            res = Engine.GetNameOfPropertyEx(model, material);
             ASSERT(res == "material");
 
-            res = engine.GetNameOfPropertyWEx(model, model);
+            res = Engine.GetNameOfPropertyWEx(model, model);
             ASSERT(res == null);
 
-            res = engine.GetNameOfPropertyWEx(model, length);
+            res = Engine.GetNameOfPropertyWEx(model, length);
             ASSERT(res == "length");
-            res = engine.GetNameOfPropertyWEx(model, material);
+            res = Engine.GetNameOfPropertyWEx(model, material);
             ASSERT(res == "material");
 
-            engine.CloseModel(model);
+            Engine.CloseModel(model);
             }
         }
     }
