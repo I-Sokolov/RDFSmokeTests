@@ -4,10 +4,10 @@
 #define REG_CHARS_FILE_NAME "PutGetRegionalChars.ifc"
 
 
-static const wchar_t*   TEST_WCHAR      = L"'English'\\ Русский'";
-static const char*      TEST_WIN1251    = "'English'\\ \xD0\xF3\xF1\xF1\xEA\xE8\xE9'";
-static const char*      TEST_STEP       = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
-static const wchar_t*   TEST_WCHAR_FORUTF8 = L"''English''\\\\ Русский''";
+static const wchar_t* TEST_WCHAR = L"'English'\\ Русский'";
+static const char* TEST_WIN1251 = "'English'\\ \xD0\xF3\xF1\xF1\xEA\xE8\xE9'";
+static const char* TEST_STEP = R"(''English''\\ \X2\0420\X0\\X2\0443\X0\\X2\0441\X0\\X2\0441\X0\\X2\043A\X0\\X2\0438\X0\\X2\0439\X0\'')";
+static const wchar_t* TEST_WCHAR_FORUTF8 = L"''English''\\\\ Русский''";
 
 static const wchar_t* CHINESE_WCHAR = L"Chinese: 中国人";
 static const char* CHINESE_WIN1251 = "Chinese: ???";
@@ -104,44 +104,43 @@ static void CheckHeader(SdaiModel ifcModel)
 
 static void EncodingAndFilter(SdaiModel model)
 {
-    struct Codepage
-    {
+    struct Codepage {
         enum_string_encoding code;
         int64_t              bitflag;
     };
 
     Codepage codepages[] = {
-                                                                                        //		14, 15, 16, 17, 18, 19
-        {enum_string_encoding::IGNORE_DEFAULT			    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   0   0   0   0	
-        {enum_string_encoding::WINDOWS_1250				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   1   0   0   0	
-        {enum_string_encoding::WINDOWS_1251				    , (0 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   0   1   0   0	
-        {enum_string_encoding::WINDOWS_1252				    , (0 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   1   1   0   0	
-        {enum_string_encoding::WINDOWS_1253				    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   0   0   1   0	
-        {enum_string_encoding::WINDOWS_1254				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   1   0   1   0	
-        {enum_string_encoding::WINDOWS_1255				    , (0 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   0   1   1   0	
-        {enum_string_encoding::WINDOWS_1256				    , (0 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   1   1   1   0	
-        {enum_string_encoding::WINDOWS_1257				    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 0   0   0   0   0   1	
-        {enum_string_encoding::WINDOWS_1258				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 0   0   1   0   0   1	
-        {enum_string_encoding::ISO8859_1					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   0   0   0   0	
-        {enum_string_encoding::ISO8859_2					, (1 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   1   0   0   0	
-        {enum_string_encoding::ISO8859_3					, (1 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   0   1   0   0	
-        {enum_string_encoding::ISO8859_4					, (1 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   1   1   0   0	
-        {enum_string_encoding::ISO8859_5					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   0   0   1   0	
-        {enum_string_encoding::ISO8859_6					, (1 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   1   0   1   0	
-        {enum_string_encoding::ISO8859_7					, (1 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   0   1   1   0	
-        {enum_string_encoding::ISO8859_8					, (1 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   1   1   1   0	
-        {enum_string_encoding::ISO8859_9					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   0   0   0   1	
-        {enum_string_encoding::ISO8859_10				    , (1 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   1   0   0   1	
-        {enum_string_encoding::ISO8859_11				    , (1 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   0   1   0   1	
-        {enum_string_encoding::ISO8859_13				    , (1 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   0   0   1   1	
-        {enum_string_encoding::ISO8859_14				    , (1 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   1   0   1   1	
-        {enum_string_encoding::ISO8859_15				    , (1 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   0   1   1   1	
-        {enum_string_encoding::ISO8859_16				    , (1 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   1   1   1   1	
-        {enum_string_encoding::MACINTOSH_CENTRAL_EUROPEAN   , (0 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   1   0   0   0   0	
-        {enum_string_encoding::SHIFT_JIS_X_213			    , (1 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   1   0   0   0   0	
-        {enum_string_encoding::UTF8			                , (1 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)}	//		 1   1   0   0   0   1	
+        //		14, 15, 16, 17, 18, 19
+{enum_string_encoding::IGNORE_DEFAULT			    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   0   0   0   0	
+{enum_string_encoding::WINDOWS_1250				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   1   0   0   0	
+{enum_string_encoding::WINDOWS_1251				    , (0 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   0   1   0   0	
+{enum_string_encoding::WINDOWS_1252				    , (0 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 0   0   1   1   0   0	
+{enum_string_encoding::WINDOWS_1253				    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   0   0   1   0	
+{enum_string_encoding::WINDOWS_1254				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   1   0   1   0	
+{enum_string_encoding::WINDOWS_1255				    , (0 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   0   1   1   0	
+{enum_string_encoding::WINDOWS_1256				    , (0 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 0   0   1   1   1   0	
+{enum_string_encoding::WINDOWS_1257				    , (0 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 0   0   0   0   0   1	
+{enum_string_encoding::WINDOWS_1258				    , (0 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 0   0   1   0   0   1	
+{enum_string_encoding::ISO8859_1					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   0   0   0   0	
+{enum_string_encoding::ISO8859_2					, (1 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   1   0   0   0	
+{enum_string_encoding::ISO8859_3					, (1 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   0   1   0   0	
+{enum_string_encoding::ISO8859_4					, (1 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 0 * 32)},	//		 1   0   1   1   0   0	
+{enum_string_encoding::ISO8859_5					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   0   0   1   0	
+{enum_string_encoding::ISO8859_6					, (1 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   1   0   1   0	
+{enum_string_encoding::ISO8859_7					, (1 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   0   1   1   0	
+{enum_string_encoding::ISO8859_8					, (1 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 0 * 32)},	//		 1   0   1   1   1   0	
+{enum_string_encoding::ISO8859_9					, (1 + 0 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   0   0   0   1	
+{enum_string_encoding::ISO8859_10				    , (1 + 0 * 2 + 1 * 4 + 0 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   1   0   0   1	
+{enum_string_encoding::ISO8859_11				    , (1 + 0 * 2 + 0 * 4 + 1 * 8 + 0 * 16 + 1 * 32)},	//		 1   0   0   1   0   1	
+{enum_string_encoding::ISO8859_13				    , (1 + 0 * 2 + 0 * 4 + 0 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   0   0   1   1	
+{enum_string_encoding::ISO8859_14				    , (1 + 0 * 2 + 1 * 4 + 0 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   1   0   1   1	
+{enum_string_encoding::ISO8859_15				    , (1 + 0 * 2 + 0 * 4 + 1 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   0   1   1   1	
+{enum_string_encoding::ISO8859_16				    , (1 + 0 * 2 + 1 * 4 + 1 * 8 + 1 * 16 + 1 * 32)},	//		 1   0   1   1   1   1	
+{enum_string_encoding::MACINTOSH_CENTRAL_EUROPEAN   , (0 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 0   1   0   0   0   0	
+{enum_string_encoding::SHIFT_JIS_X_213			    , (1 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 0 * 32)},	//		 1   1   0   0   0   0	
+{enum_string_encoding::UTF8			                , (1 + 1 * 2 + 0 * 4 + 0 * 8 + 0 * 16 + 1 * 32)}	//		 1   1   0   0   0   1	
     };
-   //not implemented  /*ISO8859_12				*/ (1 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 1 * 32),	//		 1   0   1   1   0   1	
+    //not implemented  /*ISO8859_12				*/ (1 + 0 * 2 + 1 * 4 + 1 * 8 + 0 * 16 + 1 * 32),	//		 1   0   1   1   0   1	
 
     int64_t encoding_mask = (0b111111) << 14;
 
@@ -168,7 +167,7 @@ static void EncodingAndFilter(SdaiModel model)
 
         auto getfilter = getFilter(model, encoding_mask);
         ASSERT((codepages[i].bitflag << 14) == getfilter);
-    }    
+    }
 
     //
     // switch
@@ -186,9 +185,9 @@ static void EncodingAndFilter(SdaiModel model)
 
     int64_t change_mask = 0b11;
     change_mask <<= 16;
-    
+
     getfilter = getFilter(model, change_mask);
-    ASSERT(getfilter == ((int64_t)(0b01)<<16));
+    ASSERT(getfilter == ((int64_t)(0b01) << 16));
 
     int64_t bit17 = 1;
     bit17 <<= 17;
@@ -254,7 +253,7 @@ static void CheckRegionalChars(const char* stepFile, SdaiInteger stepId)
 //
 const int_t BLOCK_LENGTH_WRITE = 20000; //  no maximum limit
 static FILE* myFileWrite = nullptr;
-static void    __stdcall   WriteCallBackFunction(unsigned char* content, int64_t size)
+static void    __stdcall   WriteCallBackFunction(unsigned char* content, int_t size)
 {
     fwrite(content, (size_t)size, 1, myFileWrite);
 }
@@ -311,7 +310,7 @@ static void PutGetRegionalChars(void)
     SdaiModel  ifcModel = sdaiCreateModelBNUnicode(L"IFC4");
     ASSERT(ifcModel);
 
-    setFilter(ifcModel, 131072, ((int64_t)0b111111)<<14);
+    setFilter(ifcModel, 131072, ((int64_t)0b111111) << 14);
 
     SetSPFFHeaderItem(ifcModel, 0, 0, sdaiSTRING, TEST_WIN1251);
     SetSPFFHeaderItem(ifcModel, 0, 1, sdaiUNICODE, TEST_WCHAR);
@@ -367,7 +366,7 @@ static void PutGetRegionalChars(void)
 
     /////////////////
     CheckRegionalChars(ifcModel, stepId);
-    
+
     //
     sdaiSaveModelBN(ifcModel, "sdaiSaveModelBN_" REG_CHARS_FILE_NAME);
     CheckRegionalChars("sdaiSaveModelBN_" REG_CHARS_FILE_NAME, stepId);
