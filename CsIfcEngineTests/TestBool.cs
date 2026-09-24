@@ -13,21 +13,21 @@ namespace CsIfcEngineTests
         {
             ENTER_TEST();
 
-            var model = ifcengine.sdaiCreateModelBN("IFC4");
+            var model = IFCEngine.sdaiCreateModelBN("IFC4");
             ASSERT(model);
 
-            var entity = ifcengine.sdaiGetEntity(model, "IfcWall");
+            var entity = IFCEngine.sdaiGetEntity(model, "IfcWall");
 
-            var ok = ifcengine.engiSetMappingSupport(entity, true);
+            var ok = IFCEngine.engiSetMappingSupport(entity, true);
             ASSERT(ok);
-            ok = ifcengine.engiGetMappingSupport(entity);
+            ok = IFCEngine.engiGetMappingSupport(entity);
             ASSERT(ok);
-            ok = ifcengine.engiSetMappingSupport(entity, false);
+            ok = IFCEngine.engiSetMappingSupport(entity, false);
             ASSERT(ok);
-            ok = ifcengine.engiGetMappingSupport(entity);
+            ok = IFCEngine.engiGetMappingSupport(entity);
             ASSERT(!ok);
 
-            ifcengine.sdaiCloseModel(model);
+            IFCEngine.sdaiCloseModel(model);
         }
     }
 }

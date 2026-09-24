@@ -17,7 +17,7 @@ namespace CsIfcEngineTests
 
         private static void GetSetGlobalPlacement()
         {
-            var model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\walls.ifc", "");
+            var model = IFCEngine.sdaiOpenModelBN(0, "..\\TestData\\walls.ifc", "");
             ASSERT(model != 0);
 
             //expected identity placement
@@ -25,20 +25,20 @@ namespace CsIfcEngineTests
             expectedOrigin[0] = expectedOrigin[4] = expectedOrigin[8] = 1.0;
 
             double[] getOrigin = new double[12];
-            ifcengine.getGlobalPlacement(model, out getOrigin[0]);
+            IFCEngine.getGlobalPlacement(model, out getOrigin[0]);
             ASSERT_EQ(getOrigin, expectedOrigin);
 
             //now set translation (1,2,3)
             expectedOrigin[9] = 1.0;
             expectedOrigin[10] = 2.0;
             expectedOrigin[11] = 3.0;
-            ifcengine.setGlobalPlacement(model, ref expectedOrigin[0], false);
+            IFCEngine.setGlobalPlacement(model, ref expectedOrigin[0], false);
 
             //check, use second form 
-            ifcengine.getGlobalPlacement(model, getOrigin);
+            IFCEngine.getGlobalPlacement(model, getOrigin);
             ASSERT_EQ(getOrigin, expectedOrigin);
 
-            ifcengine.sdaiCloseModel(model);
+            IFCEngine.sdaiCloseModel(model);
         }
 
     }

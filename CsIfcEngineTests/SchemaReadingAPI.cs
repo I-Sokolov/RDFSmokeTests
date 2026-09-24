@@ -16,13 +16,13 @@ namespace CsIfcEngineTests
         {
             ENTER_TEST();
 
-            var model = ifcengine.sdaiCreateModelBN("IFC4");
+            var model = IFCEngine.sdaiCreateModelBN("IFC4");
 
             IterateEntities(model);
 
             IterateAttributes(model);
 
-            ifcengine.sdaiCloseModel(model);
+            IFCEngine.sdaiCloseModel(model);
         }
 
         class AggrDef
@@ -87,46 +87,46 @@ namespace CsIfcEngineTests
 
         static void IterateAttributes(Int64 model)
         {
-            Int64 wall = ifcengine.sdaiGetEntity(model, "IfcWall");
+            Int64 wall = IFCEngine.sdaiGetEntity(model, "IfcWall");
             var wallAttr = new List<AttrTrairs>();
 
             FillWallAttr(wallAttr);
 
             IterateAttributes(wall, wallAttr.ToArray());
 
-            var str = ifcengine.engiGetAttrNameByIndex(wall, 2);
+            var str = IFCEngine.engiGetAttrNameByIndex(wall, 2);
             ASSERT(str == "Name");
-            bool b = ifcengine.engiIsAttrExplicitBN(wall, "Name");
+            bool b = IFCEngine.engiIsAttrExplicitBN(wall, "Name");
             ASSERT(b);
-            b = ifcengine.engiIsAttrInverseBN(wall, "Name");
+            b = IFCEngine.engiIsAttrInverseBN(wall, "Name");
             ASSERT(!b);
-            b = ifcengine.engiIsAttrOptionalBN(wall, "Name");
+            b = IFCEngine.engiIsAttrOptionalBN(wall, "Name");
             ASSERT(b);
-            str = ifcengine.engiGetAttrDomainNameBN (wall, "Name");
+            str = IFCEngine.engiGetAttrDomainNameBN (wall, "Name");
             ASSERT(str == "IfcLabel");
 
-            Int64 ind = ifcengine.engiGetAttrIndexBN (wall, "WallType");
+            Int64 ind = IFCEngine.engiGetAttrIndexBN (wall, "WallType");
             ASSERT(ind == -1);
-            ind = ifcengine.engiGetAttrIndexBN(wall, "PredefinedType");
+            ind = IFCEngine.engiGetAttrIndexBN(wall, "PredefinedType");
             ASSERT(ind == 32);
-            ind = ifcengine.engiGetAttrIndexExBN(wall, "PredefinedType", true, false);
+            ind = IFCEngine.engiGetAttrIndexExBN(wall, "PredefinedType", true, false);
             ASSERT(ind == 8);
 
-            var attr = ifcengine.sdaiGetAttrDefinition(wall, "Name");
-            var tp = ifcengine.engiGetAttrType(attr);
-            ASSERT(tp == ifcengine.sdaiSTRING);
+            var attr = IFCEngine.sdaiGetAttrDefinition(wall, "Name");
+            var tp = IFCEngine.engiGetAttrType(attr);
+            ASSERT(tp == IFCEngine.sdaiSTRING);
 
-            ifcengine.engiGetAttrTypeByIndex(wall, 900, out tp);
+            IFCEngine.engiGetAttrTypeByIndex(wall, 900, out tp);
             ASSERT(tp == 0);
-            ifcengine.engiGetAttrTypeByIndex(wall, 32, out tp);
-            ASSERT(tp == ifcengine.sdaiENUM);
+            IFCEngine.engiGetAttrTypeByIndex(wall, 32, out tp);
+            ASSERT(tp == IFCEngine.sdaiENUM);
         }
 
         static void IterateAttributes(Int64 entity, AttrTrairs[] traits)
         {
             Int64 attr = 0;
             int ind = 0;
-            while (0 != (attr = ifcengine.engiGetEntityAttributeByIterator(entity, attr)))
+            while (0 != (attr = IFCEngine.engiGetEntityAttributeByIterator(entity, attr)))
             {
                 string name;
                 Int64 definingEntity;
@@ -136,7 +136,7 @@ namespace CsIfcEngineTests
                 Int64 domainEntity;
                 Int64 aggregationDefinition;
                 bool optional;
-                ifcengine.engiGetAttrTraits(attr, out name, out definingEntity, out direct, out inverse, out attrType, out domainEntity, out aggregationDefinition, out optional);
+                IFCEngine.engiGetAttrTraits(attr, out name, out definingEntity, out direct, out inverse, out attrType, out domainEntity, out aggregationDefinition, out optional);
 
 #if WRITE
                 Console.WriteLine("wallAttr.Add(new AttrTrairs(");
@@ -145,7 +145,7 @@ namespace CsIfcEngineTests
 
                 string defEntityName = null;
                 if (definingEntity != 0)
-                    defEntityName = ifcengine.engiGetEntityName(definingEntity);
+                    defEntityName = IFCEngine.engiGetEntityName(definingEntity);
                 Check(defEntityName, traits[ind].definingEntity);
 
                 Check(direct, traits[ind].direct);
@@ -154,24 +154,24 @@ namespace CsIfcEngineTests
 
                 string domainName = null;
                 if (domainEntity != 0)
-                    domainName = ifcengine.engiGetEntityName(domainEntity);
+                    domainName = IFCEngine.engiGetEntityName(domainEntity);
                 Check(domainName, traits[ind].domainEntity);
 
                 Check(optional, traits[ind].optional);
 
                 TestAggregationDefinition(aggregationDefinition, traits[ind].aggrDef);
 
-                var str = ifcengine.engiGetAttrName(attr);
+                var str = IFCEngine.engiGetAttrName(attr);
                 ASSERT(str == name);
-                var b = ifcengine.engiIsAttrExplicit(attr);
+                var b = IFCEngine.engiIsAttrExplicit(attr);
                 ASSERT(b == direct);
-                b = ifcengine.engiIsAttrInverse(attr);
+                b = IFCEngine.engiIsAttrInverse(attr);
                 ASSERT(b == inverse);
-                b = ifcengine.engiIsAttrOptional(attr);
+                b = IFCEngine.engiIsAttrOptional(attr);
                 ASSERT(b == optional);
-                Int64 val = ifcengine.engiGetAttrDefiningEntity(attr);
+                Int64 val = IFCEngine.engiGetAttrDefiningEntity(attr);
                 ASSERT(val == definingEntity);
-                str = ifcengine.engiGetAttrDomainName(attr);
+                str = IFCEngine.engiGetAttrDomainName(attr);
                 ASSERT(str == domainName);
 
 #if WRITE
@@ -206,7 +206,7 @@ namespace CsIfcEngineTests
             bool unique;
             Int64 nextAggregationLevel;
 
-            ifcengine.engiGetAggregationDefinition(aggregationDefinition, out aggrType, out cardinalityMin, out cardinalityMax, out optional, out unique, out nextAggregationLevel);
+            IFCEngine.engiGetAggregationDefinition(aggregationDefinition, out aggrType, out cardinalityMin, out cardinalityMax, out optional, out unique, out nextAggregationLevel);
 
 #if WRITE
             Console.WriteLine("new AggrDef(");
@@ -289,12 +289,12 @@ namespace CsIfcEngineTests
             int entities = 0;
 
             Int64 it = 0;
-            while (0 != (it = ifcengine.engiGetNextTypeDeclarationIterator(model, it)))
+            while (0 != (it = IFCEngine.engiGetNextTypeDeclarationIterator(model, it)))
             {
-                Int64 decl = ifcengine.engiGetTypeDeclarationFromIterator(model, it);
+                Int64 decl = IFCEngine.engiGetTypeDeclarationFromIterator(model, it);
                 ASSERT(decl);
 
-                var type = ifcengine.engiGetDeclarationType(decl);
+                var type = IFCEngine.engiGetDeclarationType(decl);
                 switch (type) 
                 {
                     case enum_express_declaration.__DEFINED_TYPE:

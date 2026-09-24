@@ -62,17 +62,17 @@ namespace CsIfcEngineTests
             long model = 0;
 
             //open null-model test
-            model = ifcengine.sdaiOpenModelBN(0,"NotExist", "IFC4");
+            model = IFCEngine.sdaiOpenModelBN(0,"NotExist", "IFC4");
             ASSERT(model == 0);
 
             //
-            model = ifcengine.sdaiOpenModelBN(0,"..\\TestData\\ModelCheckerIFC4x3.ifc", "IFC4x3");
+            model = IFCEngine.sdaiOpenModelBN(0,"..\\TestData\\ModelCheckerIFC4x3.ifc", "IFC4x3");
             ASSERT(model != 0);
 
             //get data test
             for (int i = 0; i < 3; i++)
             {
-                IFC4x3.IfcUnitAssignment unitsAssmt = RDF.ifcengine.internalGetInstanceFromP21Line(model, 9);
+                IFC4x3.IfcUnitAssignment unitsAssmt = RDF.IFCEngine.internalGetInstanceFromP21Line(model, 9);
                 ASSERT(unitsAssmt != 0);
 
                 var units = unitsAssmt.Units;
@@ -93,7 +93,7 @@ namespace CsIfcEngineTests
             //modify data test
             for (int i = 0; i < 3; i++)
             {
-                IFC4x3.IfcPropertySet pset = RDF.ifcengine.internalGetInstanceFromP21Line(model, 84);
+                IFC4x3.IfcPropertySet pset = RDF.IFCEngine.internalGetInstanceFromP21Line(model, 84);
                 ASSERT(pset != 0);
 
                 pset.Name = ("NewName");

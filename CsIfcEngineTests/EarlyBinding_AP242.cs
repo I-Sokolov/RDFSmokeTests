@@ -26,9 +26,9 @@ namespace CsIfcEngineTests
             /// 
             /// Create list of list of list of double
             /// 
-            long model = RDF.ifcengine.sdaiCreateModelBN(0, null as string, "AP242");
-            RDF.ifcengine.SetSPFFHeaderItem(model, 9, 0, RDF.ifcengine.sdaiSTRING, "AP242");
-            RDF.ifcengine.SetSPFFHeaderItem(model, 9, 1, RDF.ifcengine.sdaiSTRING, null as string);
+            long model = RDF.IFCEngine.sdaiCreateModelBN(0, null as string, "AP242");
+            RDF.IFCEngine.SetSPFFHeaderItem(model, 9, 0, RDF.IFCEngine.sdaiSTRING, "AP242");
+            RDF.IFCEngine.SetSPFFHeaderItem(model, 9, 1, RDF.IFCEngine.sdaiSTRING, null as string);
 
             ASSERT(model!=0);
 
@@ -143,41 +143,41 @@ namespace CsIfcEngineTests
             ASSERT(getLocations.Count == 1 && getLocations[0].inspected_shape_element_select.direction == dir);
 
             //
-            RDF.ifcengine.sdaiSaveModelBN(model, "Test.ap");
-            RDF.ifcengine.sdaiCloseModel(model);
+            RDF.IFCEngine.sdaiSaveModelBN(model, "Test.ap");
+            RDF.IFCEngine.sdaiCloseModel(model);
 
             /// 
             /// Now read
             /// 
-            var modelRead = RDF.ifcengine.sdaiOpenModelBN(0, "Test.ap", "AP242");
+            var modelRead = RDF.IFCEngine.sdaiOpenModelBN(0, "Test.ap", "AP242");
 
-            var entity = RDF.ifcengine.sdaiGetEntity(modelRead, "RATIONAL_B_SPLINE_VOLUME");
+            var entity = RDF.IFCEngine.sdaiGetEntity(modelRead, "RATIONAL_B_SPLINE_VOLUME");
             ASSERT(entity!=0);
 
-            var volumes = RDF.ifcengine.sdaiGetEntityExtent(modelRead, entity);
-            var N_volumes = RDF.ifcengine.sdaiGetMemberCount(volumes);
+            var volumes = RDF.IFCEngine.sdaiGetEntityExtent(modelRead, entity);
+            var N_volumes = RDF.IFCEngine.sdaiGetMemberCount(volumes);
             ASSERT(N_volumes == 1);
             for (long i = 0; i < N_volumes; i++)
             {
 
                 long volume = 0;
-                RDF.ifcengine.sdaiGetAggrByIndex(volumes, i, RDF.ifcengine.sdaiINSTANCE, out volume);
+                RDF.IFCEngine.sdaiGetAggrByIndex(volumes, i, RDF.IFCEngine.sdaiINSTANCE, out volume);
 
                 list_of_list_of_list_of_double weights2 = ((rational_b_spline_volume)volume).weights_data;
 
                 ASSERT_EQ_LST(weights, weights2);
             }
 
-            RDF.ifcengine.sdaiCloseModel(modelRead);
+            RDF.IFCEngine.sdaiCloseModel(modelRead);
         }
 
         static void test_multi_parent()
         {
             ENTER_TEST();
 
-            long model = RDF.ifcengine.sdaiCreateModelBN(0, null as string, "AP242");
-            RDF.ifcengine.SetSPFFHeaderItem(model, 9, 0, RDF.ifcengine.sdaiSTRING, "AP242");
-            RDF.ifcengine.SetSPFFHeaderItem(model, 9, 1, RDF.ifcengine.sdaiSTRING, null as string);
+            long model = RDF.IFCEngine.sdaiCreateModelBN(0, null as string, "AP242");
+            RDF.IFCEngine.SetSPFFHeaderItem(model, 9, 0, RDF.IFCEngine.sdaiSTRING, "AP242");
+            RDF.IFCEngine.SetSPFFHeaderItem(model, 9, 1, RDF.IFCEngine.sdaiSTRING, null as string);
 
             //wrapper test
             var inst = a3m_equivalence_criterion_with_specified_elements.Create(model);
@@ -192,38 +192,38 @@ namespace CsIfcEngineTests
             eloop.name = NAME;
             eloop.put_edge_list(edge);
 
-            RDF.ifcengine.sdaiSaveModelBN(model, "Test.ap");
-            RDF.ifcengine.sdaiCloseModel(model);
+            RDF.IFCEngine.sdaiSaveModelBN(model, "Test.ap");
+            RDF.IFCEngine.sdaiCloseModel(model);
 
             /// Now read
             /// 
-            var modelRead = RDF.ifcengine.sdaiOpenModelBN(0, "Test.ap", "AP242");
+            var modelRead = RDF.IFCEngine.sdaiOpenModelBN(0, "Test.ap", "AP242");
 
-            var entity = RDF.ifcengine.sdaiGetEntity(modelRead, "a3m_equivalence_criterion_with_specified_elements");// "a3m_equivalence_criterion");
+            var entity = RDF.IFCEngine.sdaiGetEntity(modelRead, "a3m_equivalence_criterion_with_specified_elements");// "a3m_equivalence_criterion");
             ASSERT(entity!=0);
-            var items = RDF.ifcengine.sdaiGetEntityExtent(modelRead, entity);
-            var N_items = RDF.ifcengine.sdaiGetMemberCount(items);
+            var items = RDF.IFCEngine.sdaiGetEntityExtent(modelRead, entity);
+            var N_items = RDF.IFCEngine.sdaiGetMemberCount(items);
             ASSERT(N_items == 1);
             for (long i = 0; i < N_items; i++)
             {
 
                 long item = 0;
-                RDF.ifcengine.sdaiGetAggrByIndex(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
+                RDF.IFCEngine.sdaiGetAggrByIndex(items, i, RDF.IFCEngine.sdaiINSTANCE, out item);
 
                 var name = ((a3m_equivalence_criterion)item).name;
                 ASSERT(!strcmp(name, NAME));
             }
 
-            entity = RDF.ifcengine.sdaiGetEntity(modelRead, "edge_loop");
+            entity = RDF.IFCEngine.sdaiGetEntity(modelRead, "edge_loop");
             ASSERT(entity!=0);
-            items = RDF.ifcengine.sdaiGetEntityExtent(modelRead, entity);
-            N_items = RDF.ifcengine.sdaiGetMemberCount(items);
+            items = RDF.IFCEngine.sdaiGetEntityExtent(modelRead, entity);
+            N_items = RDF.IFCEngine.sdaiGetMemberCount(items);
             ASSERT(N_items == 1);
             for (long i = 0; i < N_items; i++)
             {
 
                 long item = 0;
-                RDF.ifcengine.sdaiGetAggrByIndex(items, i, RDF.ifcengine.sdaiINSTANCE, out item);
+                RDF.IFCEngine.sdaiGetAggrByIndex(items, i, RDF.IFCEngine.sdaiINSTANCE, out item);
 
                 eloop = (edge_loop)item;
                 var name = eloop.name;
@@ -234,7 +234,7 @@ namespace CsIfcEngineTests
             }
 
 
-            RDF.ifcengine.sdaiCloseModel(modelRead);
+            RDF.IFCEngine.sdaiCloseModel(modelRead);
 
         }
 

@@ -25,10 +25,10 @@ namespace CsIfcEngineTests
 
         private static void ParseExpressFile (string strExpFile)
         {
-            var model = RDF.ifcengine.sdaiCreateModelBN(1, "",strExpFile);
+            var model = RDF.IFCEngine.sdaiCreateModelBN(1, "",strExpFile);
             ASSERT(model!= 0);
 
-            RDF.ifcengine.sdaiCloseModel(model);
+            RDF.IFCEngine.sdaiCloseModel(model);
         }
     }
 }

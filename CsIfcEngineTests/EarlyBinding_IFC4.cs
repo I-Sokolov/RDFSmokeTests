@@ -15,10 +15,10 @@ namespace CsIfcEngineTests
         {
             ENTER_TEST();
             
-            var ifcModel = ifcengine.sdaiCreateModelBN(0, (string)null, "IFC4");
+            var ifcModel = IFCEngine.sdaiCreateModelBN(0, (string)null, "IFC4");
             ASSERT(ifcModel!=0);
-            ifcengine.SetSPFFHeaderItem(ifcModel, 9, 0, ifcengine.sdaiSTRING, "IFC4");
-            ifcengine.SetSPFFHeaderItem(ifcModel, 9, 1, ifcengine.sdaiSTRING, (string)null);
+            IFCEngine.SetSPFFHeaderItem(ifcModel, 9, 0, IFCEngine.sdaiSTRING, "IFC4");
+            IFCEngine.SetSPFFHeaderItem(ifcModel, 9, 1, IFCEngine.sdaiSTRING, (string)null);
 
             var ownerHistory = IfcOwnerHistory.Create(ifcModel);
 
@@ -541,22 +541,22 @@ namespace CsIfcEngineTests
 
             /// 
             /// 
-            ifcengine.sdaiSaveModelBN(ifcModel, "Test.ifc");
-            ifcengine.sdaiCloseModel(ifcModel);
+            IFCEngine.sdaiSaveModelBN(ifcModel, "Test.ifc");
+            IFCEngine.sdaiCloseModel(ifcModel);
 
-            ifcModel = ifcengine.sdaiOpenModelBN(0, "Test.ifc", "IFC4");
+            ifcModel = IFCEngine.sdaiOpenModelBN(0, "Test.ifc", "IFC4");
 
-            var entityIfcRelDefinesByProperties = ifcengine.sdaiGetEntity(ifcModel, "IfcRelDefinesByProperties");
+            var entityIfcRelDefinesByProperties = IFCEngine.sdaiGetEntity(ifcModel, "IfcRelDefinesByProperties");
             ASSERT(entityIfcRelDefinesByProperties!=0);
 
-            var rels = ifcengine.sdaiGetEntityExtent(ifcModel, entityIfcRelDefinesByProperties);
-            var N_rels = ifcengine.sdaiGetMemberCount(rels);
+            var rels = IFCEngine.sdaiGetEntityExtent(ifcModel, entityIfcRelDefinesByProperties);
+            var N_rels = IFCEngine.sdaiGetMemberCount(rels);
             ASSERT(N_rels == 1);
             for (i = 0; i < N_rels; i++)
             {
 
                 Int64 rel = 0;
-                ifcengine.sdaiGetAggrByIndex(rels, i, ifcengine.sdaiINSTANCE, out rel);
+                IFCEngine.sdaiGetAggrByIndex(rels, i, IFCEngine.sdaiINSTANCE, out rel);
 
                 var get = ((IfcRelDefinesByProperties)(rel)).RelatingPropertyDefinition;
                 ASSERT(get.IfcPropertySetDefinition == 0);
@@ -566,7 +566,7 @@ namespace CsIfcEngineTests
                 ASSERT(name == "Empty property set");
             }
 
-            ifcengine.sdaiCloseModel(ifcModel);
+            IFCEngine.sdaiCloseModel(ifcModel);
         }
     }
 }

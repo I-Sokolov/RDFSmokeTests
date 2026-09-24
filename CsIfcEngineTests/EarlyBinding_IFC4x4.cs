@@ -15,10 +15,10 @@ namespace CsIfcEngineTests
         {
             ENTER_TEST();
 
-            var ifcModel = ifcengine.sdaiCreateModelBN(0, (string)null, "IFC4x4");
+            var ifcModel = IFCEngine.sdaiCreateModelBN(0, (string)null, "IFC4x4");
             ASSERT(ifcModel!=0);
-            ifcengine.SetSPFFHeaderItem(ifcModel, 9, 0, ifcengine.sdaiSTRING, "IFC4x4");
-            ifcengine.SetSPFFHeaderItem(ifcModel, 9, 1, ifcengine.sdaiSTRING, (string)null);
+            IFCEngine.SetSPFFHeaderItem(ifcModel, 9, 0, IFCEngine.sdaiSTRING, "IFC4x4");
+            IFCEngine.SetSPFFHeaderItem(ifcModel, 9, 1, IFCEngine.sdaiSTRING, (string)null);
 
             //
             var logicalVoxelData = IFC4x4.IfcLogicalVoxelData.Create(ifcModel);
@@ -38,41 +38,41 @@ namespace CsIfcEngineTests
 
             /// 
             /// 
-            ifcengine.sdaiSaveModelBN(ifcModel, "ebTest4x4cs.ifc");
-            ifcengine.sdaiCloseModel(ifcModel);
+            IFCEngine.sdaiSaveModelBN(ifcModel, "ebTest4x4cs.ifc");
+            IFCEngine.sdaiCloseModel(ifcModel);
 
-            ifcModel = ifcengine.sdaiOpenModelBN(0, "ebTest4x4cs.ifc", "IFC4x4");
+            ifcModel = IFCEngine.sdaiOpenModelBN(0, "ebTest4x4cs.ifc", "IFC4x4");
 
-            var entityLogicalVoxelData = ifcengine.sdaiGetEntity(ifcModel, "IfcLogicalVoxelData");
-            var extent = ifcengine.sdaiGetEntityExtent(ifcModel, entityLogicalVoxelData);
-            var N = ifcengine.sdaiGetMemberCount(extent);
+            var entityLogicalVoxelData = IFCEngine.sdaiGetEntity(ifcModel, "IfcLogicalVoxelData");
+            var extent = IFCEngine.sdaiGetEntityExtent(ifcModel, entityLogicalVoxelData);
+            var N = IFCEngine.sdaiGetMemberCount(extent);
             ASSERT(N == 1);
             for (int i = 0; i < N; i++)
             {
 
                 Int64 inst = 0;
-                ifcengine.sdaiGetAggrByIndex(extent, i, ifcengine.sdaiINSTANCE, out inst);
+                IFCEngine.sdaiGetAggrByIndex(extent, i, IFCEngine.sdaiINSTANCE, out inst);
 
                 lstGet = ((IFC4x4.IfcLogicalVoxelData)(inst)).ValueData;
                 ASSERT_EQ(lstGet, arrSet);
             }
 
 
-            var entityVoxelGrid = ifcengine.sdaiGetEntity(ifcModel, "IfcVoxelGrid");
-            extent = ifcengine.sdaiGetEntityExtent(ifcModel, entityVoxelGrid);
-            N = ifcengine.sdaiGetMemberCount(extent);
+            var entityVoxelGrid = IFCEngine.sdaiGetEntity(ifcModel, "IfcVoxelGrid");
+            extent = IFCEngine.sdaiGetEntityExtent(ifcModel, entityVoxelGrid);
+            N = IFCEngine.sdaiGetMemberCount(extent);
             ASSERT(N == 1);
             for (int i = 0; i < N; i++)
             {
 
                 Int64 inst = 0;
-                ifcengine.sdaiGetAggrByIndex(extent, i, ifcengine.sdaiINSTANCE, out inst);
+                IFCEngine.sdaiGetAggrByIndex(extent, i, IFCEngine.sdaiINSTANCE, out inst);
 
                 lstGetB = ((IFC4x4.IfcVoxelGrid)(inst)).Voxels;
                 ASSERT_EQ(lstGetB, arrSetB);
             }
 
-            ifcengine.sdaiCloseModel(ifcModel);
+            IFCEngine.sdaiCloseModel(ifcModel);
         }
 
     }

@@ -15,17 +15,17 @@ namespace CsIfcEngineTests
         {
             ENTER_TEST();
 
-            var model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\DataFiles\\Wall_SweptSolid.ifc", "");
+            var model = IFCEngine.sdaiOpenModelBN(0, "..\\TestData\\DataFiles\\Wall_SweptSolid.ifc", "");
             ASSERT(model != 0);
 
             TestSIUnitsDerivedDim(model);
 
             EnumerateGlobalScripts(model);
 
-            ifcengine.sdaiCloseModel(model);
+            IFCEngine.sdaiCloseModel(model);
 
             //
-            model = ifcengine.sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
+            model = IFCEngine.sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
 
             TestEvaluateDerivedByScript(model);
 
@@ -33,109 +33,109 @@ namespace CsIfcEngineTests
 
             TestUniqueRules(model);
 
-            ifcengine.sdaiCloseModel(model);
+            IFCEngine.sdaiCloseModel(model);
         }
 
         static void TestUniqueRules(Int64 model)
         {
-            var app = ifcengine.sdaiGetEntity(model, "IfcApplication");
+            var app = IFCEngine.sdaiGetEntity(model, "IfcApplication");
             ASSERT(app);
 
             string label;
-            Int64 rule = ifcengine.engiGetEntityUniqueRuleByIterator(app, 0, out label);
+            Int64 rule = IFCEngine.engiGetEntityUniqueRuleByIterator(app, 0, out label);
             ASSERT(rule);
             ASSERT(label == "UR1");
 
             string domain;
-            string attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, null, out domain);
+            string attrName = IFCEngine.engiGetEntityUniqueRuleAttributeByIterator(rule, null, out domain);
             ASSERT(attrName == "ApplicationIdentifier" && domain == null);
 
-            attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
+            attrName = IFCEngine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
             ASSERT(attrName == null && domain == null);
 
-            rule = ifcengine.engiGetEntityUniqueRuleByIterator(app, rule, out label);
+            rule = IFCEngine.engiGetEntityUniqueRuleByIterator(app, rule, out label);
             ASSERT(rule);
             ASSERT(label == "UR2");
 
-            attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, null, out domain);
+            attrName = IFCEngine.engiGetEntityUniqueRuleAttributeByIterator(rule, null, out domain);
             ASSERT(attrName == "ApplicationFullName" && domain == null);
 
-            attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
+            attrName = IFCEngine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
             ASSERT(attrName == "Version" && domain == null);
 
-            attrName = ifcengine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
+            attrName = IFCEngine.engiGetEntityUniqueRuleAttributeByIterator(rule, attrName, out domain);
             ASSERT(attrName == null && domain == null);
 
-            rule = ifcengine.engiGetEntityUniqueRuleByIterator(app, rule, out label);
+            rule = IFCEngine.engiGetEntityUniqueRuleByIterator(app, rule, out label);
             ASSERT(rule==0);
         }
 
         static void TestWhereRulesScript(Int64 model)
         {
-            long typeAngle = ifcengine.sdaiGetEntity(model, "IfcCompoundPlaneAngleMeasure");
+            long typeAngle = IFCEngine.sdaiGetEntity(model, "IfcCompoundPlaneAngleMeasure");
             ASSERT(typeAngle != 0);
 
             string label;
             string text;
-            Int64 rule = ifcengine.engiGetEntityWhereRuleByIterator(typeAngle, 0, out label);
+            Int64 rule = IFCEngine.engiGetEntityWhereRuleByIterator(typeAngle, 0, out label);
             ASSERT(rule != 0 && label == "MinutesInRange");
 
-            ifcengine.engiGetScriptText(rule, out _, out text);
+            IFCEngine.engiGetScriptText(rule, out _, out text);
             ASSERT(text == "ABS(SELF[2]) < 60;");
 
             string[] rLabels = { "SecondsInRange", "MicrosecondsInRange", "ConsistentSign" };
 
             int i = 0;
-            while (0!=(rule = ifcengine.engiGetEntityWhereRuleByIterator(typeAngle, rule, out IntPtr _)))
+            while (0!=(rule = IFCEngine.engiGetEntityWhereRuleByIterator(typeAngle, rule, out IntPtr _)))
             {
-                ifcengine.engiGetScriptText(rule, out label, out _);
+                IFCEngine.engiGetScriptText(rule, out label, out _);
                 ASSERT(label == rLabels[i]);
                 i++;
             }
             ASSERT(i == 3);
 
             //
-            IFC4.IfcCartesianPoint pt = ifcengine.internalForceInstanceFromP21Line(model, 99);
-            var entity = ifcengine.sdaiGetInstanceType(pt);
+            IFC4.IfcCartesianPoint pt = IFCEngine.internalForceInstanceFromP21Line(model, 99);
+            var entity = IFCEngine.sdaiGetInstanceType(pt);
             
-            rule = ifcengine.engiGetEntityWhereRuleByIterator (entity, 0, out label);
+            rule = IFCEngine.engiGetEntityWhereRuleByIterator (entity, 0, out label);
             ASSERT(rule != 0 && label == "CP2Dor3D");
 
             string logval;
-            var r = ifcengine.engiEvaluateScriptExpression (model, pt, rule, ifcengine.sdaiLOGICAL, out logval);
+            var r = IFCEngine.engiEvaluateScriptExpression (model, pt, rule, IFCEngine.sdaiLOGICAL, out logval);
             ASSERT(r != 0 && logval == "T");
         }
 
         static void TestEvaluateDerivedByScript(Int64 model)
         {
-            IFC4.IfcSIUnit lengthUnit = ifcengine.internalGetInstanceFromP21Line(model, 391);
+            IFC4.IfcSIUnit lengthUnit = IFCEngine.internalGetInstanceFromP21Line(model, 391);
             ASSERT(lengthUnit!=0);
 
-            var entityNamedUnit = ifcengine.sdaiGetEntity(model, "IfcNamedUnit");
+            var entityNamedUnit = IFCEngine.sdaiGetEntity(model, "IfcNamedUnit");
             ASSERT(entityNamedUnit!=0);
 
-            var entitySIUnit = ifcengine.sdaiGetEntity(model, "IfcSIUnit");
+            var entitySIUnit = IFCEngine.sdaiGetEntity(model, "IfcSIUnit");
             ASSERT(entitySIUnit != 0);
 
-            var dimAttr = ifcengine.sdaiGetAttrDefinition(entityNamedUnit, "Dimensions");
+            var dimAttr = IFCEngine.sdaiGetAttrDefinition(entityNamedUnit, "Dimensions");
             ASSERT(dimAttr != 0);
 
-            var derivedScript = ifcengine.engiGetAttrDerived (entityNamedUnit, dimAttr);
+            var derivedScript = IFCEngine.engiGetAttrDerived (entityNamedUnit, dimAttr);
             ASSERT(derivedScript == 0);
 
-            derivedScript = ifcengine.engiGetAttrDerived(entitySIUnit, dimAttr);
+            derivedScript = IFCEngine.engiGetAttrDerived(entitySIUnit, dimAttr);
             ASSERT(derivedScript != 0);
 
             string label;
             string text;
-            ifcengine.engiGetScriptText(derivedScript, out label, out text);
+            IFCEngine.engiGetScriptText(derivedScript, out label, out text);
             ASSERT(label == null && text == "IfcDimensionsForSiUnit (SELF.Name);");
 
             Int64 dim;
-            var res = ifcengine.engiEvaluateScriptExpression(model, lengthUnit, derivedScript, ifcengine.sdaiINSTANCE, out dim);
+            var res = IFCEngine.engiEvaluateScriptExpression(model, lengthUnit, derivedScript, IFCEngine.sdaiINSTANCE, out dim);
             ASSERT(res != 0 && dim != 0);
 
-            var ok = ifcengine.engiEnableDerivedAttributes(model, true);
+            var ok = IFCEngine.engiEnableDerivedAttributes(model, true);
             ASSERT(ok);
 
             IFC4.IfcDimensionalExponents ddim = dim;
@@ -145,37 +145,37 @@ namespace CsIfcEngineTests
 
             //
             //
-            IFC4.IfcCartesianPoint pt = ifcengine.internalGetInstanceFromP21Line(model, 100);
+            IFC4.IfcCartesianPoint pt = IFCEngine.internalGetInstanceFromP21Line(model, 100);
             ASSERT(pt!=0);
-            var entity = ifcengine.sdaiGetInstanceType(pt);
-            derivedScript = ifcengine.engiGetAttrDerivedBN(entity, "Dim");
+            var entity = IFCEngine.sdaiGetInstanceType(pt);
+            derivedScript = IFCEngine.engiGetAttrDerivedBN(entity, "Dim");
             ASSERT(derivedScript != 0);
 
-            var derivedScript2 = ifcengine.engiGetAttrDerivedBN(entity, Encoding.ASCII.GetBytes("Dim"));
+            var derivedScript2 = IFCEngine.engiGetAttrDerivedBN(entity, Encoding.ASCII.GetBytes("Dim"));
             ASSERT(derivedScript2 == derivedScript);
 
-            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiINSTANCE, out dim);
+            res = IFCEngine.engiEvaluateScriptExpression(model, pt, derivedScript, IFCEngine.sdaiINSTANCE, out dim);
             ASSERT(res == 0);
 
-            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiINTEGER, out dim);
+            res = IFCEngine.engiEvaluateScriptExpression(model, pt, derivedScript, IFCEngine.sdaiINTEGER, out dim);
             ASSERT(res != 0 && dim == 3);
 
             double v;
-            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiREAL, out v);
+            res = IFCEngine.engiEvaluateScriptExpression(model, pt, derivedScript, IFCEngine.sdaiREAL, out v);
             ASSERT(res != 0 && v == 3);
 
             bool b;
-            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiBOOLEAN, out b);
+            res = IFCEngine.engiEvaluateScriptExpression(model, pt, derivedScript, IFCEngine.sdaiBOOLEAN, out b);
             ASSERT(res == 0);
 
             string s;
-            res = ifcengine.engiEvaluateScriptExpression(model, pt, derivedScript, ifcengine.sdaiSTRING, out s);
+            res = IFCEngine.engiEvaluateScriptExpression(model, pt, derivedScript, IFCEngine.sdaiSTRING, out s);
             ASSERT(res == 0);
         }
 
         static void EnumerateGlobalScripts(Int64 model)
         {
-            var ok = ifcengine.engiEnableDerivedAttributes(model, true);
+            var ok = IFCEngine.engiEnableDerivedAttributes(model, true);
             ASSERT(ok);
 
             var funcNames = new HashSet<string>();
@@ -188,12 +188,12 @@ namespace CsIfcEngineTests
             ruleNames.Add("IfcRepresentationContextSameWCS");
 
             Int64 script = 0;
-            while (0!=(script = ifcengine.engiGetSchemaScriptDeclarationByIterator(model, script)))
+            while (0!=(script = IFCEngine.engiGetSchemaScriptDeclarationByIterator(model, script)))
             {
                 string label;
                 string text;
 
-                var type = ifcengine.engiGetDeclarationType(script);
+                var type = IFCEngine.engiGetDeclarationType(script);
                 switch (type)
                 {
                     case enum_express_declaration.__PROCEDURE:
@@ -201,12 +201,12 @@ namespace CsIfcEngineTests
                         break;
 
                     case enum_express_declaration.__FUNCTION:
-                        ifcengine.engiGetScriptText(script, out label, out _);
+                        IFCEngine.engiGetScriptText(script, out label, out _);
                         funcNames.Remove(label);
                         break;
 
                     case enum_express_declaration.__GLOBAL_RULE:
-                        ifcengine.engiGetScriptText(script, out label, out text);
+                        IFCEngine.engiGetScriptText(script, out label, out text);
                         ASSERT(ruleNames.Contains(label));
                         ruleNames.Remove(label);
                         break;
@@ -224,32 +224,32 @@ namespace CsIfcEngineTests
         {
             TestSIUnitsDerivedDim(model, false);
 
-            var ok = ifcengine.engiEnableDerivedAttributes(model, true);
+            var ok = IFCEngine.engiEnableDerivedAttributes(model, true);
             ASSERT(ok);
             TestSIUnitsDerivedDim(model, true);
 
-            ok = ifcengine.engiEnableDerivedAttributes(model, false);
+            ok = IFCEngine.engiEnableDerivedAttributes(model, false);
             ASSERT(ok);
             TestSIUnitsDerivedDim(model, false);
 
-            ok = ifcengine.engiEnableDerivedAttributes(model, true);
+            ok = IFCEngine.engiEnableDerivedAttributes(model, true);
             ASSERT(ok);
             TestSIUnitsDerivedDim(model, true);
         }
 
         static void TestSIUnitsDerivedDim (Int64 model, bool scriptEnabled)
         {
-            var units = ifcengine.sdaiGetEntityExtentBN(model, "IfcSIUnit");
+            var units = IFCEngine.sdaiGetEntityExtentBN(model, "IfcSIUnit");
             ASSERT(units != 0);
 
-            var it = ifcengine.sdaiCreateIterator(units);
+            var it = IFCEngine.sdaiCreateIterator(units);
             ASSERT(it != 0);
 
-            while (ifcengine.sdaiNext(it))
+            while (IFCEngine.sdaiNext(it))
             {
                 Int64 instance = 0;
 
-                IFC4.IfcSIUnit unit = ifcengine.sdaiGetAggrByIterator(it, ifcengine.sdaiINSTANCE, out instance);
+                IFC4.IfcSIUnit unit = IFCEngine.sdaiGetAggrByIterator(it, IFCEngine.sdaiINSTANCE, out instance);
                 ASSERT(unit != 0);
 
 
@@ -278,7 +278,7 @@ namespace CsIfcEngineTests
                     }
                 }
             }
-            ifcengine.sdaiDeleteIterator(it);
+            IFCEngine.sdaiDeleteIterator(it);
         }
     }
 }

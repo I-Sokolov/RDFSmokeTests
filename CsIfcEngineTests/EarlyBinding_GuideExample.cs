@@ -13,9 +13,9 @@ namespace CsIfcEngineTests
         {
             ENTER_TEST();
 
-            long model = RDF.ifcengine.sdaiCreateModelBN(0, null as string, "IFC4");
-            RDF.ifcengine.SetSPFFHeaderItem(model, 9, 0, RDF.ifcengine.sdaiSTRING, "IFC4");
-            RDF.ifcengine.SetSPFFHeaderItem(model, 9, 1, RDF.ifcengine.sdaiSTRING, null as string);
+            long model = RDF.IFCEngine.sdaiCreateModelBN(0, null as string, "IFC4");
+            RDF.IFCEngine.SetSPFFHeaderItem(model, 9, 0, RDF.IFCEngine.sdaiSTRING, "IFC4");
+            RDF.IFCEngine.SetSPFFHeaderItem(model, 9, 1, RDF.IFCEngine.sdaiSTRING, null as string);
 
             //
             // Create instances and use in SDAI
@@ -26,11 +26,11 @@ namespace CsIfcEngineTests
             IFC4.IfcDoor door = IFC4.IfcDoor.Create(model);
 
             //whenever SDAI instance is required, model instance can be used with implicit conversion
-            long ok = RDF.ifcengine.sdaiIsKindOfBN(wall, "IfcProduct");
+            long ok = RDF.IFCEngine.sdaiIsKindOfBN(wall, "IfcProduct");
             ASSERT(ok!=0);
 
             SdaiInstance sdaiWall = wall;
-            ok = RDF.ifcengine.sdaiIsKindOfBN(sdaiWall, "IfcSlab");
+            ok = RDF.IFCEngine.sdaiIsKindOfBN(sdaiWall, "IfcSlab");
             ASSERT(ok==0);
 
             //other way, if you have SDAI instance you can construct model instance of appripriate type
@@ -139,7 +139,7 @@ namespace CsIfcEngineTests
             //check instance class
             ASSERT((IFC4.IfcPerson)(inst)!=0);
             ASSERT((IFC4.IfcOrganization)(inst)==0);
-            ASSERT(RDF.ifcengine.sdaiIsKindOfBN(inst, "IfcPerson")!=0);
+            ASSERT(RDF.IFCEngine.sdaiIsKindOfBN(inst, "IfcPerson")!=0);
 
 
             //work with nested SELECT
