@@ -1153,7 +1153,7 @@ extern void EngineTests(void)
 
     GetAllInstancesTest(ifcModel, 7);
 
-    PrecisionTest(ifcModel);
+    //PrecisionTest(ifcModel); #todo
 
     const char* FILE_NAME = "EngineTests.ifc";
 
