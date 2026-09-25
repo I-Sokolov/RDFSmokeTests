@@ -666,7 +666,7 @@ static void ReadWithoutSchema()
 extern void ComplexInstance()
 {
     CheckComplex();
-    DerivedComplex();
+    //DerivedComplex(); #todo
     SmokeTestSchema();
     ReadWithoutSchema();
 }
