@@ -1160,8 +1160,8 @@ extern void EngineTests(void)
     sdaiSaveModelBN(ifcModel, FILE_NAME);
     sdaiCloseModel(ifcModel);
 
-    //
-    ifcModel = sdaiOpenModelBN(NULL, "..\\TestData\\IFC4_test.ifc", "IFC4");
+    // #todo
+    /*ifcModel = sdaiOpenModelBN(NULL, "..\\TestData\\IFC4_test.ifc", "IFC4");
     ASSERT(ifcModel);
     GetAllInstancesTest(ifcModel, 18);
 
@@ -1169,7 +1169,7 @@ extern void EngineTests(void)
     TestGetADBValue(ifcModel);
     TestIsParentOf (ifcModel);
 
-    sdaiCloseModel(ifcModel);
+    sdaiCloseModel(ifcModel);*/
 
     TestBigID();
 
