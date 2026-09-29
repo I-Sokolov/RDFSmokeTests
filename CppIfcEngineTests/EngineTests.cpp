@@ -1,5 +1,11 @@
 #include "pch.h"
 
+#include <Windows.h>
+#include <string>
+
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+
 using namespace IFC4;
 
 static void TestADBBoolean(SdaiInstance inst, const char* attr)
@@ -1050,7 +1056,14 @@ static void TestUnknonwEntities()
 {
     ENTER_TEST;
 
-    auto model = sdaiOpenModelBN(0, "..\\TestData\\UnknownEntitiies.ifc", "");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / "..\\TestData\\UnknownEntitiies.ifc";
+    fs::path canonicalInvalidTextLiterals = fs::canonical(dataFile);
+
+    auto model = sdaiOpenModelBN(0, canonicalInvalidTextLiterals.string().c_str(), "");
     ASSERT(model);
     
     CheckUsage(model);
@@ -1160,8 +1173,14 @@ extern void EngineTests(void)
     sdaiSaveModelBN(ifcModel, FILE_NAME);
     sdaiCloseModel(ifcModel);
 
-    // #todo
-    /*ifcModel = sdaiOpenModelBN(NULL, "..\\TestData\\IFC4_test.ifc", "IFC4");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / "..\\TestData\\IFC4_test.ifc";
+    fs::path canonicalIFC4_test = fs::canonical(dataFile);
+
+    ifcModel = sdaiOpenModelBN(NULL, canonicalIFC4_test.string().c_str(), "IFC4");
     ASSERT(ifcModel);
     GetAllInstancesTest(ifcModel, 18);
 
@@ -1169,7 +1188,7 @@ extern void EngineTests(void)
     TestGetADBValue(ifcModel);
     TestIsParentOf (ifcModel);
 
-    sdaiCloseModel(ifcModel);*/
+    sdaiCloseModel(ifcModel);
 
     TestBigID();
 

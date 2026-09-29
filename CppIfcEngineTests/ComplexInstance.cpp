@@ -114,9 +114,17 @@ static void CheckComplex()
 
     auto name2 = "Complex Entity PART; PART_PRISMATIC; PART_PRISMATIC_SIMPLE; STRUCTURAL_FRAME_ITEM; STRUCTURAL_FRAME_PRODUCT; STRUCTURAL_FRAME_PRODUCT_WITH_MATERIAL";
 
-    //#todo
-    //CheckComplex(STEP_TEST1, 1007, name1, inst1, _countof(inst1));
-    //CheckComplex(STEP_TEST2, 1233, name2, NULL, 0);
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / STEP_TEST1;
+    fs::path canonicalSTEPTest1 = fs::canonical(dataFile);
+    CheckComplex(canonicalSTEPTest1.string().c_str(), 1007, name1, inst1, _countof(inst1));
+
+    dataFile = fs::path(buffer).parent_path() / STEP_TEST2;
+    fs::path canonicalSTEPTest2 = fs::canonical(dataFile);
+    CheckComplex(canonicalSTEPTest2.string().c_str(), 1233, name2, NULL, 0);
    
 }
 

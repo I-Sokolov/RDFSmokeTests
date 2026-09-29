@@ -1,6 +1,12 @@
 ﻿#include "pch.h"
 #include <codecvt>
 
+#include <Windows.h>
+#include <string>
+
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+
 #define REG_CHARS_FILE_NAME "PutGetRegionalChars.ifc"
 
 
@@ -404,7 +410,14 @@ static void PutGetRegionalChars(void)
 
 static void InvalidTextLiterals()
 {
-    auto ifcModel = sdaiOpenModelBN(0, "..\\TestData\\InvalidTextLiterals.ifc", "");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / "..\\TestData\\InvalidTextLiterals.ifc";
+    fs::path canonicalInvalidTextLiterals = fs::canonical(dataFile);
+
+    auto ifcModel = sdaiOpenModelBN(0, canonicalInvalidTextLiterals.string().c_str(), "");
     ASSERT(ifcModel);
 
     int nissues = 0;
