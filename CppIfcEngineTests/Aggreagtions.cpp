@@ -1,6 +1,12 @@
 
 #include "pch.h"
 
+#include <Windows.h>
+#include <string>
+
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+
 #define TEST_FILE_DEL   "..\\TestData\\Walls.ifc"
 #define TEST_FILE_AGGR  "..\\TestData\\AggregationTest.ifc"
 #define TEST_SAVE       "AggregationTest.ifc"
@@ -58,7 +64,14 @@ void sdaiAdd_(
 
 static void DeleteWalls(bool subtypes)
 {
-    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_DEL, "");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / TEST_FILE_DEL;
+    fs::path canonicalTestFileDel = fs::canonical(dataFile);
+
+    SdaiModel   model = sdaiOpenModelBN(0, canonicalTestFileDel.string().c_str(), "");
 
     sdaiSaveModelBN(model, TEST_SAVE);//to check backlinks consistency
 
@@ -108,7 +121,14 @@ static void DeleteWalls(bool subtypes)
 
 static void DeleteWallsByIndex(bool subtypes)
 {
-    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_DEL, "");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / TEST_FILE_DEL;
+    fs::path canonicalTestFileDel = fs::canonical(dataFile);
+
+    SdaiModel   model = sdaiOpenModelBN(0, canonicalTestFileDel.string().c_str(), "");
 
     int cnt = 0;
 
@@ -156,7 +176,14 @@ static void CheckAggrElem(SdaiInstance inst, const char* attr, SdaiInteger index
 
 static void DeleteAttrAggrByIndex()
 {
-    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_DEL, "");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / TEST_FILE_DEL;
+    fs::path canonicalTestFileDel = fs::canonical(dataFile);
+
+    SdaiModel   model = sdaiOpenModelBN(0, canonicalTestFileDel.string().c_str(), "");
 
     auto unitAssmt = internalGetInstanceFromP21Line(model, 975);
 
@@ -305,7 +332,14 @@ static void TestIsMember(SdaiAggr aggr, std::list<SdaiInstance>& members, SdaiIn
 
 static void Iterators()
 {
-    SdaiModel   model = sdaiOpenModelBN(0, TEST_FILE_AGGR, "");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / TEST_FILE_AGGR;
+    fs::path canonicalTestFileAggr = fs::canonical(dataFile);
+
+    SdaiModel   model = sdaiOpenModelBN(0, canonicalTestFileAggr.string().c_str(), "");
 
     //arguments
     IFC4::IfcPropertySet pset = internalGetInstanceFromP21Line(model, 124);
@@ -1794,14 +1828,21 @@ static void CheckNestedAggr(SdaiModel model, bool unset)
 
 static void NestedInstanceAggr()
 {
-    auto model = sdaiCreateModelBN(TEST_SCHEMA);
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / TEST_SCHEMA;
+    fs::path canonicalTestSchema = fs::canonical(dataFile);
+
+    auto model = sdaiCreateModelBN(canonicalTestSchema.string().c_str());
     ASSERT(model);
     PopulateNestedAggr(model);
     sdaiSaveModelBN(model, TEST_MODEL_SAVED);
     CheckNestedAggr(model, false);
     sdaiCloseModel(model);
 
-    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, TEST_SCHEMA);
+    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, canonicalTestSchema.string().c_str());
     sdaiSaveModelBN(model, TEST_MODEL_SAVED);
     CheckNestedAggr(model, false);
     UnsetNestedAggr(model);
@@ -1809,7 +1850,7 @@ static void NestedInstanceAggr()
     CheckNestedAggr(model, true);
     sdaiCloseModel(model);
 
-    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, TEST_SCHEMA);
+    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, canonicalTestSchema.string().c_str());
     CheckNestedAggr(model, true);
     sdaiSaveModelBN(model, TEST_MODEL_SAVED);
     sdaiCloseModel(model);

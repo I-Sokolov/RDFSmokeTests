@@ -1,5 +1,11 @@
 #include "pch.h"
 
+#include <Windows.h>
+#include <string>
+
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+
 #define STEP_TEST1 "..\\TestData\\DataFiles\\ComplexInstance1.step"
 #define STEP_TEST2 "..\\TestData\\DataFiles\\ComplexInstance2.step"
 #define STEP_TEST_SAVED "ComplexInstance_saved.step"
@@ -615,7 +621,15 @@ static void SmokeTestSchema()
 {
     ENTER_TEST;
 
-    auto model = sdaiCreateModelBN(TEST_SCHEMA);
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / TEST_SCHEMA;
+    fs::path canonicalTestSchema = fs::canonical(dataFile);
+
+    auto model = sdaiCreateModelBN(canonicalTestSchema.string().c_str());
+
     ASSERT(model);
     engiEnableDerivedAttributes(model, sdaiTRUE);
     SmokeTestModelPopulate(model);
@@ -624,14 +638,17 @@ static void SmokeTestSchema()
     sdaiCloseModel(model);
     model = NULL;
 
-    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, TEST_SCHEMA);
+    model = sdaiOpenModelBN(0, TEST_MODEL_SAVED, canonicalTestSchema.string().c_str());
     ASSERT(model);
     engiEnableDerivedAttributes(model, sdaiTRUE);
     SmokeTestModelCheckContent(model);
     sdaiCloseModel(model);
     model = NULL;
 
-    model = sdaiOpenModelBN(0, TEST_MODEL, TEST_SCHEMA);
+    dataFile = fs::path(buffer).parent_path() / TEST_MODEL;
+    fs::path canonicalTestModel = fs::canonical(dataFile);
+
+    model = sdaiOpenModelBN(0, canonicalTestModel.string().c_str(), canonicalTestSchema.string().c_str());
     ASSERT(model);
     
     TestAttrPositions(model);

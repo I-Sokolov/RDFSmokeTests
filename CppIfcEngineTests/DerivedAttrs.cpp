@@ -1,5 +1,11 @@
 #include "pch.h"
 
+#include <Windows.h>
+#include <string>
+
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+
 #define TEST_FILE "DeriveAttr.ifc"
 
 static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getOn, bool all1, bool all2)
@@ -116,7 +122,14 @@ static void Ifc4test_Check(SdaiModel model, ExpressID extID, bool getOn, bool al
 
 ExpressID Ifc4test()
 {
-    auto model = sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / "..\\TestData\\AggregationTest.ifc";
+    fs::path canonicalAggregationTest = fs::canonical(dataFile);
+
+    auto model = sdaiOpenModelBN(0, canonicalAggregationTest.string().c_str(), "");
     ASSERT(model);
 
     auto oper = IFC4::IfcCartesianTransformationOperator3DnonUniform::Create(model);
