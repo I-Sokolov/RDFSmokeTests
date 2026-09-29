@@ -27,6 +27,7 @@ namespace CsIfcEngineTests
             fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\schemas\\IFC4x2.exp"));
             ParseExpressFile(fullPath);
 
+            //#todo: fix the following schema
             //fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\schemas\\IFC4X3_ADD2.exp"));
             //ParseExpressFile("fullPath");
 
