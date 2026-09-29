@@ -27,7 +27,7 @@ namespace CsIfcEngineTests
 
             IFCEngine.sdaiCloseModel(model);
 
-            fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\DataFiles\\AggregationTest.ifc"));
+            fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\AggregationTest.ifc"));
             model = IFCEngine.sdaiOpenModelBN(0, fullPath, "");
 
             TestEvaluateDerivedByScript(model);
