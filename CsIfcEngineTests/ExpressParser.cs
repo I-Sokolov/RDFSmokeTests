@@ -39,7 +39,7 @@ namespace CsIfcEngineTests
             fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\schemas\\structural_frame_schema.exp"));
             ParseExpressFile(fullPath);
 
-            fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\schemas\\ap242ed2_mim_lf_v1.exp"));
+            fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\schemas\\ap242ed2_mim_lf_v1.101.exp"));
             ParseExpressFile(fullPath);
         }
 
@@ -50,5 +50,6 @@ namespace CsIfcEngineTests
 
             RDF.IFCEngine.sdaiCloseModel(model);
         }
+
     }
 }
