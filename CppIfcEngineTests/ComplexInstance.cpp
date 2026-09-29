@@ -133,7 +133,13 @@ static void DerivedComplex()
     //derived attributes of complex entities
     ENTER_TEST;
 
-    SdaiModel model = sdaiOpenModelBN(0, STEP_TEST1, "");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / STEP_TEST1;
+    fs::path canonicalSTEPTest1 = fs::canonical(dataFile);
+    SdaiModel model = sdaiOpenModelBN(0, canonicalSTEPTest1.string().c_str(), "");
     ASSERT(model);
 
     engiEnableDerivedAttributes(model, sdaiTRUE);
@@ -691,7 +697,7 @@ static void ReadWithoutSchema()
 extern void ComplexInstance()
 {
     CheckComplex();
-    //DerivedComplex(); #todo
+    DerivedComplex();
     SmokeTestSchema();
     ReadWithoutSchema();
 }

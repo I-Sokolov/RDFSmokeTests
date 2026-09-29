@@ -1166,7 +1166,7 @@ extern void EngineTests(void)
 
     GetAllInstancesTest(ifcModel, 7);
 
-    //PrecisionTest(ifcModel); #todo
+    PrecisionTest(ifcModel);
 
     const char* FILE_NAME = "EngineTests.ifc";
 
@@ -1192,7 +1192,7 @@ extern void EngineTests(void)
 
     TestBigID();
 
-	//TestUnknonwEntities(); #todo
+	TestUnknonwEntities();
 
     TestAttributePosition ();
 }
