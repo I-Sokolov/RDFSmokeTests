@@ -1,11 +1,25 @@
 #include "pch.h"
+
+#include <Windows.h>
+#include <string>
+
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+
 using namespace GEOM;
 
 static void TriangulationTest()
 {
     ENTER_TEST;
 
-    auto model = OpenModel("..\\TestData\\Triangulation.bin");
+    char buffer[MAX_PATH];
+    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    ASSERT(len > 0 && len < MAX_PATH);
+
+    fs::path dataFile = fs::path(buffer).parent_path() / ".." / "TestData" / "Triangulation.bin";
+    fs::path canonicalDataFile = fs::canonical(dataFile);
+
+    auto model = OpenModel(canonicalDataFile.string().c_str());
     ASSERT(model && GetInstancesByIterator(model, NULL));
 
     int64_t settings = 0b111111000000001111000001110001ull;
@@ -221,6 +235,6 @@ static void CreateInstanceTest()
 
 extern void EntitiesTests()
 {
-    //TriangulationTest(); #todo
+    TriangulationTest();
     CreateInstanceTest();
 }
