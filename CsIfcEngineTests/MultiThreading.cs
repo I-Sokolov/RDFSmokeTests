@@ -2,6 +2,7 @@
 using RDF;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -65,8 +66,10 @@ namespace CsIfcEngineTests
             model = IFCEngine.sdaiOpenModelBN(0,"NotExist", "IFC4");
             ASSERT(model == 0);
 
-            //
-            model = IFCEngine.sdaiOpenModelBN(0,"..\\TestData\\ModelCheckerIFC4x3.ifc", "IFC4x3");
+            string basePath = AppContext.BaseDirectory;
+
+            string fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\ModelCheckerIFC4x3.ifc"));
+            model = IFCEngine.sdaiOpenModelBN(0, fullPath, "IFC4x3");
             ASSERT(model != 0);
 
             //get data test

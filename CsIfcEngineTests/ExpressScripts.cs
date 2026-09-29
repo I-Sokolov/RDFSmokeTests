@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -15,7 +16,9 @@ namespace CsIfcEngineTests
         {
             ENTER_TEST();
 
-            var model = IFCEngine.sdaiOpenModelBN(0, "..\\TestData\\DataFiles\\Wall_SweptSolid.ifc", "");
+            string basePath = AppContext.BaseDirectory;
+            string fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\..\\..\\TestData\\DataFiles\\Wall_SweptSolid.ifc"));
+            var model = IFCEngine.sdaiOpenModelBN(0, fullPath, "");
             ASSERT(model != 0);
 
             TestSIUnitsDerivedDim(model);
@@ -24,8 +27,8 @@ namespace CsIfcEngineTests
 
             IFCEngine.sdaiCloseModel(model);
 
-            //
-            model = IFCEngine.sdaiOpenModelBN(0, "..\\TestData\\AggregationTest.ifc", "");
+            fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\..\\..\\TestData\\DataFiles\\AggregationTest.ifc"));
+            model = IFCEngine.sdaiOpenModelBN(0, fullPath, "");
 
             TestEvaluateDerivedByScript(model);
 

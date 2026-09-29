@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,10 @@ namespace CsIfcEngineTests
 
         private static void GetSetGlobalPlacement()
         {
-            var model = IFCEngine.sdaiOpenModelBN(0, "..\\TestData\\walls.ifc", "");
+            string basePath = AppContext.BaseDirectory;
+
+            string fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\walls.ifc"));
+            var model = IFCEngine.sdaiOpenModelBN(0, fullPath, "");
             ASSERT(model != 0);
 
             //expected identity placement
