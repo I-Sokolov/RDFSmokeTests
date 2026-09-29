@@ -17,7 +17,7 @@ namespace CsIfcEngineTests
             ENTER_TEST();
 
             string basePath = AppContext.BaseDirectory;
-            string fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\..\\..\\TestData\\DataFiles\\Wall_SweptSolid.ifc"));
+            string fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\DataFiles\\Wall_SweptSolid.ifc"));
             var model = IFCEngine.sdaiOpenModelBN(0, fullPath, "");
             ASSERT(model != 0);
 
@@ -27,7 +27,7 @@ namespace CsIfcEngineTests
 
             IFCEngine.sdaiCloseModel(model);
 
-            fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\..\\..\\TestData\\DataFiles\\AggregationTest.ifc"));
+            fullPath = Path.GetFullPath(Path.Combine(basePath, "..\\TestData\\DataFiles\\AggregationTest.ifc"));
             model = IFCEngine.sdaiOpenModelBN(0, fullPath, "");
 
             TestEvaluateDerivedByScript(model);
