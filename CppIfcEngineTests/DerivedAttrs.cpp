@@ -279,10 +279,52 @@ static void IterateAttributes()
     sdaiCloseModel(model);
 }
 
+static void CheckDirection(SdaiAggr p, int index, double x, double y, double z)
+{
+    SdaiInstance inst = NULL;
+    auto res = sdaiGetAggrByIndex(p, index, sdaiINSTANCE, &inst);
+    ASSERT(res && inst);
+
+    AP214::direction dir(inst);
+    ASSERT(dir);
+
+    std::vector<double> comps;
+    dir.get_direction_ratios(comps);
+    ASSERT(comps.size() == 3);
+    ASSERT(fabs(comps[0] - x) < 1e-8);
+    ASSERT(fabs(comps[1] - y) < 1e-8);
+    ASSERT(fabs(comps[2] - z) < 1e-8);
+}
+
+static void SchemaConstanst()
+{
+    auto model = sdaiOpenModelBN(0, "..\\TestData\\Desk_001 1.STEP", "");
+    ASSERT(model);
+
+    bool ok = engiEnableDerivedAttributes(model, true);
+    ASSERT(ok);
+
+    auto a2p3d = internalGetInstanceFromP21Line(model, 9862);
+    ASSERT(a2p3d);
+
+    SdaiAggr p = NULL;
+    auto res = sdaiGetAttrBN(a2p3d, "p", sdaiAGGR, &p);
+
+    auto cnt = sdaiGetMemberCount(p);
+    ASSERT(cnt == 3);
+
+    CheckDirection(p, 0, 1, 0, 0);
+    CheckDirection(p, 1, 0, 1, 0);
+    CheckDirection(p, 2, 0, 0, 1);
+
+    sdaiCloseModel(model);
+}
 
 extern void DeriveAttrTests()
 {
     ENTER_TEST;
+
+    SchemaConstanst();
 
     auto operId = Ifc4test();
 

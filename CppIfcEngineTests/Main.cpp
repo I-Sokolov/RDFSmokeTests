@@ -49,12 +49,12 @@ extern int main()
         int i = 0;
         do
             {
+            DeriveAttrTests();
             BooleanTest();
             EngineTests();
             ComplexInstance();
             AggregationTests();
             SchemaReadingTests();
-            DeriveAttrTests();
             Encodings();
             ADBtests();
             EarlyBound_IFC4_test();

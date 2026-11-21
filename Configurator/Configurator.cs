@@ -153,6 +153,7 @@ namespace Configurator
                 CreateSymLink(cbEbApi.Text, "IFC4x4.h", folder, null, cfgFile);
                 CreateSymLink(cbEbApi.Text, "IFC2x3.h", folder, null, cfgFile);
                 CreateSymLink(cbEbApi.Text, "AP242.h", folder, null, cfgFile);
+                CreateSymLink(cbEbApi.Text, "AP214.h", folder, null, cfgFile);
                 CreateSymLink(cbEbApi.Text, "CIS2.h", folder, null, cfgFile);
 
                 var smokeTestsH = Path.Combine(cbIncludePath.Text, "..", "ToolBoxEx");

@@ -24,6 +24,7 @@
 #include "IFC4x4.h"
 #include "CIS2.h"
 #include "AP242.h"
+#include "AP214.h"
 
 #define COMPILE_SMOKE_TESTS
 #include "SmokeTests.h"
