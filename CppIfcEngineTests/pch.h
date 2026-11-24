@@ -35,13 +35,16 @@
 
 static void Assert(bool c, int line, const char* file)
 {
-    if (!(c)) { 
-        printf("ASSERT failed at line %d file %s\n", line, file);
-        throw (int)13; 
+    if (!(c)) {
+        fprintf(stderr, "ASSERT failed at line %d file %s\n", line, file);
+        //printf("ASSERT failed at line %d file %s\n", line, file);
+        throw (int)13;
     }
 }
 
 #define ASSERT(c) Assert(c, __LINE__, __FILE__);
 
-#define ENTER_TEST              printf ("Running " __FUNCTION__ ".\n");
-#define ENTER_TEST2(name)       printf ("Running " __FUNCTION__ " : %s.\n", name);
+#define ENTER_TEST              fprintf(stdout, "Running " __FUNCTION__ ".\n");
+#define ENTER_TEST2(name)       fprintf(stdout, "Running " __FUNCTION__ " : %s.\n", name);
+//#define ENTER_TEST              printf ("Running " __FUNCTION__ ".\n");
+//#define ENTER_TEST2(name)       printf ("Running " __FUNCTION__ " : %s.\n", name);
