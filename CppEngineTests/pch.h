@@ -32,7 +32,8 @@
 static void AssertAt(bool c, const char* file, int line)
 {
     if (!(c)) {
-        printf("ASSERT failed at line %d file %s\n", line, file);
+        //printf("ASSERT failed at line %d file %s\n", line, file);
+        fprintf(stderr, "ASSERT failed at line %d file %s\n", line, file);
         throw (int)13;
     }
 }
@@ -41,7 +42,8 @@ static void AssertAt(bool c, const char* file, int line)
 
 #define ASSERT(c) { ASSERT_AT((c),__FILE__,__LINE__); }
 
-#define ENTER_TEST_EX2(name, name2) printf ("Running " __FUNCTION__ " %s %s\n", name, name2);
+#define ENTER_TEST_EX2(name, name2) fprintf (stdout, "Running " __FUNCTION__ " %s %s\n", name, name2);
+//#define ENTER_TEST_EX2(name, name2) printf ("Running " __FUNCTION__ " %s %s\n", name, name2);
 
 #define ENTER_TEST_EX(name) ENTER_TEST_EX2(name, "")
 
